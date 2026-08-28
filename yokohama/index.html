@@ -1,0 +1,571 @@
+<!-- produced-by: gemini2 -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>橫濱 2026 新人氣地點</title>
+  <style>
+    :root {
+      --paper: #f4efe6;
+      --card: #fffdf8;
+      --ink: #2b2823;
+      --muted: #5e584f;
+      --line: #d9d0c3;
+      --sea: #245a68;
+      --sea-dark: #163943;
+      --terracotta: #a24b2a;
+      --sand: #e7dccb;
+      --tag-bg: #eef4f5;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "PingFang TC", "Hiragino Kaku Gothic ProN", "Noto Sans CJK TC", "Microsoft JhengHei", system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--sea);
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover { color: var(--terracotta); }
+
+    .wrap {
+      max-width: 40rem;
+      margin: 0 auto;
+      padding: 1.25rem 1.15rem 3rem;
+    }
+
+    header.hero {
+      padding: 1.6rem 0 1.1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .kicker {
+      margin: 0 0 0.4rem;
+      color: var(--terracotta);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0 0 0.7rem;
+      font-size: 1.85rem;
+      line-height: 1.25;
+      letter-spacing: 0.02em;
+    }
+
+    .lede {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    nav.toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 1.15rem 0 0;
+    }
+
+    nav.toc a {
+      display: inline-block;
+      padding: 0.35rem 0.7rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      text-decoration: none;
+      color: var(--sea-dark);
+      font-size: 0.88rem;
+    }
+
+    .index {
+      margin: 1.25rem 0 0;
+      padding: 0.9rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .index h2 {
+      margin: 0 0 0.45rem;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .index ol {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .index li { margin: 0.15rem 0; }
+
+    .note {
+      margin: 1rem 0 0;
+      padding: 0.75rem 0.9rem;
+      background: var(--sand);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    section {
+      margin: 2.1rem 0 0;
+      padding-top: 0.35rem;
+    }
+
+    section > h2 {
+      margin: 0 0 0.45rem;
+      font-size: 1.35rem;
+      color: var(--sea-dark);
+    }
+
+    .sec-lead {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    article.place {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.05rem 1.05rem 1.15rem;
+      margin: 0 0 0.9rem;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0 0 0.55rem;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.12rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      background: var(--tag-bg);
+      color: var(--sea-dark);
+      font-weight: 700;
+    }
+
+    .pill.open {
+      background: #f3e4db;
+      color: var(--terracotta);
+    }
+
+    article.place h3 {
+      margin: 0 0 0.55rem;
+      font-size: 1.18rem;
+      line-height: 1.35;
+    }
+
+    .jp {
+      display: block;
+      margin-top: 0.15rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    dl {
+      margin: 0;
+    }
+
+    dt {
+      margin: 0.55rem 0 0.1rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--terracotta);
+    }
+
+    dd {
+      margin: 0;
+    }
+
+    .src-inline {
+      margin: 0.85rem 0 0;
+      font-size: 0.88rem;
+    }
+
+    .src-inline a {
+      overflow-wrap: anywhere;
+    }
+
+    ol.route {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    ol.route li {
+      position: relative;
+      padding: 0 0 1.15rem 1.15rem;
+      border-left: 2px solid var(--sand);
+      margin-left: 0.45rem;
+    }
+
+    ol.route li:last-child {
+      border-left-color: transparent;
+      padding-bottom: 0;
+    }
+
+    ol.route li::before {
+      content: "";
+      position: absolute;
+      left: -0.42rem;
+      top: 0.35rem;
+      width: 0.7rem;
+      height: 0.7rem;
+      background: var(--sea);
+      border-radius: 50%;
+    }
+
+    .when {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--terracotta);
+      margin-bottom: 0.15rem;
+    }
+
+    footer {
+      margin: 2.4rem 0 0;
+      padding: 1.3rem 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    footer h2 {
+      margin: 0 0 0.4rem;
+      font-size: 1.15rem;
+    }
+
+    footer .sec-lead { margin-bottom: 0.9rem; }
+
+    footer h3 {
+      margin: 1rem 0 0.25rem;
+      font-size: 0.95rem;
+    }
+
+    footer ul {
+      margin: 0;
+      padding-left: 1.15rem;
+    }
+
+    footer li {
+      margin: 0.2rem 0;
+      overflow-wrap: anywhere;
+      font-size: 0.9rem;
+    }
+
+    .colophon {
+      margin: 1.4rem 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="kicker">FAMILY NOTE · YOKOHAMA</p>
+      <h1>橫濱 2026 新人氣地點</h1>
+      <p class="lede">給家庭群組傳閱的 2025–2026 新開幕／大型改裝重開清單。本頁 9 個地點都附開幕時間、位置與賣點；敘述只採用已核實來源，不含未記載的營業時間、票價、評價或轉乘細節。</p>
+      <nav class="toc" aria-label="分類">
+        <a href="#highlights">亮點</a>
+        <a href="#play">玩</a>
+        <a href="#eat">吃</a>
+        <a href="#bath">湯</a>
+        <a href="#stay">住</a>
+        <a href="#route">一日路線</a>
+        <a href="#sources">來源</a>
+      </nav>
+    </header>
+
+    <div class="index">
+      <h2>本頁 9 個地點</h2>
+      <ol>
+        <li><a href="#p5">BASEGATE 橫濱關內</a>（亮點）</li>
+        <li><a href="#p6">橫濱 Timber Wharf</a>（亮點）</li>
+        <li><a href="#p7">BankPark YOKOHAMA</a>（玩）</li>
+        <li><a href="#p8">資生堂 Beauty Park</a>（玩）</li>
+        <li><a href="#p12">I’m donut？ 橫濱臨港パーク店</a>（吃）</li>
+        <li><a href="#p14">ヨコバル</a>（吃）</li>
+        <li><a href="#p11">橫濱天然溫泉 SPA EAS</a>（湯）</li>
+        <li><a href="#p4">OMO7 橫濱</a>（住）</li>
+        <li><a href="#p3">OMO5 橫濱馬車道</a>（住）</li>
+      </ol>
+    </div>
+
+    <p class="note">Timber Wharf 是臨港パーク的複合設施；I’m donut？是該設施 1 樓的店。兩者分開列出，不是兩處園區。</p>
+
+    <section id="highlights">
+      <h2>亮點</h2>
+      <p class="sec-lead">關內舊市廳舍街區的大規模再開，以及臨港パーク的新複合地標。</p>
+
+      <article class="place" id="p5">
+        <div class="meta-row">
+          <span class="pill">亮點</span>
+          <span class="pill open">開幕 2026-03-19</span>
+        </div>
+        <h3>BASEGATE 橫濱關內<span class="jp">ベースゲート横浜関内</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市中區港町1丁目1番1ほか（JR 關內站前、舊市廳舍街區；JR／地鐵「關內」站步行約 1 分）</dd>
+          <dt>賣點</dt>
+          <dd>JR「關內」站前大規模複合再開發。商業區 55 店，含國內最大級小割飲食區「スタジアム横バル街」（34 店）；另有常設型直播觀賽場「THE LIVE」、DeNA 沒入體驗設施「ワンダリア横浜」。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.keikyu.co.jp/company/news/2025/20250924HP_25090MK.html">京急新聞稿</a></p>
+      </article>
+
+      <article class="place" id="p6">
+        <div class="meta-row">
+          <span class="pill">亮點</span>
+          <span class="pill open">開幕 2025-10-17</span>
+        </div>
+        <h3>橫濱 Timber Wharf<span class="jp">横浜ティンバーワーフ</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市西區みなとみらい1-1-5（みなとみらい21 臨港パーク內；「みなとみらい」或「新高島」站步行約 14 分）</dd>
+          <dt>賣點</dt>
+          <dd>臨港パーク的新複合設施與新地標。建築師山下泰樹設計，積極使用可再生木材。1 樓於開業當日同時開出「I’m donut？」與「dacō」。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://minatomirai21.com/new/127183">みなとみらい21</a> · <a href="https://yokohama-timberwharf.com/">官方網站</a></p>
+      </article>
+    </section>
+
+    <section id="play">
+      <h2>玩</h2>
+      <p class="sec-lead">馬車道的歷史建築據點，以及新高島可免費入場的共創設施。</p>
+
+      <article class="place" id="p7">
+        <div class="meta-row">
+          <span class="pill">玩</span>
+          <span class="pill open">開幕 2025-10-04</span>
+        </div>
+        <h3>BankPark YOKOHAMA<span class="jp">バンクパーク ヨコハマ</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市中區本町6丁目50-1（舊第一銀行橫濱支店；みなとみらい線「馬車道」站直結）</dd>
+          <dt>賣點</dt>
+          <dd>橫濱市認定歷史性建造物改建的文化交流據點。1 樓為 CRAFT.（工藝藝廊＋餐廳＋花店）；B1／2–3 樓為 goodroom lounge 橫濱馬車道。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://bankparkyokohama.jp/70/">BankPark 開業公告</a></p>
+      </article>
+
+      <article class="place" id="p8">
+        <div class="meta-row">
+          <span class="pill">玩</span>
+          <span class="pill open">開幕 2025-01-22</span>
+        </div>
+        <h3>資生堂 Beauty Park<span class="jp">資生堂ビューティーパーク</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市西區高島一丁目2番11號（資生堂全球創新中心 1–2 樓；みなとみらい線「新高島」站 1・2 號出口即達）</dd>
+          <dt>賣點</dt>
+          <dd>將 2019 年研究設施「S/Park」進化為研究員與生活者共創「未來之美」的免費入場設施。含「美の検診」、藥膳食體驗 Kitchen Lab、AWE 映像體驗等 5 個實驗室。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://corp.shiseido.com/jp/news/detail.html?n=00000000003943">資生堂新聞</a></p>
+      </article>
+    </section>
+
+    <section id="eat">
+      <h2>吃</h2>
+      <p class="sec-lead">臨港パーク的生甜甜圈店，以及地標廣場 1 樓的三家吧台餐廳。</p>
+
+      <article class="place" id="p12">
+        <div class="meta-row">
+          <span class="pill">吃</span>
+          <span class="pill open">開幕 2025-10-17</span>
+        </div>
+        <h3>I’m donut？ 橫濱臨港パーク店<span class="jp">アイムドーナツ？</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市西區みなとみらい1-1-5 横浜ティンバーワーフ 1 樓（臨港パーク）</dd>
+          <dt>賣點</dt>
+          <dd>平子良太主廚的生甜甜圈專門店，橫濱初進駐。約 30 種甜甜圈，並開發臨港パーク店限定商品；與同日開業的 dacō 同層。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://minatomirai21.com/new/127183">みなとみらい21</a> · <a href="https://yokohama-timberwharf.com/">Timber Wharf</a></p>
+      </article>
+
+      <article class="place" id="p14">
+        <div class="meta-row">
+          <span class="pill">吃</span>
+          <span class="pill open">開幕 2025-05-29</span>
+        </div>
+        <h3>ヨコバル<span class="jp">Yokobar</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市西區みなとみらい2-2-1 ランドマークプラザ 1 樓</dd>
+          <dt>賣點</dt>
+          <dd>三家吧台型餐廳集結的食文化據點：MALLORY PORK STEAK、OTRA CASALINA（西班牙燉飯）、日本葡萄館 みなとみらい食堂。開幕首日 16:00 起逾 200 人到店。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://prtimes.jp/main/html/rd/p/000000343.000043503.html">PR TIMES</a></p>
+      </article>
+    </section>
+
+    <section id="bath">
+      <h2>湯</h2>
+      <p class="sec-lead">橫濱站西口大型改裝重開的天然溫泉。本頁湯類只收此處，以便與みなとみらい／關內路線銜接。</p>
+
+      <article class="place" id="p11">
+        <div class="meta-row">
+          <span class="pill">湯</span>
+          <span class="pill open">重開 2026-07-28</span>
+        </div>
+        <h3>橫濱天然溫泉 SPA EAS<span class="jp">スパイアス</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市西區北幸2丁目2-1 ハマボールビルディング 5–6 樓（橫濱站西口步行約 6 分）</dd>
+          <dt>賣點</dt>
+          <dd>約 1 年 4 個月休業後大型改裝重開。地下 1,500m 源泉かけ流し天然溫泉保留；新設廣角螢幕映像桑拿「SAUNA IMMERSIA」、採光新休息區「VALO TERRACE」、和食餐廳「碧和音」。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://hamakore.yokohama/spaeas-renewal-202605/">はまこれ横浜</a> · <a href="https://prtimes.jp/main/html/rd/p/000000170.000006647.html">PR TIMES</a></p>
+      </article>
+    </section>
+
+    <section id="stay">
+      <h2>住</h2>
+      <p class="sec-lead">兩家星野集團新飯店：一間在 BASEGATE 內的舊市廳舍，一間在馬車道站直結的高樓。</p>
+
+      <article class="place" id="p4">
+        <div class="meta-row">
+          <span class="pill">住</span>
+          <span class="pill open">開幕 2026-04-21</span>
+        </div>
+        <h3>OMO7 橫濱 by 星野集團<span class="jp">OMO7横浜 by 星野リゾート</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市中區港町1丁目1番1（BASEGATE 橫濱關內內、舊市廳舍行政棟；JR／地鐵「關內」站步行約 1 分）</dd>
+          <dt>賣點</dt>
+          <dd>保存活用村野藤吾設計的舊橫濱市廳舍行政棟（橫濱市認定歷史性建造物）的遺產飯店。全 276 室；3 樓為愛犬友善樓層。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.nikkei.com/article/DGXZQOUC125FM0S6A310C2000000/">日本經濟新聞</a> · <a href="https://hoshinoresorts.com/jp/cards/g8pym5z43/">星野集團</a></p>
+      </article>
+
+      <article class="place" id="p3">
+        <div class="meta-row">
+          <span class="pill">住</span>
+          <span class="pill open">開幕 2026-01-15</span>
+        </div>
+        <h3>OMO5 橫濱馬車道 by 星野集團<span class="jp">OMO5横浜馬車道 by 星野リゾート</span></h3>
+        <dl>
+          <dt>位置</dt>
+          <dd>橫濱市中區北仲通5-57-2（複合大樓「橫濱北仲ノット」46–51 樓；みなとみらい線「馬車道」站直結）</dd>
+          <dt>賣點</dt>
+          <dd>星野集團首間公寓式飯店。全 175 室附廚房與洗衣烘乾機；位於地上 154m，概念為「360°天空のボヤージュ」。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://prtimes.jp/main/html/rd/p/000001993.000033064.html">PR TIMES</a> · <a href="https://hamakore.yokohama/omo5-yokohama-bashamichi-report/">はまこれ横浜</a></p>
+      </article>
+    </section>
+
+    <section id="route">
+      <h2>一日路線</h2>
+      <p class="sec-lead">只串本頁入選地點，依 recon 所寫的區／站名由北向南、再往橫濱站西口排列。未記載的步行分鐘與轉乘方式不寫入；「關內」站步行約 1 分、「新高島」出口即達、「馬車道」站直結、「橫濱站西口步行約 6 分」等，均直接採用 recon 原文。</p>
+
+      <ol class="route">
+        <li>
+          <span class="when">早上 · 新高島</span>
+          <strong>資生堂 Beauty Park</strong>。みなとみらい線「新高島」站 1・2 號出口即達，免費入場。
+        </li>
+        <li>
+          <span class="when">上午 · 臨港パーク</span>
+          <strong>橫濱 Timber Wharf</strong>（「みなとみらい」或「新高島」站步行約 14 分）。同一棟 1 樓是 <strong>I’m donut？</strong>，與 dacō 同層。
+        </li>
+        <li>
+          <span class="when">中午前後 · みなとみらい</span>
+          <strong>ヨコバル</strong>，ランドマークプラザ 1 樓。三家吧台餐廳：MALLORY PORK STEAK、OTRA CASALINA、日本葡萄館 みなとみらい食堂。
+        </li>
+        <li>
+          <span class="when">午後 · 馬車道</span>
+          <strong>BankPark YOKOHAMA</strong>，「馬車道」站直結。若要住在同一站，可選 <strong>OMO5 橫濱馬車道</strong>（橫濱北仲ノット 46–51 樓、站直結）。
+        </li>
+        <li>
+          <span class="when">傍晚 · 關內</span>
+          <strong>BASEGATE 橫濱關內</strong>，JR／地鐵「關內」站步行約 1 分。遺產飯店 <strong>OMO7 橫濱</strong>就在同一址的舊市廳舍行政棟內。
+        </li>
+        <li>
+          <span class="when">晚上 · 橫濱站西口</span>
+          <strong>SPA EAS</strong>，ハマボールビルディング 5–6 樓，橫濱站西口步行約 6 分。
+        </li>
+      </ol>
+    </section>
+
+    <footer id="sources">
+      <h2>資料來源</h2>
+      <p class="sec-lead">每個地點對應 recon 所列 URL。連結可點；本頁不載入任何外連樣式、字型或圖片。</p>
+
+      <h3>BASEGATE 橫濱關內</h3>
+      <ul>
+        <li><a href="https://www.keikyu.co.jp/company/news/2025/20250924HP_25090MK.html">https://www.keikyu.co.jp/company/news/2025/20250924HP_25090MK.html</a></li>
+      </ul>
+
+      <h3>橫濱 Timber Wharf</h3>
+      <ul>
+        <li><a href="https://minatomirai21.com/new/127183">https://minatomirai21.com/new/127183</a></li>
+        <li><a href="https://yokohama-timberwharf.com/">https://yokohama-timberwharf.com/</a></li>
+      </ul>
+
+      <h3>BankPark YOKOHAMA</h3>
+      <ul>
+        <li><a href="https://bankparkyokohama.jp/70/">https://bankparkyokohama.jp/70/</a></li>
+      </ul>
+
+      <h3>資生堂 Beauty Park</h3>
+      <ul>
+        <li><a href="https://corp.shiseido.com/jp/news/detail.html?n=00000000003943">https://corp.shiseido.com/jp/news/detail.html?n=00000000003943</a></li>
+      </ul>
+
+      <h3>I’m donut？ 橫濱臨港パーク店</h3>
+      <ul>
+        <li><a href="https://minatomirai21.com/new/127183">https://minatomirai21.com/new/127183</a></li>
+        <li><a href="https://yokohama-timberwharf.com/">https://yokohama-timberwharf.com/</a></li>
+      </ul>
+
+      <h3>ヨコバル</h3>
+      <ul>
+        <li><a href="https://prtimes.jp/main/html/rd/p/000000343.000043503.html">https://prtimes.jp/main/html/rd/p/000000343.000043503.html</a></li>
+      </ul>
+
+      <h3>橫濱天然溫泉 SPA EAS</h3>
+      <ul>
+        <li><a href="https://hamakore.yokohama/spaeas-renewal-202605/">https://hamakore.yokohama/spaeas-renewal-202605/</a></li>
+        <li><a href="https://prtimes.jp/main/html/rd/p/000000170.000006647.html">https://prtimes.jp/main/html/rd/p/000000170.000006647.html</a></li>
+      </ul>
+
+      <h3>OMO7 橫濱</h3>
+      <ul>
+        <li><a href="https://www.nikkei.com/article/DGXZQOUC125FM0S6A310C2000000/">https://www.nikkei.com/article/DGXZQOUC125FM0S6A310C2000000/</a></li>
+        <li><a href="https://hoshinoresorts.com/jp/cards/g8pym5z43/">https://hoshinoresorts.com/jp/cards/g8pym5z43/</a></li>
+      </ul>
+
+      <h3>OMO5 橫濱馬車道</h3>
+      <ul>
+        <li><a href="https://prtimes.jp/main/html/rd/p/000001993.000033064.html">https://prtimes.jp/main/html/rd/p/000001993.000033064.html</a></li>
+        <li><a href="https://hamakore.yokohama/omo5-yokohama-bashamichi-report/">https://hamakore.yokohama/omo5-yokohama-bashamichi-report/</a></li>
+      </ul>
+
+      <p class="colophon">偵察輸入：recon_kimi.md（2026-08-28）。本頁不補充來源未寫的常識。</p>
+    </footer>
+  </div>
+</body>
+</html>
