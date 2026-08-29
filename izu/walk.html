@@ -1,0 +1,2442 @@
+<!-- produced-by: anim-builder -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>伊豆家族溜達動畫 · Izu Family Walking Animation</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #FFFFFF;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", "PingFang TC", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif;
+    color: #111111;
+  }
+  #canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #FFFFFF;
+    cursor: pointer;
+  }
+  #ui-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  /* Top right controls */
+  .top-controls {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: auto;
+    z-index: 20;
+  }
+  .ctrl-btn {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1.5px solid #111111;
+    color: #111111;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  .ctrl-btn:hover {
+    background: #111111;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .ctrl-btn:active {
+    transform: translateY(0);
+  }
+  .ctrl-btn.active {
+    background: #111111;
+    color: #FFFFFF;
+  }
+
+  /* Bottom Scene Navigation Bar */
+  .nav-bar-container {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 20;
+    width: 90%;
+    max-width: 680px;
+  }
+  .progress-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: #D9381E;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
+  .scene-nav-pills {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 6px 10px;
+    border-radius: 30px;
+    border: 1.5px solid #111111;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    flex-wrap: wrap;
+  }
+  .scene-pill {
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #555555;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .scene-pill:hover {
+    color: #111111;
+    background: rgba(0, 0, 0, 0.04);
+  }
+  .scene-pill.active {
+    background: #111111;
+    color: #FFFFFF;
+    transform: scale(1.04);
+  }
+  .scene-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #999999;
+    transition: all 0.25s ease;
+  }
+  .scene-pill.active .scene-pill-dot {
+    background: #D9381E;
+    box-shadow: 0 0 6px #D9381E;
+  }
+
+  /* Help hint */
+  .interaction-hint {
+    position: absolute;
+    bottom: 84px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #888888;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  /* Pause Overlay */
+  .pause-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.96);
+    border: 2px solid #111111;
+    border-radius: 16px;
+    padding: 20px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 30;
+  }
+  .pause-indicator.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+  }
+  .pause-title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #111111;
+  }
+  .pause-subtitle {
+    font-size: 13px;
+    color: #666666;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 640px) {
+    .top-controls {
+      top: 14px;
+      right: 14px;
+      gap: 6px;
+    }
+    .ctrl-btn {
+      font-size: 11px;
+      padding: 5px 10px;
+    }
+    .scene-pill {
+      font-size: 11px;
+      padding: 4px 9px;
+    }
+    .nav-bar-container {
+      bottom: 14px;
+      width: 94%;
+    }
+    .interaction-hint {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<div id="ui-container">
+  <div class="top-controls">
+    <button id="btn-sound" class="ctrl-btn" title="切換環境音效 (M)">
+      <span id="sound-icon">♪</span>
+      <span id="sound-text">SOUND OFF</span>
+    </button>
+    <button id="btn-speed" class="ctrl-btn" title="切換漫步速度">
+      <span>1.0x</span>
+    </button>
+    <button id="btn-pause" class="ctrl-btn" title="暫停 / 播放 (Space)">
+      <span id="pause-icon">⏸</span>
+      <span id="pause-text">PAUSE</span>
+    </button>
+  </div>
+
+  <div class="pause-indicator" id="pause-modal">
+    <div class="pause-title">PAUSED · 漫步暫停</div>
+    <div class="pause-subtitle">點擊畫面或按 Space 鍵繼續伊豆旅程</div>
+  </div>
+
+  <div class="interaction-hint" id="hint-text">
+    點擊畫面暫停 · 空白鍵 / 方向鍵 / 點擊下方地標切換景點
+  </div>
+
+  <div class="nav-bar-container">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-bar"></div>
+    </div>
+    <div class="scene-nav-pills" id="scene-nav">
+      <!-- Generated scene buttons -->
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // SCENE DEFINITIONS (6 Exact Scene Names)
+  const SCENE_NAMES = [
+    '踴子號',
+    '大室山',
+    '碧露台',
+    'Fuua',
+    '淨蓮',
+    '浜の湯'
+  ];
+
+  const SCENE_DETAILS = [
+    {
+      index: 0,
+      name: '踴子號',
+      roma: 'ODORIKO EXPRESS',
+      subtitle: '海岸線特急 · 相模灣絕景',
+      desc: '沿著伊豆蔚藍海岸奔馳的特急列車，車窗遠眺富士山積雪與海浪',
+      tag: '01 / RAILWAY',
+      accentColor: '#D9381E' // Vermilion Red
+    },
+    {
+      index: 1,
+      name: '大室山',
+      roma: 'MT. OMURO',
+      subtitle: '抹茶布丁火山 · 標高580m',
+      desc: '如抹茶甜點般的天然單成火山，搭乘雙人登山纜車漫步火山口環狀步道',
+      tag: '02 / VOLCANO',
+      accentColor: '#4CAF50' // Green
+    },
+    {
+      index: 2,
+      name: '碧露台',
+      roma: 'AOI TERRACE',
+      subtitle: '葛城山頂 · 天空水鏡水盤',
+      desc: '伊豆全景公園高空水鏡露台，湛藍水面映照白雪富士山與空中纜車',
+      tag: '03 / PANORAMA',
+      accentColor: '#0047AB' // Cobalt Blue
+    },
+    {
+      index: 3,
+      name: 'Fuua',
+      roma: 'OCEAN SPA FUUA',
+      subtitle: '熱海海天一線 · 深度立湯',
+      desc: '全長25公尺無邊際露天立湯溫泉，浸泡在溫暖泉水中眺望海天相接與繚繞水汽',
+      tag: '04 / ONSEN',
+      accentColor: '#0047AB' // Cobalt Blue
+    },
+    {
+      index: 4,
+      name: '淨蓮',
+      roma: 'JOREN FALLS',
+      subtitle: '淨蓮瀑布 · 天城生山葵',
+      desc: '玄武岩柱狀節理飛瀑奔流，清冽山泉滋養鮮綠山葵田，小孩開心享用巨型山葵霜淇淋',
+      tag: '05 / NATURE',
+      accentColor: '#4CAF50' // Green
+    },
+    {
+      index: 5,
+      name: '浜の湯',
+      roma: 'HAMANOYU RYOKAN',
+      subtitle: '稻取溫泉旅館 · 金目鯛姿煮',
+      desc: '傳統日式筵席整尾鮮紅金目鯛煮付，伴隨和室暖橘燈籠微光與聽海露天風呂',
+      tag: '06 / FEAST',
+      accentColor: '#D9381E' // Vermilion Red
+    }
+  ];
+
+  // CONSTANTS & PALETTE
+  const COLOR_VERMILION = '#D9381E';
+  const COLOR_ORANGE    = '#F3722C';
+  const COLOR_COBALT    = '#0047AB';
+  const COLOR_GREEN     = '#4CAF50';
+  const COLOR_WHITE     = '#FFFFFF';
+  const COLOR_INK       = '#111111';
+  const COLOR_INK_LIGHT = '#666666';
+
+  const TOTAL_SCENES = 6;
+  const SCENE_UNIT_WIDTH = 1300; // virtual width per scene
+  const TOTAL_WORLD_WIDTH = TOTAL_SCENES * SCENE_UNIT_WIDTH;
+
+  // CANVAS & STATE
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let dpr = 1;
+  let viewWidth = 800;
+  let viewHeight = 600;
+
+  let isPaused = false;
+  let speedMultiplier = 1.0;
+  const speedOptions = [1.0, 1.6, 0.5];
+  let speedIdx = 0;
+
+  let worldTime = 0; // seconds
+  let lastTimestamp = null;
+
+  let cameraX = 0; // current camera world X
+  let targetCameraX = 0; // for smooth target seeking
+  let isTransitioning = false;
+  let autoScroll = true;
+
+  // Particle systems
+  const steamParticles = [];
+  const mistParticles = [];
+  const birdFlock = [];
+
+  // Init persistent animated background entities
+  for (let i = 0; i < 7; i++) {
+    birdFlock.push({
+      x: Math.random() * 2000,
+      y: 80 + Math.random() * 120,
+      speed: 25 + Math.random() * 20,
+      wingPhase: Math.random() * Math.PI * 2,
+      scale: 0.6 + Math.random() * 0.5
+    });
+  }
+
+  // RESIZE
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    viewWidth = window.innerWidth;
+    viewHeight = window.innerHeight;
+    canvas.width = Math.round(viewWidth * dpr);
+    canvas.height = Math.round(viewHeight * dpr);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // AUDIO SYSTEM (Native Web Audio API Oscillators, zero dependencies)
+  let audioCtx = null;
+  let isSoundOn = false;
+  let chimeInterval = null;
+
+  function initAudio() {
+    if (audioCtx) return;
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+    } catch (e) {
+      // audio optional fallback
+    }
+  }
+
+  function playTone(freq, type, duration, gainVal, delay) {
+    if (!audioCtx || !isSoundOn) return;
+    try {
+      const d = delay || 0;
+      const now = audioCtx.currentTime + d;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(gainVal, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.05);
+    } catch (e) {}
+  }
+
+  function playChime() {
+    if (!isSoundOn) return;
+    const pentatonic = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+    const f1 = pentatonic[Math.floor(Math.random() * pentatonic.length)];
+    const f2 = pentatonic[Math.floor(Math.random() * pentatonic.length)];
+    playTone(f1, 'sine', 1.8, 0.04, 0);
+    playTone(f2, 'triangle', 2.2, 0.02, 0.15);
+  }
+
+  function toggleSound() {
+    initAudio();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    isSoundOn = !isSoundOn;
+    const soundText = document.getElementById('sound-text');
+    const soundBtn = document.getElementById('btn-sound');
+    if (isSoundOn) {
+      soundText.textContent = 'SOUND ON';
+      soundBtn.classList.add('active');
+      playChime();
+      if (!chimeInterval) {
+        chimeInterval = setInterval(function() {
+          if (isSoundOn && !isPaused && Math.random() < 0.4) {
+            playChime();
+          }
+        }, 4000);
+      }
+    } else {
+      soundText.textContent = 'SOUND OFF';
+      soundBtn.classList.remove('active');
+      if (chimeInterval) {
+        clearInterval(chimeInterval);
+        chimeInterval = null;
+      }
+    }
+  }
+
+  // UI CREATION & EVENT LISTENERS
+  const sceneNav = document.getElementById('scene-nav');
+  SCENE_DETAILS.forEach(function(sc, i) {
+    const btn = document.createElement('button');
+    btn.className = 'scene-pill' + (i === 0 ? ' active' : '');
+    btn.id = 'scene-btn-' + i;
+    btn.innerHTML = '<span class="scene-pill-dot"></span>' + sc.name;
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      goToScene(i);
+    };
+    sceneNav.appendChild(btn);
+  });
+
+  function updateActiveNav(idx) {
+    for (let i = 0; i < TOTAL_SCENES; i++) {
+      const b = document.getElementById('scene-btn-' + i);
+      if (b) {
+        if (i === idx) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      }
+    }
+  }
+
+  function goToScene(idx) {
+    const targetBase = idx * SCENE_UNIT_WIDTH;
+    let diff = targetBase - (cameraX % TOTAL_WORLD_WIDTH);
+    if (diff > TOTAL_WORLD_WIDTH / 2) diff -= TOTAL_WORLD_WIDTH;
+    if (diff < -TOTAL_WORLD_WIDTH / 2) diff += TOTAL_WORLD_WIDTH;
+    targetCameraX = cameraX + diff;
+    isTransitioning = true;
+    updateActiveNav(idx);
+    playChime();
+  }
+
+  function togglePause() {
+    isPaused = !isPaused;
+    document.getElementById('pause-modal').classList.toggle('show', isPaused);
+    document.getElementById('pause-text').textContent = isPaused ? 'PLAY' : 'PAUSE';
+    document.getElementById('pause-icon').textContent = isPaused ? '▶' : '⏸';
+    document.getElementById('btn-pause').classList.toggle('active', isPaused);
+    if (!isPaused) {
+      lastTimestamp = performance.now();
+    }
+  }
+
+  function cycleSpeed() {
+    speedIdx = (speedIdx + 1) % speedOptions.length;
+    speedMultiplier = speedOptions[speedIdx];
+    document.querySelector('#btn-speed span').textContent = speedMultiplier.toFixed(1) + 'x';
+  }
+
+  // Event Listeners
+  document.getElementById('btn-pause').addEventListener('click', function(e) {
+    e.stopPropagation();
+    togglePause();
+  });
+  document.getElementById('btn-speed').addEventListener('click', function(e) {
+    e.stopPropagation();
+    cycleSpeed();
+  });
+  document.getElementById('btn-sound').addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleSound();
+  });
+  canvas.addEventListener('click', function() {
+    togglePause();
+  });
+
+  window.addEventListener('keydown', function(e) {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      togglePause();
+    } else if (e.code === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+      const cur = Math.round(((cameraX % TOTAL_WORLD_WIDTH) + TOTAL_WORLD_WIDTH) % TOTAL_WORLD_WIDTH / SCENE_UNIT_WIDTH);
+      goToScene((cur + 1) % TOTAL_SCENES);
+    } else if (e.code === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+      const cur = Math.round(((cameraX % TOTAL_WORLD_WIDTH) + TOTAL_WORLD_WIDTH) % TOTAL_WORLD_WIDTH / SCENE_UNIT_WIDTH);
+      goToScene((cur + TOTAL_SCENES - 1) % TOTAL_SCENES);
+    } else if (e.key >= '1' && e.key <= '6') {
+      goToScene(parseInt(e.key, 10) - 1);
+    } else if (e.key === 'm' || e.key === 'M') {
+      toggleSound();
+    }
+  });
+
+  // Touch / Drag Navigation
+  let touchStartX = 0;
+  let isDragging = false;
+  window.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 1) {
+      touchStartX = e.touches[0].clientX;
+      isDragging = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', function(e) {
+    if (!isDragging || e.touches.length !== 1) return;
+    const currentX = e.touches[0].clientX;
+    const deltaX = touchStartX - currentX;
+    if (Math.abs(deltaX) > 40) {
+      isDragging = false;
+      const cur = Math.round(((cameraX % TOTAL_WORLD_WIDTH) + TOTAL_WORLD_WIDTH) % TOTAL_WORLD_WIDTH / SCENE_UNIT_WIDTH);
+      if (deltaX > 0) {
+        goToScene((cur + 1) % TOTAL_SCENES);
+      } else {
+        goToScene((cur + TOTAL_SCENES - 1) % TOTAL_SCENES);
+      }
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', function() {
+    isDragging = false;
+  }, { passive: true });
+
+  // -------------------------------------------------------------
+  // DRAWING PRIMITIVES & HELPERS (Crisp Black Ink + Minimalist Style)
+  // -------------------------------------------------------------
+
+  function drawInkLine(c, x1, y1, x2, y2, width, color) {
+    c.save();
+    c.strokeStyle = color || COLOR_INK;
+    c.lineWidth = width || 1.5;
+    c.lineCap = 'round';
+    c.beginPath();
+    c.moveTo(x1, y1);
+    c.lineTo(x2, y2);
+    c.stroke();
+    c.restore();
+  }
+
+  function drawHatchPattern(c, x, y, w, h, step, angle, color) {
+    c.save();
+    c.beginPath();
+    c.rect(x, y, w, h);
+    c.clip();
+    c.strokeStyle = color || 'rgba(17, 17, 17, 0.15)';
+    c.lineWidth = 1;
+    const st = step || 8;
+    const rad = (angle || 45) * Math.PI / 180;
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const diag = Math.sqrt(w * w + h * h);
+    for (let d = -diag; d <= diag * 2; d += st) {
+      c.beginPath();
+      c.moveTo(x + d * cos - diag * sin, y + d * sin + diag * cos);
+      c.lineTo(x + d * cos + diag * sin, y + d * sin - diag * cos);
+      c.stroke();
+    }
+    c.restore();
+  }
+
+  // Draw Mount Fuji (Minimalist Ink outline with Snow Cap)
+  function drawFuji(c, x, y, scale, showCobaltTint) {
+    c.save();
+    c.translate(x, y);
+    const s = scale || 1.0;
+    c.scale(s, s);
+
+    const topW = 28;
+    const baseW = 240;
+    const fujiH = 150;
+
+    c.beginPath();
+    c.moveTo(-topW, -fujiH);
+    c.quadraticCurveTo(-topW - 40, -fujiH * 0.45, -baseW, 0);
+    c.lineTo(baseW, 0);
+    c.quadraticCurveTo(topW + 40, -fujiH * 0.45, topW, -fujiH);
+    c.closePath();
+    c.fillStyle = '#FFFFFF';
+    c.fill();
+
+    if (showCobaltTint) {
+      c.fillStyle = 'rgba(0, 71, 171, 0.04)';
+      c.fill();
+    }
+
+    // Snow cap (White with ink zigzag bottom edge)
+    c.beginPath();
+    c.moveTo(-topW, -fujiH);
+    c.quadraticCurveTo(-topW - 14, -fujiH * 0.72, -topW * 2.2, -fujiH * 0.55);
+    c.lineTo(-topW * 1.5, -fujiH * 0.52);
+    c.lineTo(-topW * 1.0, -fujiH * 0.42);
+    c.lineTo(-topW * 0.4, -fujiH * 0.50);
+    c.lineTo(0, -fujiH * 0.38);
+    c.lineTo(topW * 0.5, -fujiH * 0.48);
+    c.lineTo(topW * 1.1, -fujiH * 0.40);
+    c.lineTo(topW * 1.6, -fujiH * 0.54);
+    c.quadraticCurveTo(topW + 14, -fujiH * 0.72, topW, -fujiH);
+    c.closePath();
+    c.fillStyle = COLOR_WHITE;
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.8;
+    c.stroke();
+
+    // Fuji main outer slopes outline
+    c.beginPath();
+    c.moveTo(-baseW, 0);
+    c.quadraticCurveTo(-topW - 40, -fujiH * 0.45, -topW, -fujiH);
+    c.lineTo(topW, -fujiH);
+    c.quadraticCurveTo(topW + 40, -fujiH * 0.45, baseW, 0);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.0;
+    c.stroke();
+
+    // Summit crater gentle notch
+    c.beginPath();
+    c.moveTo(-topW, -fujiH);
+    c.lineTo(-topW * 0.4, -fujiH + 3);
+    c.lineTo(topW * 0.4, -fujiH + 3);
+    c.lineTo(topW, -fujiH);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.8;
+    c.stroke();
+
+    c.restore();
+  }
+
+  // Draw Pine Tree Bonsai (Editorial ink)
+  function drawPineTree(c, x, y, scale) {
+    c.save();
+    c.translate(x, y);
+    const s = scale || 1.0;
+    c.scale(s, s);
+
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 3.5;
+    c.beginPath();
+    c.moveTo(0, 0);
+    c.quadraticCurveTo(15, -35, 10, -70);
+    c.quadraticCurveTo(6, -95, 20, -120);
+    c.stroke();
+
+    c.lineWidth = 2.0;
+    c.beginPath();
+    c.moveTo(10, -50);
+    c.quadraticCurveTo(-20, -60, -35, -55);
+    c.moveTo(12, -75);
+    c.quadraticCurveTo(35, -85, 55, -80);
+    c.stroke();
+
+    const clusters = [
+      { x: 20, y: -125, r: 24 },
+      { x: -35, y: -55, r: 18 },
+      { x: 55, y: -80, r: 20 },
+      { x: 5, y: -90, r: 16 }
+    ];
+
+    clusters.forEach(function(cl) {
+      c.fillStyle = COLOR_GREEN;
+      c.beginPath();
+      c.arc(cl.x, cl.y, cl.r, 0, Math.PI * 2);
+      c.fill();
+
+      c.strokeStyle = COLOR_INK;
+      c.lineWidth = 1.8;
+      c.beginPath();
+      for (let a = 0; a < Math.PI * 2; a += 0.8) {
+        const nx = cl.x + Math.cos(a) * cl.r;
+        const ny = cl.y + Math.sin(a) * cl.r * 0.7;
+        c.arc(nx, ny, 6, 0, Math.PI * 2);
+      }
+      c.stroke();
+    });
+
+    c.restore();
+  }
+
+  // -------------------------------------------------------------
+  // SCENE 1: 踴子號 (Odoriko Limited Express & Coastal Railway)
+  // -------------------------------------------------------------
+  function drawSceneOdoriko(c, x, y, w, h, t) {
+    const groundY = h * 0.72;
+
+    // Distant Mount Fuji on horizon
+    drawFuji(c, x + w * 0.75, groundY - 80, 0.9, true);
+
+    // Distant Izu Peninsular Coastal Ridge
+    c.save();
+    c.strokeStyle = 'rgba(17, 17, 17, 0.4)';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.moveTo(x, groundY - 100);
+    c.bezierCurveTo(x + w * 0.2, groundY - 140, x + w * 0.4, groundY - 80, x + w * 0.65, groundY - 110);
+    c.bezierCurveTo(x + w * 0.8, groundY - 130, x + w * 0.95, groundY - 70, x + w, groundY - 95);
+    c.stroke();
+    c.restore();
+
+    // Cobalt Blue Flowing Sea Streamlines
+    c.save();
+    const seaY = groundY - 45;
+    const waveCount = 5;
+    for (let k = 0; k < waveCount; k++) {
+      const lineY = seaY + k * 10;
+      const speed = (k + 1) * 0.8;
+      const amp = 4 + k * 1.5;
+      c.strokeStyle = (k % 2 === 0) ? COLOR_COBALT : '#1D4ED8';
+      c.lineWidth = 1.8;
+      c.beginPath();
+      for (let wx = x; wx <= x + w; wx += 20) {
+        const wy = lineY + Math.sin((wx * 0.015) + (t * speed) + k) * amp;
+        if (wx === x) c.moveTo(wx, wy);
+        else c.lineTo(wx, wy);
+      }
+      c.stroke();
+
+      if (k === 1 || k === 3) {
+        c.strokeStyle = COLOR_WHITE;
+        c.lineWidth = 2.0;
+        for (let wx = x + 60; wx < x + w; wx += 140) {
+          const crestX = wx + Math.sin(t * 1.2 + k) * 30;
+          const crestY = lineY + Math.sin((crestX * 0.015) + (t * speed) + k) * amp;
+          c.beginPath();
+          c.arc(crestX, crestY - 1, 8, Math.PI * 0.8, Math.PI * 1.8);
+          c.stroke();
+        }
+      }
+    }
+    c.restore();
+
+    // Sailboat on horizon
+    const boatX = x + w * 0.35 + Math.sin(t * 0.5) * 15;
+    const boatY = groundY - 80 + Math.sin(t * 1.5) * 3;
+    c.save();
+    c.translate(boatX, boatY);
+    c.fillStyle = COLOR_INK;
+    c.beginPath();
+    c.moveTo(-12, 0);
+    c.lineTo(14, 0);
+    c.lineTo(9, 4);
+    c.lineTo(-9, 4);
+    c.closePath();
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.2;
+    c.beginPath();
+    c.moveTo(0, 0);
+    c.lineTo(0, -18);
+    c.lineTo(10, -2);
+    c.closePath();
+    c.fillStyle = COLOR_WHITE;
+    c.fill();
+    c.stroke();
+    c.restore();
+
+    // Coastal Railway Structure (Elevated Track / Embankment)
+    const trackY = groundY - 32;
+    c.fillStyle = '#FAFAFA';
+    c.fillRect(x, trackY, w, 28);
+    drawInkLine(c, x, trackY, x + w, trackY, 2.0, COLOR_INK);
+    drawInkLine(c, x, trackY + 28, x + w, trackY + 28, 2.0, COLOR_INK);
+    drawHatchPattern(c, x, trackY, w, 28, 12, 60, 'rgba(17, 17, 17, 0.08)');
+
+    // Railway sleepers & rails
+    drawInkLine(c, x, trackY - 6, x + w, trackY - 6, 2.5, COLOR_INK);
+    drawInkLine(c, x, trackY - 2, x + w, trackY - 2, 2.5, COLOR_INK);
+    for (let rx = x; rx < x + w; rx += 22) {
+      drawInkLine(c, rx, trackY - 9, rx + 4, trackY, 1.5, COLOR_INK);
+    }
+
+    // Overhead Catenary Poles
+    for (let px = x + 80; px < x + w; px += 260) {
+      drawInkLine(c, px, trackY - 140, px, trackY + 28, 2.5, COLOR_INK);
+      drawInkLine(c, px - 15, trackY - 130, px + 40, trackY - 130, 2.0, COLOR_INK);
+      drawInkLine(c, px, trackY - 110, px + 35, trackY - 130, 1.5, COLOR_INK);
+      c.fillStyle = COLOR_VERMILION;
+      c.fillRect(px + 28, trackY - 133, 6, 6);
+    }
+    drawInkLine(c, x, trackY - 130, x + w, trackY - 130, 1.2, 'rgba(17, 17, 17, 0.6)');
+
+    // THE ODORIKO LIMITED EXPRESS TRAIN (Saphir / E257)
+    const trainLen = 420;
+    const trainH = 68;
+    const trainX = x + w * 0.18 + Math.sin(t * 0.8) * 40;
+    const trainY = trackY - 6 - trainH;
+
+    c.save();
+    c.translate(trainX, trainY);
+
+    c.fillStyle = 'rgba(0, 0, 0, 0.08)';
+    c.fillRect(0, trainH - 4, trainLen, 6);
+
+    c.fillStyle = COLOR_WHITE;
+    c.beginPath();
+    c.moveTo(0, 0);
+    c.lineTo(trainLen - 30, 0);
+    c.quadraticCurveTo(trainLen, 10, trainLen, trainH * 0.65);
+    c.quadraticCurveTo(trainLen - 8, trainH, trainLen - 25, trainH);
+    c.lineTo(0, trainH);
+    c.closePath();
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.5;
+    c.stroke();
+
+    // Vermilion Red Stripe & Cobalt Blue Stripe
+    c.fillStyle = COLOR_VERMILION;
+    c.fillRect(0, trainH * 0.68, trainLen - 16, 8);
+    c.fillStyle = COLOR_COBALT;
+    c.fillRect(0, trainH * 0.82, trainLen - 22, 4);
+
+    // Train Roof Line & AC Units
+    c.fillStyle = '#EEEEEE';
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.fillRect(40, -8, 80, 8);
+    c.strokeRect(40, -8, 80, 8);
+    c.fillRect(200, -8, 80, 8);
+    c.strokeRect(200, -8, 80, 8);
+
+    // Cab Window
+    c.fillStyle = COLOR_INK;
+    c.beginPath();
+    c.moveTo(trainLen - 50, 10);
+    c.lineTo(trainLen - 15, 18);
+    c.lineTo(trainLen - 20, 32);
+    c.lineTo(trainLen - 55, 32);
+    c.closePath();
+    c.fill();
+
+    // Glowing warm orange headlight
+    c.fillStyle = COLOR_ORANGE;
+    c.beginPath();
+    c.arc(trainLen - 6, trainH * 0.6, 6, 0, Math.PI * 2);
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.stroke();
+
+    // Headlight beam cone
+    const beamGrad = c.createLinearGradient(trainLen, trainH * 0.6, trainLen + 120, trainH * 0.6);
+    beamGrad.addColorStop(0, 'rgba(255, 127, 0, 0.35)');
+    beamGrad.addColorStop(1, 'rgba(255, 127, 0, 0)');
+    c.fillStyle = beamGrad;
+    c.beginPath();
+    c.moveTo(trainLen, trainH * 0.6 - 4);
+    c.lineTo(trainLen + 120, trainH * 0.6 - 35);
+    c.lineTo(trainLen + 120, trainH * 0.6 + 45);
+    c.lineTo(trainLen, trainH * 0.6 + 8);
+    c.closePath();
+    c.fill();
+
+    // Large Panoramic Passenger Windows showing the FAMILY OF FOUR seated together!
+    const windowConfigs = [
+      { x: 25, w: 70 },
+      { x: 105, w: 70 },
+      { x: 185, w: 70 },
+      { x: 265, w: 70 }
+    ];
+
+    windowConfigs.forEach(function(win, idx) {
+      c.fillStyle = 'rgba(0, 71, 171, 0.08)';
+      c.fillRect(win.x, 14, win.w, 30);
+      c.strokeStyle = COLOR_INK;
+      c.lineWidth = 1.8;
+      c.strokeRect(win.x, 14, win.w, 30);
+
+      if (idx === 1) {
+        // Dad & Mom seated by table
+        c.fillStyle = COLOR_INK;
+        c.fillRect(win.x + 22, 36, 26, 8);
+        c.fillStyle = COLOR_WHITE;
+        c.beginPath();
+        c.arc(win.x + 30, 34, 3, 0, Math.PI * 2);
+        c.arc(win.x + 40, 34, 3, 0, Math.PI * 2);
+        c.fill();
+
+        // Dad silhouette
+        c.fillStyle = COLOR_INK;
+        c.beginPath();
+        c.arc(win.x + 14, 23, 5, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = COLOR_WHITE;
+        c.beginPath();
+        c.arc(win.x + 16, 22, 1.2, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = COLOR_INK;
+        c.fillRect(win.x + 9, 28, 11, 14);
+
+        // Mom silhouette
+        c.beginPath();
+        c.arc(win.x + 56, 24, 4.5, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = COLOR_WHITE;
+        c.beginPath();
+        c.arc(win.x + 54, 23, 1.2, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = COLOR_INK;
+        c.fillRect(win.x + 50, 28, 12, 14);
+      } else if (idx === 2) {
+        // Kid 1 & Kid 2 excitedly waving out window!
+        c.fillStyle = COLOR_INK;
+        c.beginPath();
+        c.arc(win.x + 20, 26, 4, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = COLOR_WHITE;
+        c.beginPath();
+        c.arc(win.x + 22, 25, 1, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = COLOR_INK;
+        c.fillRect(win.x + 16, 30, 9, 12);
+        drawInkLine(c, win.x + 24, 32, win.x + 28 + Math.sin(t * 6) * 3, 22, 1.5);
+
+        // Kid 2
+        c.beginPath();
+        c.arc(win.x + 48, 29, 3.5, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = COLOR_WHITE;
+        c.beginPath();
+        c.arc(win.x + 46, 28, 0.9, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = COLOR_INK;
+        c.fillRect(win.x + 44, 32, 8, 10);
+        drawInkLine(c, win.x + 42, 33, win.x + 38, 26 + Math.sin(t * 6 + 1) * 3, 1.2);
+      }
+    });
+
+    // Wheels
+    const bogieX = [50, 150, 250, 350];
+    bogieX.forEach(function(bx) {
+      c.fillStyle = COLOR_INK;
+      c.fillRect(bx - 18, trainH, 36, 6);
+      [-12, 12].forEach(function(wx) {
+        c.beginPath();
+        c.arc(bx + wx, trainH + 5, 6, 0, Math.PI * 2);
+        c.fillStyle = COLOR_INK;
+        c.fill();
+        c.fillStyle = COLOR_WHITE;
+        c.beginPath();
+        c.arc(bx + wx, trainH + 5, 2.5, 0, Math.PI * 2);
+        c.fill();
+      });
+    });
+
+    c.restore();
+
+    // Foreground Japanese Pine Tree
+    drawPineTree(c, x + w * 0.92, groundY, 0.85);
+
+    // Ground promenade edge
+    drawInkLine(c, x, groundY, x + w, groundY, 2.0, COLOR_INK);
+  }
+
+  // -------------------------------------------------------------
+  // SCENE 2: 大室山 (Mount Omuro - Matcha Pudding Volcano & Chairlift)
+  // -------------------------------------------------------------
+  function drawSceneOmuro(c, x, y, w, h, t) {
+    const groundY = h * 0.72;
+
+    // Distant soft hills
+    c.save();
+    c.strokeStyle = 'rgba(76, 175, 80, 0.3)';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.moveTo(x, groundY - 70);
+    c.quadraticCurveTo(x + w * 0.2, groundY - 110, x + w * 0.45, groundY - 65);
+    c.stroke();
+    c.restore();
+
+    // THE GIANT MATCHA GREEN VOLCANO (Mount Omuro)
+    const omuroCenterX = x + w * 0.52;
+    const omuroBaseY = groundY;
+    const omuroW = 680;
+    const omuroH = 260;
+    const craterW = 190;
+    const craterDepth = 38;
+
+    c.save();
+
+    // 1. Mountain Body Fill (#588157 / #4CAF50)
+    c.beginPath();
+    c.moveTo(omuroCenterX - omuroW * 0.5, omuroBaseY);
+    c.quadraticCurveTo(omuroCenterX - omuroW * 0.32, omuroBaseY - omuroH * 0.7, omuroCenterX - craterW * 0.5, omuroBaseY - omuroH);
+    c.quadraticCurveTo(omuroCenterX, omuroBaseY - omuroH + craterDepth, omuroCenterX + craterW * 0.5, omuroBaseY - omuroH);
+    c.quadraticCurveTo(omuroCenterX + omuroW * 0.32, omuroBaseY - omuroH * 0.7, omuroCenterX + omuroW * 0.5, omuroBaseY);
+    c.closePath();
+
+    c.fillStyle = '#588157';
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.5;
+    c.stroke();
+
+    // 2. Interior Crater Bowl Depth
+    c.beginPath();
+    c.moveTo(omuroCenterX - craterW * 0.5, omuroBaseY - omuroH);
+    c.quadraticCurveTo(omuroCenterX, omuroBaseY - omuroH - 15, omuroCenterX + craterW * 0.5, omuroBaseY - omuroH);
+    c.quadraticCurveTo(omuroCenterX, omuroBaseY - omuroH + craterDepth, omuroCenterX - craterW * 0.5, omuroBaseY - omuroH);
+    c.fillStyle = '#4CAF50';
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.8;
+    c.stroke();
+
+    // Grass Contours
+    drawHatchPattern(c, omuroCenterX - omuroW * 0.45, omuroBaseY - omuroH, omuroW * 0.9, omuroH, 14, -65, 'rgba(255, 255, 255, 0.18)');
+
+    // 3. CRATER RIM WALKING PATH & Tiny Strolling Figures
+    const pathPoints = [];
+    const stepCount = 18;
+    for (let i = 0; i <= stepCount; i++) {
+      const u = i / stepCount;
+      const px = omuroCenterX - craterW * 0.5 + u * craterW;
+      const py = omuroBaseY - omuroH + Math.sin(u * Math.PI) * craterDepth;
+      pathPoints.push({ x: px, y: py });
+    }
+
+    c.beginPath();
+    pathPoints.forEach(function(pt, i) {
+      if (i === 0) c.moveTo(pt.x, pt.y - 1);
+      else c.lineTo(pt.x, pt.y - 1);
+    });
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.2;
+    c.setLineDash([4, 3]);
+    c.stroke();
+    c.setLineDash([]);
+
+    // 8 Tiny Silhouette Figures walking along the crater rim!
+    for (let f = 0; f < 8; f++) {
+      const u = ((f / 8) + (t * 0.02)) % 1.0;
+      const fx = omuroCenterX - craterW * 0.5 + u * craterW;
+      const fy = omuroBaseY - omuroH + Math.sin(u * Math.PI) * craterDepth;
+      c.fillStyle = COLOR_INK;
+      c.beginPath();
+      c.arc(fx, fy - 6, 1.5, 0, Math.PI * 2);
+      c.fill();
+      drawInkLine(c, fx, fy - 5, fx, fy - 1, 1.2);
+      const legSpread = Math.sin(t * 8 + f) * 1.5;
+      drawInkLine(c, fx, fy - 2, fx - legSpread, fy, 1.0);
+      drawInkLine(c, fx, fy - 2, fx + legSpread, fy, 1.0);
+    }
+
+    // 4. TWO-SEAT CHAIRLIFT Climbing the Slope
+    const liftBaseX = omuroCenterX - omuroW * 0.38;
+    const liftBaseY = omuroBaseY - 20;
+    const liftTopX = omuroCenterX - craterW * 0.42;
+    const liftTopY = omuroBaseY - omuroH + 8;
+
+    drawInkLine(c, liftBaseX, liftBaseY - 20, liftTopX, liftTopY - 15, 1.8, COLOR_INK);
+    drawInkLine(c, liftBaseX, liftBaseY - 12, liftTopX, liftTopY - 7, 1.5, 'rgba(17, 17, 17, 0.7)');
+
+    for (let p = 0.25; p <= 0.75; p += 0.25) {
+      const towerX = liftBaseX + (liftTopX - liftBaseX) * p;
+      const towerY = liftBaseY + (liftTopY - liftBaseY) * p;
+      drawInkLine(c, towerX, towerY + 30, towerX, towerY - 20, 2.0, COLOR_INK);
+      drawInkLine(c, towerX - 10, towerY - 18, towerX + 10, towerY - 18, 1.8, COLOR_INK);
+    }
+
+    // Chairlift Units with #F3722C Orange accent seats
+    const numChairs = 6;
+    for (let k = 0; k < numChairs; k++) {
+      const isAscending = k % 2 === 0;
+      let progress = ((k / numChairs) + (t * 0.08)) % 1.0;
+      if (!isAscending) progress = 1.0 - progress;
+
+      const chairX = liftBaseX + (liftTopX - liftBaseX) * progress;
+      const chairY = liftBaseY + (liftTopY - liftBaseY) * progress + (isAscending ? -18 : -10);
+
+      drawInkLine(c, chairX, chairY, chairX, chairY + 12, 1.5, COLOR_INK);
+      c.fillStyle = COLOR_ORANGE;
+      c.fillRect(chairX - 5, chairY + 12, 10, 4);
+      c.strokeStyle = COLOR_INK;
+      c.lineWidth = 1.2;
+      c.strokeRect(chairX - 5, chairY + 12, 10, 4);
+      drawInkLine(c, chairX - 5, chairY + 7, chairX - 5, chairY + 12, 1.5, COLOR_ORANGE);
+
+      c.fillStyle = COLOR_INK;
+      c.beginPath();
+      c.arc(chairX - 2.5, chairY + 7, 1.6, 0, Math.PI * 2);
+      c.arc(chairX + 2.5, chairY + 7, 1.6, 0, Math.PI * 2);
+      c.fill();
+      const swing = Math.sin(t * 4 + k) * 2;
+      drawInkLine(c, chairX - 2.5, chairY + 14, chairX - 2.5 + swing, chairY + 19, 1.0);
+      drawInkLine(c, chairX + 2.5, chairY + 14, chairX + 2.5 - swing, chairY + 19, 1.0);
+    }
+
+    // 5. Paraglider in Sky
+    const gliderX = omuroCenterX + omuroW * 0.32 + Math.sin(t * 0.7) * 25;
+    const gliderY = omuroBaseY - omuroH * 0.85 + Math.sin(t * 1.2) * 10;
+    c.beginPath();
+    c.ellipse(gliderX, gliderY, 18, 5, -0.15, 0, Math.PI * 2);
+    c.fillStyle = COLOR_VERMILION;
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.2;
+    c.stroke();
+    drawInkLine(c, gliderX - 12, gliderY + 3, gliderX, gliderY + 14, 0.8);
+    drawInkLine(c, gliderX + 12, gliderY + 3, gliderX, gliderY + 14, 0.8);
+    c.fillStyle = COLOR_INK;
+    c.beginPath();
+    c.arc(gliderX, gliderY + 15, 2, 0, Math.PI * 2);
+    c.fill();
+
+    // 6. Signpost at base
+    const signX = x + w * 0.15;
+    const signY = groundY;
+    drawInkLine(c, signX, signY, signX, signY - 45, 3.0, COLOR_INK);
+    c.fillStyle = COLOR_WHITE;
+    c.fillRect(signX - 35, signY - 58, 70, 22);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.8;
+    c.strokeRect(signX - 35, signY - 58, 70, 22);
+    c.fillStyle = COLOR_INK;
+    c.font = 'bold 9px sans-serif';
+    c.textAlign = 'center';
+    c.fillText('大室山 580m', signX, signY - 43);
+
+    // Wildflowers
+    for (let fl = 0; fl < 12; fl++) {
+      const flX = x + w * 0.05 + fl * 28;
+      const flY = groundY - 4 + Math.sin(fl * 1.7) * 4;
+      c.fillStyle = (fl % 2 === 0) ? COLOR_VERMILION : COLOR_ORANGE;
+      c.beginPath();
+      c.arc(flX, flY, 2.5, 0, Math.PI * 2);
+      c.fill();
+      drawInkLine(c, flX, flY, flX, flY + 5, 1.0, COLOR_GREEN);
+    }
+
+    c.restore();
+
+    drawInkLine(c, x, groundY, x + w, groundY, 2.0, COLOR_INK);
+  }
+
+  // -------------------------------------------------------------
+  // SCENE 3: 碧露台 (Aoi Terrace - Mountain Summit & Fuji Water Basin)
+  // -------------------------------------------------------------
+  function drawSceneAoi(c, x, y, w, h, t) {
+    const groundY = h * 0.72;
+
+    // Distant Mount Fuji
+    drawFuji(c, x + w * 0.45, groundY - 140, 1.15, true);
+
+    // Distant Mountains
+    c.save();
+    c.strokeStyle = 'rgba(0, 71, 171, 0.25)';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.moveTo(x, groundY - 90);
+    c.bezierCurveTo(x + w * 0.2, groundY - 120, x + w * 0.5, groundY - 80, x + w, groundY - 105);
+    c.stroke();
+    c.restore();
+
+    // Aerial Ropeway Gondola System
+    const cableY1 = groundY - 240;
+    const cableY2 = groundY - 180;
+    drawInkLine(c, x, cableY1, x + w, cableY2, 1.8, COLOR_INK);
+
+    // Gondola Cabin
+    const gondolaProgress = (t * 0.05) % 1.0;
+    const gondolaX = x + w * gondolaProgress;
+    const gondolaY = cableY1 + (cableY2 - cableY1) * gondolaProgress;
+
+    c.save();
+    c.translate(gondolaX, gondolaY);
+    drawInkLine(c, 0, 0, 0, 16, 2.0, COLOR_INK);
+    drawInkLine(c, -8, 16, 8, 16, 2.0, COLOR_INK);
+    drawInkLine(c, -6, 16, -6, 24, 1.5, COLOR_INK);
+    drawInkLine(c, 6, 16, 6, 24, 1.5, COLOR_INK);
+
+    c.fillStyle = COLOR_WHITE;
+    c.beginPath();
+    c.roundRect(-22, 24, 44, 28, 6);
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.8;
+    c.stroke();
+
+    c.fillStyle = COLOR_GREEN;
+    c.fillRect(-22, 42, 44, 4);
+    c.fillStyle = COLOR_VERMILION;
+    c.fillRect(-22, 46, 44, 2);
+
+    c.fillStyle = 'rgba(0, 71, 171, 0.15)';
+    c.fillRect(-18, 28, 36, 12);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.2;
+    c.strokeRect(-18, 28, 36, 12);
+
+    c.fillStyle = COLOR_INK;
+    c.beginPath();
+    c.arc(-6, 34, 2.5, 0, Math.PI * 2);
+    c.arc(6, 34, 2.5, 0, Math.PI * 2);
+    c.fill();
+    c.restore();
+
+    // Summit Wooden Deck
+    const deckY = groundY - 20;
+    c.fillStyle = '#FAFAFA';
+    c.fillRect(x, deckY, w, 22);
+    drawInkLine(c, x, deckY, x + w, deckY, 2.0, COLOR_INK);
+    for (let px = x; px < x + w; px += 28) {
+      drawInkLine(c, px, deckY, px, deckY + 22, 1.0, 'rgba(17, 17, 17, 0.2)');
+    }
+
+    // Glass safety railing
+    drawInkLine(c, x + w * 0.05, deckY - 28, x + w * 0.95, deckY - 28, 2.0, COLOR_INK);
+    for (let rx = x + w * 0.05; rx <= x + w * 0.95; rx += 45) {
+      drawInkLine(c, rx, deckY - 28, rx, deckY, 1.5, COLOR_INK);
+      c.fillStyle = 'rgba(0, 71, 171, 0.04)';
+      c.fillRect(rx, deckY - 28, 45, 28);
+    }
+
+    // Terrace Lounge Sofas & Cushions
+    const sofaX = x + w * 0.18;
+    c.save();
+    c.translate(sofaX, deckY - 14);
+    c.fillStyle = COLOR_WHITE;
+    c.fillRect(0, 0, 55, 14);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.strokeRect(0, 0, 55, 14);
+    c.fillStyle = COLOR_VERMILION;
+    c.fillRect(6, -6, 20, 8);
+    c.strokeStyle = COLOR_INK;
+    c.strokeRect(6, -6, 20, 8);
+    c.fillStyle = COLOR_COBALT;
+    c.fillRect(29, -6, 20, 8);
+    c.strokeStyle = COLOR_INK;
+    c.strokeRect(29, -6, 20, 8);
+    c.restore();
+
+    // CIRCULAR WATER BASIN (碧テラス 水盤 - Fuji Water Mirror)
+    const basinCenterX = x + w * 0.62;
+    const basinCenterY = deckY + 2;
+    const basinRadiusX = 175;
+    const basinRadiusY = 48;
+
+    c.save();
+
+    // 1. Basin Outer Stone Rim
+    c.beginPath();
+    c.ellipse(basinCenterX, basinCenterY, basinRadiusX + 6, basinRadiusY + 4, 0, 0, Math.PI * 2);
+    c.fillStyle = '#FFFFFF';
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.5;
+    c.stroke();
+
+    // 2. Deep Cobalt Blue Water Surface
+    c.beginPath();
+    c.ellipse(basinCenterX, basinCenterY, basinRadiusX, basinRadiusY, 0, 0, Math.PI * 2);
+    c.fillStyle = COLOR_COBALT;
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.stroke();
+
+    // 3. Inverted Fuji Reflection in the Water Mirror
+    c.save();
+    c.beginPath();
+    c.ellipse(basinCenterX, basinCenterY, basinRadiusX - 4, basinRadiusY - 2, 0, 0, Math.PI * 2);
+    c.clip();
+
+    c.save();
+    c.translate(basinCenterX, basinCenterY - 12);
+    c.scale(0.85, -0.45);
+    drawFuji(c, 0, 0, 1.0, false);
+    c.restore();
+
+    // Expanding ripples
+    const numRipples = 3;
+    for (let r = 0; r < numRipples; r++) {
+      const ripProgress = ((t * 0.4 + r / numRipples) % 1.0);
+      const rx = ripProgress * (basinRadiusX * 0.75);
+      const ry = ripProgress * (basinRadiusY * 0.75);
+      const alpha = (1.0 - ripProgress) * 0.6;
+      c.beginPath();
+      c.ellipse(basinCenterX, basinCenterY, rx, ry, 0, 0, Math.PI * 2);
+      c.strokeStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+      c.lineWidth = 1.5;
+      c.stroke();
+    }
+    c.restore();
+
+    // 4. Observer with camera on tripod
+    const obsX = basinCenterX - basinRadiusX - 18;
+    const obsY = deckY;
+    c.fillStyle = COLOR_INK;
+    c.beginPath();
+    c.arc(obsX, obsY - 36, 4, 0, Math.PI * 2);
+    c.fill();
+    drawInkLine(c, obsX, obsY - 32, obsX, obsY, 2.0);
+    drawInkLine(c, obsX + 14, obsY - 24, obsX + 6, obsY, 1.2);
+    drawInkLine(c, obsX + 14, obsY - 24, obsX + 22, obsY, 1.2);
+    drawInkLine(c, obsX + 14, obsY - 24, obsX + 14, obsY, 1.2);
+    c.fillRect(obsX + 10, obsY - 30, 8, 6);
+
+    c.restore();
+
+    drawInkLine(c, x, groundY, x + w, groundY, 2.0, COLOR_INK);
+  }
+
+  // -------------------------------------------------------------
+  // SCENE 4: Fuua (Ocean Spa Fuua - Vast Standing-Depth Ocean Bath)
+  // -------------------------------------------------------------
+  function drawSceneFuua(c, x, y, w, h, t) {
+    const groundY = h * 0.72;
+    const oceanHorizonY = groundY - 95;
+
+    // Ocean Gradient & Horizon
+    c.save();
+    const seaGrad = c.createLinearGradient(0, oceanHorizonY, 0, groundY);
+    seaGrad.addColorStop(0, '#FFFFFF');
+    seaGrad.addColorStop(0.3, 'rgba(0, 71, 171, 0.08)');
+    seaGrad.addColorStop(1, 'rgba(0, 71, 171, 0.25)');
+    c.fillStyle = seaGrad;
+    c.fillRect(x, oceanHorizonY, w, groundY - oceanHorizonY);
+
+    drawInkLine(c, x, oceanHorizonY, x + w, oceanHorizonY, 1.8, COLOR_INK);
+
+    // Shimmer Waves
+    for (let ow = 0; ow < 4; ow++) {
+      const owY = oceanHorizonY + 15 + ow * 16;
+      c.strokeStyle = COLOR_COBALT;
+      c.lineWidth = 1.2;
+      c.beginPath();
+      for (let ox = x; ox <= x + w; ox += 25) {
+        const oy = owY + Math.sin((ox * 0.02) + (t * 1.5) + ow) * 2;
+        if (ox === x) c.moveTo(ox, oy);
+        else c.lineTo(ox, oy);
+      }
+      c.stroke();
+    }
+    c.restore();
+
+    // Distant Island & Lighthouse
+    const islandX = x + w * 0.78;
+    c.save();
+    c.fillStyle = 'rgba(17, 17, 17, 0.18)';
+    c.beginPath();
+    c.ellipse(islandX, oceanHorizonY + 1, 45, 6, 0, Math.PI, Math.PI * 2);
+    c.fill();
+    drawInkLine(c, islandX + 15, oceanHorizonY - 10, islandX + 15, oceanHorizonY, 2.0, COLOR_INK);
+    c.restore();
+
+    // INFINITY ONEN BATH (Fuua 露天立湯)
+    const poolTopY = groundY - 45;
+    const poolH = 50;
+
+    // Glass railing
+    drawInkLine(c, x, poolTopY - 24, x + w * 0.85, poolTopY - 24, 2.0, COLOR_INK);
+    for (let gx = x + 30; gx <= x + w * 0.85; gx += 60) {
+      drawInkLine(c, gx, poolTopY - 24, gx, poolTopY, 1.5, COLOR_INK);
+      c.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      c.fillRect(gx - 28, poolTopY - 24, 56, 24);
+    }
+
+    // Hot Spring Water
+    c.save();
+    c.fillStyle = COLOR_COBALT;
+    c.fillRect(x, poolTopY, w * 0.85, poolH);
+
+    c.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    c.lineWidth = 1.5;
+    for (let cx = x + 10; cx < x + w * 0.85; cx += 35) {
+      c.beginPath();
+      const cy = poolTopY + 12 + Math.sin(cx * 0.05 + t * 2) * 5;
+      c.ellipse(cx, cy, 14, 4, 0, 0, Math.PI * 2);
+      c.stroke();
+    }
+
+    c.strokeStyle = COLOR_WHITE;
+    c.lineWidth = 2.5;
+    c.beginPath();
+    for (let px = x; px <= x + w * 0.85; px += 20) {
+      const py = poolTopY + Math.sin(px * 0.03 + t * 2.5) * 2.5;
+      if (px === x) c.moveTo(px, py);
+      else c.lineTo(px, py);
+    }
+    c.stroke();
+    c.restore();
+
+    // 5 Soaking Figures with Folded Head Towels
+    const bathers = [
+      { x: x + w * 0.15, depth: 22, lookRight: true },
+      { x: x + w * 0.32, depth: 25, lookRight: false },
+      { x: x + w * 0.48, depth: 20, lookRight: true },
+      { x: x + w * 0.62, depth: 24, lookRight: false },
+      { x: x + w * 0.76, depth: 22, lookRight: true }
+    ];
+
+    bathers.forEach(function(b, idx) {
+      const bob = Math.sin(t * 2 + idx * 1.3) * 2;
+      const bx = b.x;
+      const by = poolTopY + b.depth + bob;
+
+      c.save();
+      c.fillStyle = COLOR_INK;
+      c.beginPath();
+      c.arc(bx, by - 22, 6.5, 0, Math.PI * 2);
+      c.fill();
+
+      c.fillStyle = COLOR_WHITE;
+      c.beginPath();
+      c.arc(b.lookRight ? bx + 2.5 : bx - 2.5, by - 23, 1.4, 0, Math.PI * 2);
+      c.fill();
+
+      c.fillStyle = COLOR_INK;
+      c.beginPath();
+      c.ellipse(bx, by - 10, 14, 8, 0, 0, Math.PI * 2);
+      c.fill();
+
+      // Folded white towel on head
+      c.fillStyle = COLOR_WHITE;
+      c.fillRect(bx - 6, by - 32, 12, 5);
+      c.strokeStyle = COLOR_INK;
+      c.lineWidth = 1.2;
+      c.strokeRect(bx - 6, by - 32, 12, 5);
+
+      if (idx === 2 || idx === 4) {
+        drawInkLine(c, bx - 12, by - 12, bx - 18, poolTopY - 2, 2.0, COLOR_INK);
+        drawInkLine(c, bx + 12, by - 12, bx + 18, poolTopY - 2, 2.0, COLOR_INK);
+      }
+
+      c.restore();
+    });
+
+    // Floating Onsen Tubs & Ladle
+    const tubX = x + w * 0.24 + Math.sin(t * 1.2) * 6;
+    const tubY = poolTopY + 10 + Math.sin(t * 2) * 2;
+    c.save();
+    c.fillStyle = '#FFFFFF';
+    c.fillRect(tubX - 9, tubY - 6, 18, 10);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.strokeRect(tubX - 9, tubY - 6, 18, 10);
+    c.fillStyle = COLOR_VERMILION;
+    c.fillRect(tubX - 9, tubY - 6, 18, 2);
+    c.fillStyle = COLOR_WHITE;
+    c.fillRect(tubX - 4, tubY - 9, 8, 4);
+    c.strokeRect(tubX - 4, tubY - 9, 8, 4);
+    c.restore();
+
+    // Elegant Rising Steam Curls
+    c.save();
+    if (Math.random() < 0.35 && steamParticles.length < 35) {
+      steamParticles.push({
+        x: x + Math.random() * (w * 0.8),
+        y: poolTopY - 5,
+        vx: 10 + Math.random() * 15,
+        vy: -25 - Math.random() * 25,
+        radius: 6 + Math.random() * 10,
+        alpha: 0.7,
+        curlPhase: Math.random() * Math.PI * 2
+      });
+    }
+
+    for (let s = 0; s < 4; s++) {
+      const streamX = x + w * 0.18 + s * 160;
+      c.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+      c.lineWidth = 2.0;
+      c.beginPath();
+      for (let sy = poolTopY; sy >= poolTopY - 90; sy -= 10) {
+        const wave = Math.sin((poolTopY - sy) * 0.08 + t * 3 + s) * 10;
+        if (sy === poolTopY) c.moveTo(streamX + wave, sy);
+        else c.lineTo(streamX + wave, sy);
+      }
+      c.stroke();
+    }
+    c.restore();
+
+    // Onsen Deck on right
+    const deckStartX = x + w * 0.85;
+    c.fillStyle = '#FFFFFF';
+    c.fillRect(deckStartX, groundY - 30, w * 0.15, 30);
+    drawInkLine(c, deckStartX, groundY - 30, x + w, groundY - 30, 2.0, COLOR_INK);
+    drawInkLine(c, deckStartX, poolTopY - 24, deckStartX, groundY, 2.0, COLOR_INK);
+
+    drawInkLine(c, x, groundY, x + w, groundY, 2.0, COLOR_INK);
+  }
+
+  // -------------------------------------------------------------
+  // SCENE 5: 淨蓮 (Joren Falls - Waterfall & Wasabi Soft-Serve)
+  // -------------------------------------------------------------
+  function drawSceneJoren(c, x, y, w, h, t) {
+    const groundY = h * 0.72;
+
+    // Dark Columnar Basalt Cliff (Hexagonal Basalt Pillars)
+    const cliffX = x + w * 0.38;
+    const cliffTopY = groundY - 260;
+
+    c.save();
+    const columnCount = 14;
+    const colW = 24;
+    for (let cidx = 0; cidx < columnCount; cidx++) {
+      const colX = cliffX - 120 + cidx * colW;
+      const colTop = cliffTopY + (cidx % 3) * 18;
+      c.fillStyle = (cidx % 2 === 0) ? '#FFFFFF' : '#F5F5F5';
+      c.fillRect(colX, colTop, colW, groundY - colTop);
+      c.strokeStyle = COLOR_INK;
+      c.lineWidth = 1.5;
+      c.strokeRect(colX, colTop, colW, groundY - colTop);
+
+      for (let jy = colTop + 20; jy < groundY - 30; jy += 26) {
+        drawInkLine(c, colX, jy, colX + colW, jy, 1.2, COLOR_INK);
+      }
+    }
+
+    // Lush Green Forest Canopy
+    for (let fx = x; fx < x + w * 0.65; fx += 45) {
+      c.fillStyle = COLOR_GREEN;
+      c.beginPath();
+      c.arc(fx, cliffTopY + 10 + Math.sin(fx * 0.1) * 8, 22, 0, Math.PI * 2);
+      c.fill();
+      c.strokeStyle = COLOR_INK;
+      c.lineWidth = 1.8;
+      c.stroke();
+    }
+
+    // WATERFALL (淨蓮瀑布)
+    const fallX = cliffX + 20;
+    const fallW = 42;
+    const fallTopY = cliffTopY + 10;
+    const fallBottomY = groundY - 15;
+
+    c.fillStyle = COLOR_WHITE;
+    c.fillRect(fallX, fallTopY, fallW, fallBottomY - fallTopY);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.0;
+    c.strokeRect(fallX, fallTopY, fallW, fallBottomY - fallTopY);
+
+    c.strokeStyle = COLOR_COBALT;
+    c.lineWidth = 1.8;
+    for (let s = 0; s < 5; s++) {
+      const sx = fallX + 6 + s * 7;
+      c.beginPath();
+      for (let sy = fallTopY; sy < fallBottomY; sy += 15) {
+        const offset = Math.sin(sy * 0.08 + t * 15 + s) * 2;
+        if (sy === fallTopY) c.moveTo(sx + offset, sy);
+        else c.lineTo(sx + offset, sy);
+      }
+      c.stroke();
+    }
+
+    // Plunge Pool
+    const poolCenterX = fallX + fallW * 0.5;
+    const poolCenterY = fallBottomY + 5;
+    c.beginPath();
+    c.ellipse(poolCenterX, poolCenterY, 65, 18, 0, 0, Math.PI * 2);
+    c.fillStyle = '#4CAF50';
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.0;
+    c.stroke();
+
+    // Spray Mist
+    if (Math.random() < 0.6 && mistParticles.length < 40) {
+      mistParticles.push({
+        x: poolCenterX + (Math.random() - 0.5) * 60,
+        y: poolCenterY - Math.random() * 15,
+        vx: (Math.random() - 0.5) * 35,
+        vy: -20 - Math.random() * 30,
+        radius: 2 + Math.random() * 4,
+        alpha: 0.8
+      });
+    }
+
+    for (let r = 0; r < 3; r++) {
+      const rSize = ((t * 2 + r * 15) % 45);
+      c.beginPath();
+      c.ellipse(poolCenterX, poolCenterY, rSize, rSize * 0.3, 0, 0, Math.PI * 2);
+      c.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+      c.lineWidth = 1.5;
+      c.stroke();
+    }
+
+    // WASABI FIELDS (わさび田)
+    const wasabiStartX = x + w * 0.58;
+    const wasabiY = groundY - 45;
+
+    for (let step = 0; step < 3; step++) {
+      const sy = wasabiY + step * 14;
+      const sx = wasabiStartX + step * 25;
+      const sw = w * 0.38 - step * 25;
+      c.fillStyle = '#FAFAFA';
+      c.fillRect(sx, sy, sw, 14);
+      c.strokeStyle = COLOR_INK;
+      c.lineWidth = 1.5;
+      c.strokeRect(sx, sy, sw, 14);
+
+      for (let wx = sx + 8; wx < sx + sw - 10; wx += 16) {
+        c.fillStyle = COLOR_GREEN;
+        c.beginPath();
+        c.arc(wx, sy + 4, 5, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = COLOR_INK;
+        c.lineWidth = 1.0;
+        c.stroke();
+      }
+    }
+
+    // WASABI STALL & GRATER / ICE CREAM VIGNETTE
+    const shopX = x + w * 0.82;
+    const shopY = groundY;
+
+    // Stall Canopy
+    c.fillStyle = COLOR_VERMILION;
+    c.fillRect(shopX - 45, shopY - 110, 90, 18);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.8;
+    c.strokeRect(shopX - 45, shopY - 110, 90, 18);
+    drawInkLine(c, shopX - 40, shopY - 110, shopX - 40, shopY, 2.0);
+    drawInkLine(c, shopX + 40, shopY - 110, shopX + 40, shopY, 2.0);
+
+    // Stall Counter Table
+    c.fillStyle = COLOR_WHITE;
+    c.fillRect(shopX - 45, shopY - 60, 90, 20);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.8;
+    c.strokeRect(shopX - 45, shopY - 60, 90, 20);
+
+    c.fillStyle = COLOR_INK;
+    c.font = 'bold 10px sans-serif';
+    c.textAlign = 'center';
+    c.fillText('生わさび · 霜淇淋', shopX, shopY - 96);
+
+    // Fresh Wasabi Root
+    const rootX = shopX - 22;
+    const rootY = shopY - 64;
+    c.fillStyle = COLOR_GREEN;
+    c.beginPath();
+    c.moveTo(rootX, rootY);
+    c.quadraticCurveTo(rootX + 16, rootY - 4, rootX + 26, rootY + 2);
+    c.lineTo(rootX + 24, rootY + 6);
+    c.quadraticCurveTo(rootX + 12, rootY + 5, rootX, rootY + 3);
+    c.closePath();
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.2;
+    c.stroke();
+    c.fillStyle = '#588157';
+    c.beginPath();
+    c.arc(rootX - 2, rootY + 1, 4, 0, Math.PI * 2);
+    c.fill();
+
+    // Sharkskin Grater (鮫皮おろし)
+    const graterX = shopX + 16;
+    const graterY = shopY - 65;
+    c.fillStyle = COLOR_WHITE;
+    c.fillRect(graterX, graterY, 14, 9);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.2;
+    c.strokeRect(graterX, graterY, 14, 9);
+    drawInkLine(c, graterX + 14, graterY + 4.5, graterX + 20, graterY + 4.5, 2.0);
+    drawHatchPattern(c, graterX, graterY, 14, 9, 3, 45, 'rgba(17, 17, 17, 0.4)');
+
+    // Giant Wasabi Ice Cream Sign
+    const coneX = shopX + 56;
+    const coneY = shopY - 55;
+    c.beginPath();
+    c.moveTo(coneX - 10, coneY);
+    c.lineTo(coneX + 10, coneY);
+    c.lineTo(coneX, coneY + 24);
+    c.closePath();
+    c.fillStyle = COLOR_ORANGE;
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.stroke();
+    drawHatchPattern(c, coneX - 10, coneY, 20, 24, 4, 45, 'rgba(17, 17, 17, 0.3)');
+
+    c.fillStyle = COLOR_GREEN;
+    c.beginPath();
+    c.arc(coneX, coneY - 3, 11, 0, Math.PI * 2);
+    c.arc(coneX, coneY - 14, 8, 0, Math.PI * 2);
+    c.arc(coneX + 1, coneY - 22, 4, 0, Math.PI * 2);
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.stroke();
+
+    for (let sp = 0; sp < 3; sp++) {
+      const spA = t * 3 + sp * 2;
+      const spX = coneX + Math.cos(spA) * 20;
+      const spY = coneY - 12 + Math.sin(spA) * 16;
+      c.fillStyle = COLOR_VERMILION;
+      c.beginPath();
+      c.arc(spX, spY, 2.2, 0, Math.PI * 2);
+      c.fill();
+    }
+
+    c.restore();
+
+    drawInkLine(c, x, groundY, x + w, groundY, 2.0, COLOR_INK);
+  }
+
+  // -------------------------------------------------------------
+  // SCENE 6: 浜の湯 (Inatori Hamanoyu - Seafood Feast & Ocean Rotenburo)
+  // -------------------------------------------------------------
+  function drawSceneHamanoyu(c, x, y, w, h, t) {
+    const groundY = h * 0.72;
+
+    const roomW = w * 0.65;
+    const windowX = x + roomW;
+    const windowW = w - roomW;
+
+    c.save();
+
+    // 1. NIGHT OCEAN VIEW & ROTENBURO OUTSIDE WINDOW
+    const oceanY = groundY - 110;
+    c.fillStyle = '#FFFFFF';
+    c.fillRect(windowX, 0, windowW, groundY);
+
+    for (let nw = 0; nw < 4; nw++) {
+      const nwy = oceanY + 20 + nw * 18;
+      c.strokeStyle = COLOR_COBALT;
+      c.lineWidth = 1.5;
+      c.beginPath();
+      for (let nx = windowX; nx <= x + w; nx += 20) {
+        const ny = nwy + Math.sin(nx * 0.02 + t * 1.5 + nw) * 2.5;
+        if (nx === windowX) c.moveTo(nx, ny);
+        else c.lineTo(nx, ny);
+      }
+      c.stroke();
+    }
+
+    // Outdoor Stone Onsen Tub (露天風呂)
+    const tubX = windowX + windowW * 0.45;
+    const tubY = groundY - 24;
+    c.beginPath();
+    c.ellipse(tubX, tubY, 55, 20, 0, 0, Math.PI * 2);
+    c.fillStyle = '#FAFAFA';
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.5;
+    c.stroke();
+    c.beginPath();
+    c.ellipse(tubX, tubY + 2, 48, 15, 0, 0, Math.PI * 2);
+    c.fillStyle = COLOR_COBALT;
+    c.fill();
+
+    // Warm Orange Hanging Paper Lantern (提燈)
+    const lanternX = windowX + 35;
+    const lanternY = groundY - 180;
+    drawInkLine(c, lanternX, 0, lanternX, lanternY, 1.8, COLOR_INK);
+
+    const glowGrad = c.createRadialGradient(lanternX, lanternY + 24, 4, lanternX, lanternY + 24, 65);
+    glowGrad.addColorStop(0, 'rgba(243, 114, 44, 0.35)');
+    glowGrad.addColorStop(0.5, 'rgba(255, 127, 0, 0.15)');
+    glowGrad.addColorStop(1, 'rgba(255, 127, 0, 0)');
+    c.fillStyle = glowGrad;
+    c.beginPath();
+    c.arc(lanternX, lanternY + 24, 65, 0, Math.PI * 2);
+    c.fill();
+
+    c.fillStyle = COLOR_ORANGE;
+    c.beginPath();
+    c.ellipse(lanternX, lanternY + 24, 18, 24, 0, 0, Math.PI * 2);
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.0;
+    c.stroke();
+
+    drawInkLine(c, lanternX - 16, lanternY + 16, lanternX + 16, lanternY + 16, 1.2, COLOR_VERMILION);
+    drawInkLine(c, lanternX - 18, lanternY + 24, lanternX + 18, lanternY + 24, 1.5, COLOR_VERMILION);
+    drawInkLine(c, lanternX - 16, lanternY + 32, lanternX + 16, lanternY + 32, 1.2, COLOR_VERMILION);
+
+    c.fillStyle = COLOR_INK;
+    c.fillRect(lanternX - 10, lanternY, 20, 5);
+    c.fillRect(lanternX - 10, lanternY + 44, 20, 5);
+
+    c.fillStyle = COLOR_WHITE;
+    c.font = 'bold 8px sans-serif';
+    c.textAlign = 'center';
+    c.fillText('浜の湯', lanternX, lanternY + 27);
+
+    // 2. RYOKAN TATAMI DINING ROOM
+    drawInkLine(c, windowX, 0, windowX, groundY, 3.0, COLOR_INK);
+    for (let sy = 30; sy < groundY - 30; sy += 35) {
+      drawInkLine(c, windowX - 35, sy, windowX, sy, 1.2, COLOR_INK);
+    }
+    drawInkLine(c, windowX - 35, 0, windowX - 35, groundY, 2.0, COLOR_INK);
+
+    c.fillStyle = '#FFFFFF';
+    c.fillRect(x, groundY - 55, roomW, 55);
+    drawInkLine(c, x, groundY - 55, x + roomW, groundY - 55, 2.0, COLOR_INK);
+    for (let tx = x + 100; tx < x + roomW; tx += 180) {
+      drawInkLine(c, tx, groundY - 55, tx, groundY, 2.0, COLOR_INK);
+    }
+
+    // 3. JAPANESE BANQUET TABLE
+    const tableX = x + roomW * 0.42;
+    const tableY = groundY - 42;
+    const tableW = 280;
+    const tableH = 85;
+
+    c.fillStyle = '#FAFAFA';
+    c.beginPath();
+    c.ellipse(tableX, tableY, tableW * 0.5, tableH * 0.45, 0, 0, Math.PI * 2);
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.5;
+    c.stroke();
+    c.beginPath();
+    c.ellipse(tableX, tableY + 6, tableW * 0.5, tableH * 0.45, 0, 0, Math.PI);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.0;
+    c.stroke();
+
+    // 4. THE CENTERPIECE: WHOLE VERMILION-RED SPLAYED KINMEDAI (金目鯛 姿煮)
+    const platterX = tableX;
+    const platterY = tableY - 2;
+    const platterW = 150;
+    const platterH = 48;
+
+    c.fillStyle = '#FFFFFF';
+    c.beginPath();
+    c.ellipse(platterX, platterY, platterW * 0.5, platterH * 0.5, 0, 0, Math.PI * 2);
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.0;
+    c.stroke();
+
+    c.save();
+    c.translate(platterX, platterY);
+
+    c.beginPath();
+    c.moveTo(55, 0);
+    c.quadraticCurveTo(20, -18, -35, -8);
+    c.lineTo(-58, -16);
+    c.lineTo(-48, 0);
+    c.lineTo(-58, 16);
+    c.lineTo(-35, 8);
+    c.quadraticCurveTo(20, 18, 55, 0);
+    c.closePath();
+
+    c.fillStyle = COLOR_VERMILION;
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 2.0;
+    c.stroke();
+
+    // Golden Eye Ring
+    c.fillStyle = COLOR_ORANGE;
+    c.beginPath();
+    c.arc(42, -3, 6.5, 0, Math.PI * 2);
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.stroke();
+    c.fillStyle = COLOR_INK;
+    c.beginPath();
+    c.arc(42, -3, 3.5, 0, Math.PI * 2);
+    c.fill();
+    c.fillStyle = COLOR_WHITE;
+    c.beginPath();
+    c.arc(43.5, -4.5, 1.2, 0, Math.PI * 2);
+    c.fill();
+
+    // Glaze cuts
+    drawInkLine(c, 5, -8, -15, 8, 1.8, '#8B0000');
+    drawInkLine(c, -15, -8, 5, 8, 1.8, '#8B0000');
+    drawInkLine(c, -12, -7, -28, 6, 1.8, '#8B0000');
+    drawInkLine(c, -28, -7, -12, 6, 1.8, '#8B0000');
+
+    // Fin
+    c.beginPath();
+    c.moveTo(25, 2);
+    c.lineTo(10, 12);
+    c.lineTo(18, 4);
+    c.closePath();
+    c.fillStyle = COLOR_VERMILION;
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.stroke();
+
+    // Ginger slivers
+    drawInkLine(c, 8, -14, 22, -10, 1.5, COLOR_ORANGE);
+    drawInkLine(c, 12, -16, 18, -6, 1.5, COLOR_ORANGE);
+
+    c.restore();
+
+    // 5. SIDE DISHES
+    // Sashimi Plate
+    const sashimiX = tableX - 95;
+    const sashimiY = tableY + 8;
+    c.fillStyle = '#FFFFFF';
+    c.beginPath();
+    c.ellipse(sashimiX, sashimiY, 22, 12, -0.2, 0, Math.PI * 2);
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.stroke();
+    c.fillStyle = COLOR_VERMILION;
+    c.fillRect(sashimiX - 10, sashimiY - 5, 10, 6);
+    c.fillStyle = COLOR_GREEN;
+    c.beginPath();
+    c.arc(sashimiX + 8, sashimiY - 2, 3, 0, Math.PI * 2);
+    c.fill();
+
+    // Rice Bowl
+    const riceX = tableX + 92;
+    const riceY = tableY + 8;
+    c.fillStyle = '#FFFFFF';
+    c.beginPath();
+    c.arc(riceX, riceY, 12, 0, Math.PI);
+    c.closePath();
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.stroke();
+    c.beginPath();
+    c.arc(riceX, riceY - 1, 10, Math.PI, Math.PI * 2);
+    c.fillStyle = COLOR_WHITE;
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.stroke();
+
+    // Miso Soup Bowl
+    const soupX = tableX + 80;
+    const soupY = tableY - 22;
+    c.fillStyle = COLOR_INK;
+    c.beginPath();
+    c.arc(soupX, soupY, 9, 0, Math.PI);
+    c.closePath();
+    c.fill();
+    drawInkLine(c, soupX - 9, soupY, soupX + 9, soupY, 1.8, COLOR_VERMILION);
+
+    // Sake Tokkuri
+    const sakeX = tableX - 85;
+    const sakeY = tableY - 20;
+    c.fillStyle = COLOR_WHITE;
+    c.beginPath();
+    c.moveTo(sakeX - 4, sakeY - 14);
+    c.lineTo(sakeX + 4, sakeY - 14);
+    c.lineTo(sakeX + 3, sakeY - 8);
+    c.quadraticCurveTo(sakeX + 9, sakeY, sakeX + 8, sakeY + 8);
+    c.lineTo(sakeX - 8, sakeY + 8);
+    c.quadraticCurveTo(sakeX - 9, sakeY, sakeX - 3, sakeY - 8);
+    c.closePath();
+    c.fill();
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.5;
+    c.stroke();
+    drawInkLine(c, sakeX - 6, sakeY + 2, sakeX + 6, sakeY + 2, 1.5, COLOR_COBALT);
+
+    // Chopsticks
+    const chopX = tableX - 30;
+    const chopY = tableY + 26;
+    drawInkLine(c, chopX - 35, chopY, chopX + 35, chopY, 1.8, COLOR_INK);
+    drawInkLine(c, chopX - 35, chopY + 3, chopX + 35, chopY + 3, 1.8, COLOR_INK);
+    c.fillStyle = COLOR_VERMILION;
+    c.fillRect(chopX - 25, chopY - 2, 6, 8);
+
+    c.restore();
+
+    drawInkLine(c, x, groundY, x + w, groundY, 2.0, COLOR_INK);
+  }
+
+  // -------------------------------------------------------------
+  // THE WALKING FAMILY OF FOUR (Dynamic Silhouette Walk Engine)
+  // -------------------------------------------------------------
+  function drawFamilyWalking(c, screenX, groundY, t, sceneIdx) {
+    c.save();
+
+    const walkCadence = 7.5;
+    const phase = t * walkCadence;
+
+    const characters = [
+      {
+        id: 'dad',
+        name: '爸爸',
+        relX: -110,
+        height: 52,
+        headR: 5.5,
+        torsoW: 10,
+        torsoH: 22,
+        stride: 16,
+        phaseOffset: 0,
+        prop: 'camera'
+      },
+      {
+        id: 'mom',
+        name: '媽媽',
+        relX: -45,
+        height: 48,
+        headR: 5.0,
+        torsoW: 9,
+        torsoH: 20,
+        stride: 14,
+        phaseOffset: Math.PI * 0.4,
+        prop: 'hat'
+      },
+      {
+        id: 'kid1',
+        name: '哥哥',
+        relX: 20,
+        height: 34,
+        headR: 4.2,
+        torsoW: 7,
+        torsoH: 14,
+        stride: 12,
+        phaseOffset: Math.PI * 0.8,
+        prop: 'backpack'
+      },
+      {
+        id: 'kid2',
+        name: '妹妹',
+        relX: 75,
+        height: 25,
+        headR: 3.6,
+        torsoW: 5.5,
+        torsoH: 10,
+        stride: 9,
+        phaseOffset: Math.PI * 1.3,
+        prop: 'icecream'
+      }
+    ];
+
+    characters.forEach(function(char) {
+      const charX = screenX + char.relX;
+      const charPhase = phase + char.phaseOffset;
+
+      const bob = Math.abs(Math.sin(charPhase)) * 3.5;
+      const footY = groundY;
+      const hipY = footY - (char.height - char.headR * 2 - 4) - bob;
+
+      const legAngle1 = Math.sin(charPhase) * 0.45;
+      const legAngle2 = -Math.sin(charPhase) * 0.45;
+
+      const armAngle1 = -Math.sin(charPhase) * 0.5;
+      const armAngle2 = Math.sin(charPhase) * 0.5;
+
+      // 1. LEGS
+      const legLen = char.height * 0.42;
+      [-1, 1].forEach(function(legSign, lIdx) {
+        const angle = lIdx === 0 ? legAngle2 : legAngle1;
+        const kneeX = charX + Math.sin(angle) * (legLen * 0.55);
+        const kneeY = hipY + Math.cos(angle) * (legLen * 0.55);
+        const footPosX = charX + Math.sin(angle * 1.1) * legLen;
+        const footPosY = Math.min(footY, hipY + Math.cos(angle * 1.1) * legLen);
+
+        c.strokeStyle = COLOR_INK;
+        c.lineWidth = char.height > 30 ? 2.5 : 1.8;
+        c.lineCap = 'round';
+        c.beginPath();
+        c.moveTo(charX + (legSign * 2), hipY);
+        c.lineTo(kneeX, kneeY);
+        c.lineTo(footPosX, footPosY);
+        c.stroke();
+
+        c.beginPath();
+        c.moveTo(footPosX - 1, footPosY);
+        c.lineTo(footPosX + 4, footPosY);
+        c.stroke();
+      });
+
+      // 2. TORSO
+      c.fillStyle = COLOR_INK;
+      const shoulderY = hipY - char.torsoH;
+      c.beginPath();
+      c.roundRect(charX - char.torsoW * 0.5, shoulderY, char.torsoW, char.torsoH, 3);
+      c.fill();
+
+      // 3. ARMS
+      const armLen = char.height * 0.35;
+      const backArmX = charX + Math.sin(armAngle2) * armLen;
+      const backArmY = shoulderY + 4 + Math.cos(armAngle2) * armLen;
+      drawInkLine(c, charX - 2, shoulderY + 4, backArmX, backArmY, 2.0);
+
+      if (char.id === 'kid2' && sceneIdx === 4) {
+        // Kid 2 holds giant wasabi ice cream in scene 5 (淨蓮)
+        const handX = charX + 12;
+        const handY = shoulderY - 4;
+        drawInkLine(c, charX + 2, shoulderY + 4, handX, handY, 2.0);
+
+        c.save();
+        c.translate(handX, handY);
+        c.beginPath();
+        c.moveTo(-4, 0);
+        c.lineTo(4, 0);
+        c.lineTo(0, 10);
+        c.closePath();
+        c.fillStyle = COLOR_ORANGE;
+        c.fill();
+        c.strokeStyle = COLOR_INK;
+        c.lineWidth = 1.0;
+        c.stroke();
+
+        c.fillStyle = COLOR_GREEN;
+        c.beginPath();
+        c.arc(0, -4, 6, 0, Math.PI * 2);
+        c.arc(0, -10, 4, 0, Math.PI * 2);
+        c.arc(0.5, -14, 2, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = COLOR_INK;
+        c.stroke();
+
+        const spk = Math.sin(t * 8) * 3;
+        c.fillStyle = COLOR_VERMILION;
+        c.beginPath();
+        c.arc(7 + spk, -10, 1.5, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+
+      } else if (char.id === 'dad' && char.prop === 'camera') {
+        const frontArmX = charX + Math.sin(armAngle1) * armLen;
+        const frontArmY = shoulderY + 4 + Math.cos(armAngle1) * armLen;
+        drawInkLine(c, charX + 2, shoulderY + 4, frontArmX, frontArmY, 2.2);
+        drawInkLine(c, charX - 4, shoulderY + 2, charX + 5, hipY - 4, 1.8, COLOR_VERMILION);
+        c.fillStyle = COLOR_INK;
+        c.fillRect(charX + 4, hipY - 6, 7, 5);
+        c.fillStyle = COLOR_WHITE;
+        c.beginPath();
+        c.arc(charX + 7.5, hipY - 3.5, 1.5, 0, Math.PI * 2);
+        c.fill();
+
+      } else if (char.id === 'mom' && char.prop === 'hat') {
+        const frontArmX = charX + Math.sin(armAngle1) * armLen;
+        const frontArmY = shoulderY + 4 + Math.cos(armAngle1) * armLen;
+        drawInkLine(c, charX + 2, shoulderY + 4, frontArmX, frontArmY, 2.0);
+
+      } else if (char.id === 'kid1') {
+        const frontArmX = charX + Math.sin(armAngle1) * armLen;
+        const frontArmY = shoulderY + 4 + Math.cos(armAngle1) * armLen;
+        drawInkLine(c, charX + 2, shoulderY + 4, frontArmX, frontArmY, 1.8);
+        c.fillStyle = COLOR_VERMILION;
+        c.fillRect(charX - char.torsoW * 0.5 - 4, shoulderY + 2, 4, 9);
+        c.strokeStyle = COLOR_INK;
+        c.lineWidth = 1.0;
+        c.strokeRect(charX - char.torsoW * 0.5 - 4, shoulderY + 2, 4, 9);
+
+      } else {
+        const frontArmX = charX + Math.sin(armAngle1) * armLen;
+        const frontArmY = shoulderY + 4 + Math.cos(armAngle1) * armLen;
+        drawInkLine(c, charX + 2, shoulderY + 4, frontArmX, frontArmY, 1.8);
+      }
+
+      // 4. HEAD
+      const headY = shoulderY - char.headR;
+      c.fillStyle = COLOR_INK;
+      c.beginPath();
+      c.arc(charX, headY, char.headR, 0, Math.PI * 2);
+      c.fill();
+
+      if (char.id === 'mom') {
+        c.fillStyle = COLOR_WHITE;
+        c.beginPath();
+        c.ellipse(charX, headY - 2, char.headR * 1.8, 3, -0.1, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = COLOR_INK;
+        c.lineWidth = 1.5;
+        c.stroke();
+        drawInkLine(c, charX - 5, headY - 4, charX + 5, headY - 4, 1.5, COLOR_VERMILION);
+      }
+
+      if (char.id === 'dad') {
+        drawInkLine(c, charX - 3, headY - 4, charX + 7, headY - 2, 2.0, COLOR_INK);
+      }
+
+      // White dot eyes
+      c.fillStyle = COLOR_WHITE;
+      c.beginPath();
+      c.arc(charX + char.headR * 0.45, headY - char.headR * 0.1, char.headR * 0.22, 0, Math.PI * 2);
+      c.fill();
+    });
+
+    c.restore();
+  }
+
+  // -------------------------------------------------------------
+  // TOP-LEFT EDITORIAL SCENE BADGE (Drawn with ctx.fillText)
+  // -------------------------------------------------------------
+  function drawSceneHeader(c, scene) {
+    c.save();
+    const startX = 36;
+    const startY = 52;
+
+    // 1. Hanko Stamp Seal
+    const sealX = startX;
+    const sealY = startY - 20;
+    c.fillStyle = COLOR_VERMILION;
+    c.fillRect(sealX, sealY, 26, 26);
+    c.strokeStyle = COLOR_INK;
+    c.lineWidth = 1.2;
+    c.strokeRect(sealX, sealY, 26, 26);
+    c.fillStyle = COLOR_WHITE;
+    c.font = 'bold 11px "Hiragino Mincho ProN", "Yu Mincho", "Songti TC", serif';
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillText('伊豆', sealX + 13, sealY + 13);
+
+    // 2. Scene Tag
+    c.fillStyle = scene.accentColor;
+    c.font = 'bold 11px -apple-system, sans-serif';
+    c.textAlign = 'left';
+    c.textBaseline = 'alphabetic';
+    c.fillText(scene.tag, startX + 36, startY - 5);
+
+    // 3. PRIMARY CHINESE SCENE NAME (Exact string rendered using ctx.fillText)
+    c.fillStyle = COLOR_INK;
+    c.font = '900 32px -apple-system, "Hiragino Kaku Gothic ProN", "PingFang TC", "Microsoft JhengHei", sans-serif';
+    c.fillText(scene.name, startX, startY + 30);
+
+    // Subtitle
+    c.fillStyle = COLOR_INK_LIGHT;
+    c.font = '600 13px -apple-system, sans-serif';
+    c.fillText(scene.subtitle, startX + 2, startY + 49);
+
+    // Description
+    if (viewWidth > 580) {
+      c.font = '400 12px -apple-system, sans-serif';
+      c.fillStyle = '#777777';
+      c.fillText(scene.desc, startX + 2, startY + 68);
+    }
+
+    c.restore();
+  }
+
+  // -------------------------------------------------------------
+  // MAIN ANIMATION LOOP
+  // -------------------------------------------------------------
+  function animate(timestamp) {
+    requestAnimationFrame(animate);
+
+    if (!lastTimestamp) lastTimestamp = timestamp;
+    const dt = Math.min((timestamp - lastTimestamp) / 1000, 0.1);
+    lastTimestamp = timestamp;
+
+    if (!isPaused) {
+      worldTime += dt * speedMultiplier;
+
+      if (isTransitioning) {
+        const diff = targetCameraX - cameraX;
+        cameraX += diff * (dt * 5.0);
+        if (Math.abs(diff) < 1.0) {
+          cameraX = targetCameraX;
+          isTransitioning = false;
+        }
+      } else if (autoScroll) {
+        const scrollSpeed = 130 * speedMultiplier;
+        cameraX += scrollSpeed * dt;
+        targetCameraX = cameraX;
+      }
+    }
+
+    const wrappedCamX = ((cameraX % TOTAL_WORLD_WIDTH) + TOTAL_WORLD_WIDTH) % TOTAL_WORLD_WIDTH;
+    const currentSceneIndex = Math.floor((wrappedCamX + viewWidth * 0.35) / SCENE_UNIT_WIDTH) % TOTAL_SCENES;
+    const activeScene = SCENE_DETAILS[currentSceneIndex];
+
+    const progressPercent = (wrappedCamX / TOTAL_WORLD_WIDTH) * 100;
+    const progressBar = document.getElementById('progress-bar');
+    if (progressBar) {
+      progressBar.style.width = progressPercent + '%';
+    }
+    updateActiveNav(currentSceneIndex);
+
+    // Clear Canvas
+    ctx.save();
+    ctx.scale(dpr, dpr);
+    ctx.fillStyle = COLOR_WHITE;
+    ctx.fillRect(0, 0, viewWidth, viewHeight);
+
+    // Seagulls
+    ctx.save();
+    birdFlock.forEach(function(bird) {
+      if (!isPaused) {
+        bird.x += bird.speed * dt * speedMultiplier;
+        bird.wingPhase += dt * 6.0;
+        if (bird.x > viewWidth + 100) bird.x = -60;
+      }
+      ctx.strokeStyle = 'rgba(17, 17, 17, 0.4)';
+      ctx.lineWidth = 1.2;
+      const wingY = Math.sin(bird.wingPhase) * 5 * bird.scale;
+      ctx.beginPath();
+      ctx.moveTo(bird.x - 8 * bird.scale, bird.y + wingY);
+      ctx.quadraticCurveTo(bird.x - 4 * bird.scale, bird.y - 2, bird.x, bird.y);
+      ctx.quadraticCurveTo(bird.x + 4 * bird.scale, bird.y - 2, bird.x + 8 * bird.scale, bird.y + wingY);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // RENDER VISIBLE SCENES
+    for (let loopOffset = -1; loopOffset <= 2; loopOffset++) {
+      for (let sIdx = 0; sIdx < TOTAL_SCENES; sIdx++) {
+        const sceneWorldX = (loopOffset * TOTAL_SCENES + sIdx) * SCENE_UNIT_WIDTH;
+        const screenSceneX = sceneWorldX - cameraX;
+
+        if (screenSceneX + SCENE_UNIT_WIDTH >= -200 && screenSceneX <= viewWidth + 200) {
+          switch (sIdx) {
+            case 0:
+              drawSceneOdoriko(ctx, screenSceneX, 0, SCENE_UNIT_WIDTH, viewHeight, worldTime);
+              break;
+            case 1:
+              drawSceneOmuro(ctx, screenSceneX, 0, SCENE_UNIT_WIDTH, viewHeight, worldTime);
+              break;
+            case 2:
+              drawSceneAoi(ctx, screenSceneX, 0, SCENE_UNIT_WIDTH, viewHeight, worldTime);
+              break;
+            case 3:
+              drawSceneFuua(ctx, screenSceneX, 0, SCENE_UNIT_WIDTH, viewHeight, worldTime);
+              break;
+            case 4:
+              drawSceneJoren(ctx, screenSceneX, 0, SCENE_UNIT_WIDTH, viewHeight, worldTime);
+              break;
+            case 5:
+              drawSceneHamanoyu(ctx, screenSceneX, 0, SCENE_UNIT_WIDTH, viewHeight, worldTime);
+              break;
+          }
+        }
+      }
+    }
+
+    // PARTICLES
+    ctx.save();
+    for (let i = steamParticles.length - 1; i >= 0; i--) {
+      const p = steamParticles[i];
+      if (!isPaused) {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.alpha -= dt * 0.25;
+        p.radius += dt * 4;
+      }
+      if (p.alpha <= 0 || p.y < 0) {
+        steamParticles.splice(i, 1);
+        continue;
+      }
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + p.alpha + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (let i = mistParticles.length - 1; i >= 0; i--) {
+      const p = mistParticles[i];
+      if (!isPaused) {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += 40 * dt;
+        p.alpha -= dt * 0.8;
+      }
+      if (p.alpha <= 0) {
+        mistParticles.splice(i, 1);
+        continue;
+      }
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + p.alpha + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // RENDER THE WALKING FAMILY
+    const familyGroundY = viewHeight * 0.72;
+    const familyScreenX = viewWidth * 0.32;
+    drawFamilyWalking(ctx, familyScreenX, familyGroundY, worldTime, currentSceneIndex);
+
+    // RENDER TOP-LEFT SCENE HEADER
+    drawSceneHeader(ctx, activeScene);
+
+    ctx.restore();
+  }
+
+  requestAnimationFrame(animate);
+
+})();
+</script>
+</body>
+</html>
