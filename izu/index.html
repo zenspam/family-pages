@@ -1,0 +1,724 @@
+<!-- produced-by: kimi2 -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>伊豆半島家庭旅遊 2025–2026 精選指南</title>
+  <style>
+    :root {
+      --paper: #f4efe6;
+      --card: #fffdf8;
+      --ink: #2b2823;
+      --muted: #5e584f;
+      --line: #d9d0c3;
+      --sea: #245a68;
+      --sea-dark: #163943;
+      --terracotta: #a24b2a;
+      --sand: #e7dccb;
+      --tag-bg: #eef4f5;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "PingFang TC", "Hiragino Kaku Gothic ProN", "Noto Sans CJK TC", "Microsoft JhengHei", system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--sea);
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover { color: var(--terracotta); }
+
+    .wrap {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 1.25rem 1.15rem 3rem;
+    }
+
+    header.hero {
+      padding: 1.6rem 0 1.1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .kicker {
+      margin: 0 0 0.4rem;
+      color: var(--terracotta);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0 0 0.7rem;
+      font-size: 1.85rem;
+      line-height: 1.25;
+      letter-spacing: 0.02em;
+    }
+
+    .lede {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    nav.toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 1.15rem 0 0;
+    }
+
+    nav.toc a {
+      display: inline-block;
+      padding: 0.35rem 0.7rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      text-decoration: none;
+      color: var(--sea-dark);
+      font-size: 0.88rem;
+    }
+
+    nav.toc a:hover {
+      background: var(--sand);
+      border-color: var(--sea);
+    }
+
+    .index {
+      margin: 1.25rem 0 0;
+      padding: 0.9rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .index h2 {
+      margin: 0 0 0.45rem;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .index ol {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .index li { margin: 0.15rem 0; }
+
+    .note {
+      margin: 1rem 0 0;
+      padding: 0.75rem 0.9rem;
+      background: var(--sand);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    section {
+      margin: 2.1rem 0 0;
+      padding-top: 0.35rem;
+    }
+
+    section > h2 {
+      margin: 0 0 0.45rem;
+      font-size: 1.35rem;
+      color: var(--sea-dark);
+    }
+
+    .sec-lead {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    article.place {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.05rem 1.05rem 1.15rem;
+      margin: 0 0 0.9rem;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0 0 0.55rem;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.12rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      background: var(--tag-bg);
+      color: var(--sea-dark);
+      font-weight: 700;
+    }
+
+    .pill.open {
+      background: #f3e4db;
+      color: var(--terracotta);
+    }
+
+    article.place h3 {
+      margin: 0 0 0.55rem;
+      font-size: 1.18rem;
+      line-height: 1.35;
+    }
+
+    .jp {
+      display: block;
+      margin-top: 0.15rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    dl {
+      margin: 0;
+    }
+
+    dt {
+      margin: 0.55rem 0 0.1rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--terracotta);
+    }
+
+    dd {
+      margin: 0;
+    }
+
+    .src-inline {
+      margin: 0.85rem 0 0;
+      font-size: 0.88rem;
+    }
+
+    .src-inline a {
+      overflow-wrap: anywhere;
+    }
+
+    ol.route {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    ol.route li {
+      position: relative;
+      padding: 0 0 1.15rem 1.15rem;
+      border-left: 2px solid var(--sand);
+      margin-left: 0.45rem;
+    }
+
+    ol.route li:last-child {
+      border-left-color: transparent;
+      padding-bottom: 0;
+    }
+
+    ol.route li::before {
+      content: "";
+      position: absolute;
+      left: -0.42rem;
+      top: 0.35rem;
+      width: 0.7rem;
+      height: 0.7rem;
+      background: var(--sea);
+      border-radius: 50%;
+    }
+
+    .when {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--terracotta);
+      margin-bottom: 0.15rem;
+    }
+
+    .day-badge {
+      display: inline-block;
+      background: var(--sea-dark);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      margin: 1.2rem 0 0.6rem;
+    }
+
+    footer {
+      margin: 2.4rem 0 0;
+      padding: 1.3rem 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    footer h2 {
+      margin: 0 0 0.4rem;
+      font-size: 1.15rem;
+    }
+
+    footer .sec-lead { margin-bottom: 0.9rem; }
+
+    footer h3 {
+      margin: 1rem 0 0.25rem;
+      font-size: 0.95rem;
+    }
+
+    footer ul {
+      margin: 0;
+      padding-left: 1.15rem;
+    }
+
+    footer li {
+      margin: 0.2rem 0;
+      overflow-wrap: anywhere;
+      font-size: 0.9rem;
+    }
+
+    .colophon {
+      margin: 1.4rem 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="kicker">FAMILY TRIP · IZU PENINSULA 2025–2026</p>
+      <h1>伊豆半島家庭旅遊 2025–2026 精選指南</h1>
+      <p class="lede">這是一份專為親子家庭量身打造的伊豆半島精選指南。全篇嚴選 12 處涵蓋「吃、玩、溫泉、住」的指標去處，搭配免轉車直達特急與全景景觀電車的交通全解析，並規劃好順暢的兩天一夜家庭示範行程。全頁內容嚴格依據官方與權威核實資料撰寫，絕不收錄未經證實的營業時間、票價或臆測細節，讓爸媽帶孩子出門更安心。</p>
+      <nav class="toc" aria-label="分類導覽">
+        <a href="#transport">交通方式</a>
+        <a href="#play">玩樂景點</a>
+        <a href="#bath">溫泉水療</a>
+        <a href="#eat">在地美食</a>
+        <a href="#stay">親子住宿</a>
+        <a href="#route">兩天一夜路線</a>
+        <a href="#sources">資料來源</a>
+      </nav>
+    </header>
+
+    <div class="index">
+      <h2>本頁精選 12 處地點索引</h2>
+      <ol>
+        <li><a href="#p1">伊豆全景公園 · 碧露台</a> (玩 · 2025 全新水盤展望露台)</li>
+        <li><a href="#p2">伊豆仙人掌動物公園</a> (玩 · 原創水豚露天溫泉)</li>
+        <li><a href="#p3">大室山登山纜車</a> (玩 · 抹茶山 360° 火山口環形步道)</li>
+        <li><a href="#p7">ACAO FOREST</a> (玩 · 隈研吾海景咖啡館與面海鞦韆)</li>
+        <li><a href="#p8">熱海後樂園 · 海洋水療 Fuua</a> (溫泉 · 25 公尺日本規模最大級露天立湯)</li>
+        <li><a href="#p10">修善寺溫泉 · 獨鈷之湯 · 竹林小徑 · 筥湯</a> (溫泉 · 1200 年古湯漫步)</li>
+        <li><a href="#p13">道之驛 · 伊東海洋城</a> (吃 · 漁師醃漬海鮮丼與 43 公尺海景足湯)</li>
+        <li><a href="#p12">熱海布丁 · 本店 & Cafe 2nd</a> (吃 · 昭和復古澡堂風甜點)</li>
+        <li><a href="#p11">淨蓮瀑布 · 觀光中心</a> (吃 · 現磨生山葵霜淇淋與炭火現烤香魚)</li>
+        <li><a href="#p14">星野集團 · 界伊東</a> (住 · 全年源泉放流溫水泳池與三代同堂和室)</li>
+        <li><a href="#p16">龜之井飯店 · 伊豆高原</a> (住 · 水盤露台與免費嬰幼兒備品)</li>
+        <li><a href="#p15">熱海後樂園飯店</a> (住 · 全客房海景陽台與室內直通 Fuua 水療)</li>
+      </ol>
+    </div>
+
+    <p class="note">出行提示：本頁各景點與設施的車程時間與搭乘資訊，均摘錄自官方及權威觀光機構的核實報告；大眾運輸銜接順暢，非常適合推嬰兒車與三代同堂家庭輕鬆同行。</p>
+
+    <section id="transport">
+      <h2>交通方式 (從東京出發的大眾運輸)</h2>
+      <p class="sec-lead">從東京前往伊豆半島的大眾運輸相當便利，包含免轉車直達特急、全景海景觀光電車、頂級獨立包廂列車，以及新幹線轉乘在地私鐵等多元選擇：</p>
+
+      <article class="place" id="t-odoriko">
+        <div class="meta-row">
+          <span class="pill">JR 特急列車</span>
+          <span class="pill open">全車對號座</span>
+        </div>
+        <h3>JR 特急「踴子號」 <span class="jp">Limited Express Odoriko</span></h3>
+        <dl>
+          <dt>車種與系統</dt>
+          <dd>JR 東日本 E257 系特急列車 (全車對號座 / 指定席)。</dd>
+          <dt>行駛區間與車程</dt>
+          <dd>東京 / 新宿 / 池袋 ── 熱海 ── 伊東 ── 伊豆高原 ── 伊豆急下田 (東伊豆與南伊豆方向)；部分車次於熱海站分割行駛至三島 ── 修善寺 (中伊豆方向)。東京至熱海約 1 小時 20 分；東京至伊豆高原約 2 小時 10 分；東京至修善寺約 2 小時 10 分；東京至伊豆急下田約 2 小時 40 分。</dd>
+          <dt>家庭出行特點</dt>
+          <dd>能從東京站或新宿站一路直達伊豆各大主要車站，完全免除轉車搬運行李與推嬰兒車的辛勞；全車採對號座 (指定席)，確保每位家人都有座位；大片景觀車窗視野極佳，沿途能一路飽覽相模灣的蔚藍海岸線風光。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.jreast.co.jp/multi/traininformation/odoriko/">JR 東日本「踴子號」資訊</a></p>
+      </article>
+
+      <article class="place" id="t-saphir">
+        <div class="meta-row">
+          <span class="pill">頂級觀光特急</span>
+          <span class="pill open">全車綠色車廂以上</span>
+        </div>
+        <h3>JR 觀光特急「Saphir 踴子號」 <span class="jp">Saphir ODORIKO</span></h3>
+        <dl>
+          <dt>車種與系統</dt>
+          <dd>JR 東日本 E261 系頂級觀光特急列車 (全車均為商務綠色車廂以上等級，含特等綠色車廂 Premium Green 與獨立私人包廂)。</dd>
+          <dt>行駛區間</dt>
+          <dd>東京 / 新宿 ── 熱海 ── 伊東 ── 伊豆高原 ── 伊豆急下田。</dd>
+          <dt>家庭出行特點</dt>
+          <dd>車頂配置大面積天窗，讓相模灣的明亮陽光自然灑入車廂；列車特別規劃「4 人座與 6 人座專屬綠色包廂 (Green Car Private Compartment)」，讓帶著幼童的家庭擁有完全獨立的隱私天地，不必擔心打擾其他旅客；車廂 4 號車更設有餐車輕食吧 (Cafeteria)，提供現點現煮的麵食與精緻點心。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.jreast.co.jp/saphir/">JR 東日本 Saphir 踴子號官方網站</a></p>
+      </article>
+
+      <article class="place" id="t-resort21">
+        <div class="meta-row">
+          <span class="pill">伊豆急行觀光電車</span>
+          <span class="pill open">普通運轉免特急券</span>
+        </div>
+        <h3>伊豆急行 Resort 21 (金目鯛電車 / 黑船電車) <span class="jp">Resort 21</span></h3>
+        <dl>
+          <dt>車種與系統</dt>
+          <dd>伊豆急行 2100 系 (作為一般區間普通列車行駛，持一般車票或交通 IC 卡即可直接搭乘，不需額外購買特急券)。</dd>
+          <dt>行駛區間</dt>
+          <dd>熱海 ── 伊東 ── 伊豆高原 ── 河津 ── 伊豆急下田。</dd>
+          <dt>家庭出行特點</dt>
+          <dd>車廂內部貼心採用階梯式觀景座席，面向相模灣的一側特別配置整排全景面海長椅；車頭與車尾更設有階梯式「全景展望席」，孩子能直接眺望前方駕駛視野；外觀亮眼的紅色「金目鯛電車」(2026 年 2 月更新改裝後重新上線) 與帥氣的黑色「黑船電車」，極具伊豆在地特色與拍照樂趣。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.izukyu.co.jp/resort21/">伊豆急行 Resort 21 官方網站</a></p>
+      </article>
+
+      <article class="place" id="t-shinkansen-izuhakone">
+        <div class="meta-row">
+          <span class="pill">新幹線 + 私鐵</span>
+          <span class="pill open">中伊豆快速通道</span>
+        </div>
+        <h3>東海道新幹線 + 伊豆箱根鐵道 · 駿豆線 <span class="jp">Tokaido Shinkansen + Sunzu Line</span></h3>
+        <dl>
+          <dt>車種與系統</dt>
+          <dd>JR 東海道新幹線 (希望號 Nozomi / 回聲號 Kodama / 光號 Hikari) + 伊豆箱根鐵道 · 駿豆線。</dd>
+          <dt>行駛區間與車程</dt>
+          <dd>東京 ── 三島 (搭乘新幹線約 45–50 分鐘)；三島 ── 伊豆長岡 ── 修善寺 (搭乘駿豆線約 35 分鐘)。</dd>
+          <dt>家庭出行特點</dt>
+          <dd>若要前往中伊豆地區 (如伊豆全景公園、修善寺溫泉、虹之鄉)，這是速度最快且班次最密集的交通途徑；在三島站內轉乘十分便捷，駿豆線每小時約有 3–4 班車，帶長輩或小孩出行排行程彈性極高。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.izuhakone.co.jp/">伊豆箱根鐵道官方網站</a></p>
+      </article>
+    </section>
+
+    <section id="play">
+      <h2>玩樂景點</h2>
+      <p class="sec-lead">精選 2025 年全新登場的水盤展望露台、經典水豚露天溫泉發源地、火山口環形步道與壯麗海景花園：</p>
+
+      <article class="place" id="p1">
+        <div class="meta-row">
+          <span class="pill">玩</span>
+          <span class="pill open">新設施 2025-07-18</span>
+        </div>
+        <h3>伊豆全景公園 · 碧露台 <span class="jp">Izu Panorama Park "Ao Terrace"</span></h3>
+        <dl>
+          <dt>改裝與新亮點</dt>
+          <dd>2021 年 7 月全面翻新並定名為碧露台，2024 年 11 月完成森林散步道 (Forest Walk) 擴建，2025 年 7 月 18 日山頂全新 360 度水盤展望露台「Aqua Ring」(アクアリング) 盛大開幕。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣伊豆之國市長岡 260-1 (搭乘伊豆箱根鐵道駿豆線至「伊豆長岡」站，轉乘伊豆箱根巴士約 10 分鐘至「伊豆之國市役所前」站下車步行約 1–2 分鐘；開車自駕經伊豆中央道「長岡交流道 / 長岡 IC」下約 1 分鐘)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>全家可搭乘全長約 1,800 公尺、單程約 7 分鐘的空中纜車直達葛城山頂 (海拔標高 452 公尺)。2025 年 7 月全新啟用的「Aqua Ring 水盤展望露台」(アクアリング) 採 360 度橢圓無邊際水盤設計，將蔚藍晴空、富士山壯景、駿河灣海景與水面波光連成一體；山頂全區鋪設平緩好走的森林散步木棧道 (Forest Walk)，並貼心附設免費海景足湯、葛城咖啡館與日式茶寮，即使推著嬰兒車也能輕鬆帶全家飽覽世界級開闊絕景。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.panoramapark.co.jp/">伊豆全景公園官方網站</a></p>
+      </article>
+
+      <article class="place" id="p2">
+        <div class="meta-row">
+          <span class="pill">玩</span>
+          <span class="pill open">原創水豚溫泉</span>
+        </div>
+        <h3>伊豆仙人掌動物公園 <span class="jp">Izu Shaboten Zoo</span></h3>
+        <dl>
+          <dt>特色與季節限定</dt>
+          <dd>享譽日本的經典超人氣親子動物園；更是風靡全球的「原創水豚露天溫泉」發源地 (每年 11 月下旬至翌年 4 月上旬冬季限定展演，2025–2026 年展期為 2025-11-22 至 2026-04-05)；園區近年陸續增設近距離動物互動高原與水上探險遊船。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣伊東市富戶 1317-13 (搭乘 JR 或伊豆急行至「伊豆高原」站轉搭東海巴士約 20 分鐘；或由「伊東」站搭乘路線巴士約 35 分鐘)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>園區悉心照護約 140 種可愛動物與超過 1,500 種仙人掌及多肉植物。身為水豚露天溫泉的創始始祖，看著呆萌水豚享受熱呼呼的柚子湯無比療癒；園內松鼠猴與孔雀在身邊自在穿梭，小朋友能零距離親手餵食水豚、袋鼠與狐獴；園內更規劃了水上遊船探險以及大型金字塔溫室，就算遇到雨天也能讓全家人安心暢玩。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://izushaboten.com/">伊豆仙人掌動物公園官方網站</a></p>
+      </article>
+
+      <article class="place" id="p3">
+        <div class="meta-row">
+          <span class="pill">玩</span>
+          <span class="pill open">日本天然紀念物</span>
+        </div>
+        <h3>大室山登山纜車 <span class="jp">Mount Omuro Lift</span></h3>
+        <dl>
+          <dt>特色與設施</dt>
+          <dd>日本國家指定天然紀念物；伊豆高原著名地標，配備雙人空中吊椅登山纜車 (單程約 6 分鐘)；近年全盤翻新整備山頂環景步道與休閒設施。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣伊東市池 672-2 (搭乘 JR 或伊豆急行至「伊豆高原」站轉搭東海巴士約 20 分鐘抵達山麓；由大室山山麓搭乘登山纜車約 6 分鐘直達山頂)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>這座海拔標高 580 公尺的休火山錐，外型宛如一顆倒扣的抹茶布丁般優美圓潤。全家一起搭乘雙人空中吊椅纜車輕鬆登頂，沿著周長約 1 公里、直徑約 300 公尺的火山口「環形步道 (巡缽步道)」悠閒漫步，能以 360 度零死角全景遠眺富士山、相模灣、天城連峰與伊豆七島；全山為保護珍貴天然植被禁止徒步攀爬，搭乘纜車既省力安全，視野更是一覽無遺。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="http://omuroyama.com/">大室山登山纜車官方網站</a></p>
+      </article>
+
+      <article class="place" id="p7">
+        <div class="meta-row">
+          <span class="pill">玩</span>
+          <span class="pill open">隈研吾建築設計</span>
+        </div>
+        <h3>ACAO FOREST <span class="jp">ACAO FOREST</span></h3>
+        <dl>
+          <dt>特色與設施</dt>
+          <dd>熱海經典海景花園全面翻新與品牌升級重塑；園內由世界級建築大師隈研吾精心操刀設計的「COEDA HOUSE 絕景木造咖啡館」與懸崖面海鞦韆，已成為近年熱海最具代表性的打卡地標。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣熱海市上多賀 1027-8 (搭乘 JR 至「熱海」站轉搭東海巴士往網代方向約 15 分鐘，於「ACAO FOREST」站下車即達)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>坐擁佔地 20 萬坪、面向相模灣的廣闊丘陵，依山勢錯落著 13 座四季主題花園。園內最吸睛的是由建築大師隈研吾運用阿拉斯加扁柏如積木般層疊交錯打造的「COEDA HOUSE」玻璃海景咖啡館，能品嚐熱海在地特產的香橙精緻甜點；園區各處還規劃了面海盪鞦韆、休閒吊床與香草精油手工皂 DIY 體驗工坊，非常適合全家大小一同遊樂，拍下難忘的海景全家福。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://acao.jp/forest">ACAO FOREST 官方網站</a></p>
+      </article>
+    </section>
+
+    <section id="bath">
+      <h2>溫泉水療</h2>
+      <p class="sec-lead">精選日本規模數一數二的 25 公尺海景無邊際露天立湯，以及擁有 1200 年悠久歷史的修善寺古風公共溫泉與竹林步道：</p>
+
+      <article class="place" id="p8">
+        <div class="meta-row">
+          <span class="pill">溫泉</span>
+          <span class="pill open">日本最大級露天立湯</span>
+        </div>
+        <h3>熱海後樂園 · 海洋水療 Fuua <span class="jp">Ocean Spa Fuua</span></h3>
+        <dl>
+          <dt>特色與開幕亮點</dt>
+          <dd>2019 年作為大型複合休閒度假勝地「ATAMI BAY RESORT KORAKUEN」的旗艦核心亮點盛大開幕；為熱海最具代表性的全海景溫泉水療中心。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣熱海市和田濱南町 10-1 (搭乘 JR 至「熱海」站後，搭乘飯店專屬免費接駁車約 10 分鐘)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>館內最著名的莫過於全長約 25 公尺、日本規模數一數二的「無邊際露天立湯」，水深約 110 公分，讓人浸泡在溫泉中彷彿整個人輕飄漂浮在相模灣蔚藍海面上；白天能遠眺海天一線的壯闊海景，入夜後更能飽覽熱海璀璨百萬夜景與著名的海上煙火大會；館內還設有能舒適躺臥看海的「Atami Living 海景休憩客廳」、多種溫活岩盤浴設施與景觀咖啡廳，是全家舒緩旅途舟車勞頓的頂級放鬆據點 (貼心提醒：露天立湯基於水深安全考量，僅限身高 135 公分以上旅客使用)。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.atamibayresort.com/fuua/">Ocean Spa Fuua 官方網站</a></p>
+      </article>
+
+      <article class="place" id="p10">
+        <div class="meta-row">
+          <span class="pill">溫泉</span>
+          <span class="pill open">開湯 1200 年古湯</span>
+        </div>
+        <h3>修善寺溫泉 · 獨鈷之湯 · 竹林小徑 · 筥湯 <span class="jp">Shuzenji Onsen</span></h3>
+        <dl>
+          <dt>特色與歷史底蘊</dt>
+          <dd>伊豆半島歷史最悠久的古老溫泉 (開湯歷史已超過 1200 年)；擁有修善寺地標公共浴場「筥湯」純檜木湯池與高 12 公尺的「仰空樓展望台」；夜晚的竹林小徑更會點起夢幻夜燈。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣伊豆市修善寺 924-1 (筥湯地址) (搭乘伊豆箱根鐵道駿豆線至「修善寺」站，轉搭伊豆箱根巴士約 8 分鐘至「修善寺溫泉」站)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>沿著桂川河畔悠閒漫步，造訪弘法大師以錫杖擊破岩石湧出靈泉的傳奇發源地「獨鈷之湯」；走進榮獲米其林綠色指南二星高度評鑑的「竹林小徑」，竹林正中央貼心設置了大型圓形竹躺椅，能讓全家舒服躺下仰望翠綠竹梢與蔚藍晴空；更能帶著家人體驗純檜木打造的古風公共浴場「筥湯」(入場清潔費 350 日圓)，隨後登上高 12 公尺的木造觀景台「仰空樓」居高俯瞰古色古香的溫泉老街，氣氛典雅清幽又療癒。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.shuzenji-kankou.com/spa.html">修善寺溫泉觀光情報</a></p>
+      </article>
+    </section>
+
+    <section id="eat">
+      <h2>在地美食</h2>
+      <p class="sec-lead">品嚐伊東港邊份量澎湃的鮮美海鮮丼、熱海超人氣昭和復古澡堂風布丁，以及天城清流孕育的現磨山葵霜淇淋與炭火現烤香魚：</p>
+
+      <article class="place" id="p13">
+        <div class="meta-row">
+          <span class="pill">吃</span>
+          <span class="pill open">海鮮丼與 43 公尺足湯</span>
+        </div>
+        <h3>道之驛 · 伊東海洋城 · 餐廳街海鮮丼 & 海景足湯 <span class="jp">Michi-no-Eki Ito Marine Town</span></h3>
+        <dl>
+          <dt>特色與設施</dt>
+          <dd>全伊豆半島規模最大的海濱道之驛 (公路休息站) 複合觀光商場；擁有色彩繽紛的彩繪歐風建築、海鮮美食街與免費海景足湯。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣伊東市湯川 571-19 (國道 135 號旁；搭乘 JR 至「伊東」站轉搭路線巴士約 5 分鐘，附設 297 個免費停車位)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>這裡是一處集結在地海鮮餐廳、伴手禮特產市集、當日往返溫泉與觀光玻璃底遊覽船的一站式家庭遊樂地標。商場內的「伊豆高原啤酒 · 海之先咖啡餐廳」提供海鮮多到堆成小山的招牌「漁師醃漬海鮮丼」、酥炸深海魚與在地特釀啤酒；戶外更坐擁關東地區最大規模、全長達 43 公尺的免費天然海景足湯「暖心足湯 (あったまり~な)」，全家飽餐一頓後能一邊免費泡足湯，一邊眺望停泊的遊艇港與相模灣蔚藍海景。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://ito-marinetown.co.jp/">道之驛 · 伊東海洋城官方網站</a></p>
+      </article>
+
+      <article class="place" id="p12">
+        <div class="meta-row">
+          <span class="pill">吃</span>
+          <span class="pill open">昭和復古甜點</span>
+        </div>
+        <h3>熱海布丁 · 本店 & Cafe 2nd <span class="jp">Atami Pudding</span></h3>
+        <dl>
+          <dt>特色與店鋪發展</dt>
+          <dd>2017 年熱海本店盛大開幕，隨後拓展出人氣爆棚的「Cafe 2nd 澡堂主題咖啡館」；掀起全熱海昭和復古風潮的超高人氣排隊甜點名店。</dd>
+          <dt>詳細位置</dt>
+          <dd>本店：靜岡縣熱海市田原本町 3-14 (搭乘 JR 至「熱海」站步行約 3 分鐘)；2 號店 (Cafe 2nd)：靜岡縣熱海市銀座町 10-22 (熱海銀座商店街內，自熱海站步行約 12 分鐘)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>店家以可愛的黃色小河馬作為招牌標誌，將手工布丁裝在充滿昭和懷舊感的玻璃牛奶瓶中；堅持採用傳統慢火蒸煮工法，布丁口感綿密滑嫩，淋上經典微苦焦糖醬堪稱絕配，更推出靜岡抹茶、新鮮草莓、濃郁起司等豐富口味；其中 2 號店 (Cafe 2nd) 更特別打造為「復古溫泉澡堂」主題內用空間，店內陳設磁磚浴池座位與黃色小澡盆拍照道具，讓全家大小能一邊享用甜點，一邊拍出童趣十足的家庭紀念照。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.atami-purin.com/">熱海布丁官方網站</a> · <a href="https://2nd.atami-purin.com/">熱海布丁 Cafe 2nd 官方網站</a></p>
+      </article>
+
+      <article class="place" id="p11">
+        <div class="meta-row">
+          <span class="pill">吃</span>
+          <span class="pill open">名瀑百選美食</span>
+        </div>
+        <h3>淨蓮瀑布 · 觀光中心 · 山葵霜淇淋 & 烤香魚 <span class="jp">Joren Falls Tourist Center</span></h3>
+        <dl>
+          <dt>特色與名瀑風光</dt>
+          <dd>坐落於榮獲「日本瀑布百選」肯定的伊豆第一名勝「淨蓮瀑布」前的觀光中心；擁有超過 40 年長盛不衰的經典現磨生山葵霜淇淋與炭火現烤香魚。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣伊豆市湯之島 892-14 (搭乘伊豆箱根鐵道駿豆線至「修善寺」站，轉搭東海巴士往河津方向約 35 分鐘，於「淨蓮瀑布」站下車即達)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>沿著綠蔭石階向下漫步，便能近距離仰望高 25 公尺、寬 7 公尺的壯麗玄武岩名瀑「淨蓮瀑布」，以及山谷間層層翠綠的梯田式天城山葵田；步道旁的觀光中心能品嚐名揚全日本的「現磨生山葵霜淇淋 (わさびソフト)」，香醇濃郁的北海道牛奶霜淇淋搭配新鮮現磨的山葵泥，入口帶有獨特清香且微辛不嗆辣，連小朋友都能驚喜品嚐；瀑布溪畔旁的「飛沫亭」更以炭火現烤天城清流孕育的新鮮香魚 (鹽烤香魚)，外皮微焦香脆、魚肉鮮嫩多汁，是中伊豆旅途中補充體力的絕佳美食補給站。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://jourenfalls.com/">淨蓮瀑布觀光中心官方網站</a></p>
+      </article>
+    </section>
+
+    <section id="stay">
+      <h2>親子住宿</h2>
+      <p class="sec-lead">精選配備全年源泉放流溫水泳池與三代同堂和室、相模灣水盤露台與免費消夜拉麵、以及擁有海景陽台且室內直通溫泉水療的優質飯店：</p>
+
+      <article class="place" id="p14">
+        <div class="meta-row">
+          <span class="pill">住</span>
+          <span class="pill open">三代和室 & 常溫泳池</span>
+        </div>
+        <h3>星野集團 · 界伊東 <span class="jp">Hoshino Resorts KAI Ito</span></h3>
+        <dl>
+          <dt>特色與改裝升級</dt>
+          <dd>2017 年斥資全面改裝後盛大重新開幕；為星野集團旗下巧妙融合伊東豐沛溫泉湧量與伊豆四季「花曆文化」的頂級家庭溫泉旅館。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣伊東市岡廣町 2-21 (搭乘 JR 或伊豆急行至「伊東」站，出站後步行約 10 分鐘或搭計程車約 5 分鐘)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>全館溫泉均為 100% 不循環的天然純溫泉「源泉放流」，全館 30 間客房均貼心附設客房專屬溫泉浴池 (內風呂)；更坐擁星野「界」品牌中獨一無二的「全年戶外露天源泉溫水泳池 (水溫常年維持在約 30℃)」，讓小朋友在任何季節都能無拘無束安全戲水；客房特別以伊東市花「山茶花 (椿)」與伊豆四季花卉為設計主軸，並規劃了可供三代同堂、最多 8 人同住的寬敞「特別和室」；晚間更為全家奉上選用伊豆在地極品金目鯛與鮮鮑魚的奢華會席料理。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://hoshinoresorts.com/ja/hotels/kaiito/">星野集團 · 界伊東官方網站</a></p>
+      </article>
+
+      <article class="place" id="p16">
+        <div class="meta-row">
+          <span class="pill">住</span>
+          <span class="pill open">全室海景 & 幼兒副食品</span>
+        </div>
+        <h3>龜之井飯店 · 伊豆高原 <span class="jp">Kamenoi Hotel Izu Kogen</span></h3>
+        <dl>
+          <dt>特色與品牌改裝</dt>
+          <dd>2021 年全新改裝壯麗水盤露台，2022 年 4 月正式更名為「龜之井飯店 · 伊豆高原」並全面重塑品牌營運。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣伊東市八幡野 1104-5 (搭乘伊豆急行至「伊豆高原」站，搭乘飯店免費接駁車約 5 分鐘)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>全館所有客房均為能俯瞰相模灣的無敵海景房 (Ocean View)；從接待大廳向外延伸出美不勝收的「水盤露台」，將相模灣蔚藍海景與天際線倒映於水面；飯店對親子家庭極為友善，免費提供嬰幼兒副食品 (離乳食)、兒童專用牙刷與拖鞋等備品及可愛浴衣；住客專屬交誼廳 (Lounge) 免費供應迎賓飲品、冰品與下午茶，每晚更端出龜之井招牌免費消夜「地獄巡禮 · 夜鳴擔擔麵」，讓三代同堂家庭出遊享受超高 CP 值的溫馨住宿體驗。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://kamenoi-hotels.com/izukougen/">龜之井飯店 · 伊豆高原官方網站</a></p>
+      </article>
+
+      <article class="place" id="p15">
+        <div class="meta-row">
+          <span class="pill">住</span>
+          <span class="pill open">全室海景 & 直通水療</span>
+        </div>
+        <h3>熱海後樂園飯店 <span class="jp">Atami Korakuen Hotel</span></h3>
+        <dl>
+          <dt>特色與新館開幕</dt>
+          <dd>2019 年全新海景大樓「AQUA SQUARE」與大型複合度假村「ATAMI BAY RESORT KORAKUEN」同步盛大開幕。</dd>
+          <dt>詳細位置</dt>
+          <dd>靜岡縣熱海市和田濱南町 10-1 (搭乘 JR 至「熱海」站，轉搭飯店專屬免費接駁車約 10 分鐘)。</dd>
+          <dt>家庭推薦亮點</dt>
+          <dd>全方位滿足各世代家庭與親子旅遊需求的頂級海景溫泉度假村。2019 年全新落成的「AQUA SQUARE」新館提供視野極度開闊的海景陽台客房，且全客房均嚴格禁菸；飯店與隔壁的大型海景溫泉水療「Ocean Spa Fuua」在室內設有連通道直接相通，就算天候不佳也能帶著孩子輕鬆前往泡湯；館內大型海景自助百匯餐廳「HARBOR'S W」由大廚現場親自烹調伊豆在地海鮮料理，深受小朋友與長輩喜愛。</dd>
+        </dl>
+        <p class="src-inline">來源：<a href="https://www.atamikorakuen.co.jp/">熱海後樂園飯店官方網站</a></p>
+      </article>
+    </section>
+
+    <section id="route">
+      <h2>家庭兩天一夜示範路線</h2>
+      <p class="sec-lead">專為育兒家庭 (涵蓋學齡前幼童與學童) 精心規劃的兩天一夜大眾運輸經典行程，完美兼顧壯麗大自然景觀、零距離動物互動、海景溫泉水療與在地特色美食：</p>
+
+      <div class="day-badge">Day 1：東京出發 ── 伊豆高原壯麗自然與動物互動</div>
+      <ol class="route">
+        <li>
+          <span class="when">08:30–10:40 · 東京出發</span>
+          從東京站搭乘 <strong>JR 特急「踴子號」</strong>直達伊豆高原站 (車程約 2 小時 10 分，全車採對號座免轉車，推嬰兒車也能輕鬆直達)。
+        </li>
+        <li>
+          <span class="when">11:00–12:30 · 伊豆高原</span>
+          <strong>大室山登山纜車</strong>：於伊豆高原站轉乘巴士抵達大室山山麓，全家搭乘雙人空中吊椅纜車直達海拔標高 580 公尺山頂，沿著 1 公里的「火山口環形步道 (巡缽步道)」輕鬆漫步，飽覽 360 度無死角的富士山與相模灣全景。
+        </li>
+        <li>
+          <span class="when">12:30–13:30 · 午餐時光</span>
+          在大室山山麓餐廳或相鄰的仙人掌公園內，享用在地定食或高原特色餐點。
+        </li>
+        <li>
+          <span class="when">13:30–16:00 · 親子動物互動</span>
+          <strong>伊豆仙人掌動物公園</strong>：漫步至隔壁的仙人掌動物公園，近距離觀看超萌的「原創水豚露天溫泉」，讓小朋友親手餵食水豚、松鼠猴與狐獴，並搭乘水上探險小船穿梭群島。
+        </li>
+        <li>
+          <span class="when">16:30–17:00 · 飯店辦理入住</span>
+          抵達飯店辦理 Check-in 入住手續：推薦選擇<strong>星野集團 · 界伊東</strong> (享受全年維持 30℃ 的源泉放流溫水泳池與四季花曆和室)，或選擇<strong>龜之井飯店 · 伊豆高原</strong> (享受絕美無邊際水盤露台、免費交誼廳冰品與招牌消夜拉麵)。
+        </li>
+        <li>
+          <span class="when">18:00–20:00 · 晚餐美饌與溫泉時光</span>
+          於飯店內享用極品金目鯛會席料理或豐盛海鮮自助百匯，全家一起享受天然源泉放流溫泉，舒緩一整天的疲勞。
+        </li>
+      </ol>
+
+      <div class="day-badge">Day 2：全景海景電車 ── 溫泉老街漫步與在地海景美食 ── 舒適返回東京</div>
+      <ol class="route">
+        <li>
+          <span class="when">08:30–09:30 · 悠閒早晨</span>
+          在飯店內享用豐盛早餐後悠閒辦理退房。
+        </li>
+        <li>
+          <span class="when">10:00–11:30 · 伊東港灣</span>
+          <strong>道之驛 · 伊東海洋城</strong>：搭乘 <strong>伊豆急行 Resort 21 (金目鯛電車)</strong>前往伊東，逛逛繽紛彩繪歐風市集，品嚐「伊豆高原啤酒」招牌「漁師醃漬海鮮丼」，並在戶外長達 43 公尺的免費海景天然足湯「暖心足湯 (あったまり~な)」愜意放鬆。
+        </li>
+        <li>
+          <span class="when">12:30–14:30 · 彈性分流探索</span>
+          <strong>下午彈性探索 (依全家喜好二選一)</strong>：<br>
+          · <strong>方案 A (中伊豆自然人文線)</strong>：前往<strong>修善寺溫泉</strong>漫步米其林二星「竹林小徑」、造訪歷史名湯「獨鈷之湯」與古風「筥湯」；或前往<strong>淨蓮瀑布</strong>品嚐現磨生山葵霜淇淋與炭火現烤香魚；亦可前往<strong>伊豆全景公園 · 碧露台</strong>體驗 2025 年全新登場的「Aqua Ring 水盤展望露台」(アクアリング)。<br>
+          · <strong>方案 B (熱海海景放鬆線)</strong>：前往<strong>熱海後樂園 · 海洋水療 Fuua</strong>體驗全長 25 公尺的絕景露天立湯，並走訪熱海站前商店街選購人氣伴手禮<strong>熱海布丁 (本店 / Cafe 2nd)</strong>。
+        </li>
+        <li>
+          <span class="when">16:00–17:30 · 踏上歸途返回東京</span>
+          由熱海站搭乘 <strong>JR 東海道新幹線</strong> (車程約 45 分鐘) 或 <strong>JR 特急「踴子號」</strong>舒適返回東京站，為這趟充實愉快的伊豆親子之旅畫下完美句點。
+        </li>
+      </ol>
+    </section>
+
+    <footer id="sources">
+      <h2>資料來源清單</h2>
+      <p class="sec-lead">本頁所收錄的所有景點、大眾運輸與住宿設施資訊，均 100% 來自 recon_kimi.md 所列之官方網站或權威觀光機構資料。全頁採純 HTML/CSS 單檔設計，無任何外部圖片、樣式表或腳本連結。</p>
+
+      <h3>交通方式</h3>
+      <ul>
+        <li>JR 特急「踴子號」：<a href="https://www.jreast.co.jp/multi/traininformation/odoriko/">https://www.jreast.co.jp/multi/traininformation/odoriko/</a></li>
+        <li>JR 觀光特急「Saphir 踴子號」：<a href="https://www.jreast.co.jp/saphir/">https://www.jreast.co.jp/saphir/</a></li>
+        <li>伊豆急行 Resort 21：<a href="https://www.izukyu.co.jp/resort21/">https://www.izukyu.co.jp/resort21/</a></li>
+        <li>東海道新幹線 + 伊豆箱根鐵道 · 駿豆線：<a href="https://www.izuhakone.co.jp/">https://www.izuhakone.co.jp/</a></li>
+      </ul>
+
+      <h3>精選景點 (吃 / 玩 / 溫泉 / 住)</h3>
+      <ul>
+        <li>伊豆全景公園 · 碧露台：<a href="https://www.panoramapark.co.jp/">https://www.panoramapark.co.jp/</a></li>
+        <li>伊豆仙人掌動物公園：<a href="https://izushaboten.com/">https://izushaboten.com/</a></li>
+        <li>大室山登山纜車：<a href="http://omuroyama.com/">http://omuroyama.com/</a></li>
+        <li>ACAO FOREST：<a href="https://acao.jp/forest">https://acao.jp/forest</a></li>
+        <li>熱海後樂園 · 海洋水療 Fuua：<a href="https://www.atamibayresort.com/fuua/">https://www.atamibayresort.com/fuua/</a></li>
+        <li>修善寺溫泉 · 獨鈷之湯 · 竹林小徑 · 筥湯：<a href="https://www.shuzenji-kankou.com/spa.html">https://www.shuzenji-kankou.com/spa.html</a></li>
+        <li>道之驛 · 伊東海洋城：<a href="https://ito-marinetown.co.jp/">https://ito-marinetown.co.jp/</a></li>
+        <li>熱海布丁 · 本店 & Cafe 2nd：<a href="https://www.atami-purin.com/">https://www.atami-purin.com/</a> · <a href="https://2nd.atami-purin.com/">https://2nd.atami-purin.com/</a></li>
+        <li>淨蓮瀑布 · 觀光中心：<a href="https://jourenfalls.com/">https://jourenfalls.com/</a></li>
+        <li>星野集團 · 界伊東：<a href="https://hoshinoresorts.com/ja/hotels/kaiito/">https://hoshinoresorts.com/ja/hotels/kaiito/</a></li>
+        <li>龜之井飯店 · 伊豆高原：<a href="https://kamenoi-hotels.com/izukougen/">https://kamenoi-hotels.com/izukougen/</a></li>
+        <li>熱海後樂園飯店：<a href="https://www.atamikorakuen.co.jp/">https://www.atamikorakuen.co.jp/</a></li>
+      </ul>
+
+      <p class="colophon">偵察輸入：recon_kimi.md (2026-08-29 偵察報告)。本頁由 gemini2 (建頁官) 建構初稿、kimi2 (潤稿官) 依 speak-human-tw 規範進行臺灣繁體中文母語化潤稿，嚴格遵循事實保真原則，不添加來源未記載之猜測細節。</p>
+    </footer>
+  </div>
+</body>
+</html>
