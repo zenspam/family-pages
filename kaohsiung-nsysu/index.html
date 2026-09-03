@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>西子灣山海圖鑑</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{
+  --paper:#eef3f2; --ink:#10262b; --muted:#4f6468; --line:#cfd8d6; --panel:#ffffff;
+  --sea:#0b6b7a; --sea-ink:#ffffff; --sun:#c8763a; --rock:#6b6f62; --warn:#9a3b2c; --warn-bg:#f8e9e5;
+  --serif:"Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1a1d; --ink:#e3ecee; --muted:#9db0b4; --line:#27363a; --panel:#16252a;
+    --sea:#4fb9c8; --sea-ink:#08191c; --sun:#e29a63; --rock:#a9ad9f; --warn:#f0a08f; --warn-bg:#3a1f19;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1a1d; --ink:#e3ecee; --muted:#9db0b4; --line:#27363a; --panel:#16252a;
+  --sea:#4fb9c8; --sea-ink:#08191c; --sun:#e29a63; --rock:#a9ad9f; --warn:#f0a08f; --warn-bg:#3a1f19;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7}
+main{max-width:72rem;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+header{max-width:46rem;margin-bottom:2rem}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .5rem}
+h1{font-family:var(--serif);font-size:2.2rem;line-height:1.2;margin:0 0 .8rem;text-wrap:balance}
+.lede{font-size:1.1rem;margin:0 0 1rem}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 0}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;padding:.12rem .5rem;border-radius:.3rem;border:1px solid var(--line);color:var(--muted)}
+.tag.hot{background:var(--sea);color:var(--sea-ink);border-color:var(--sea)}
+.tag.hidden{background:var(--sun);color:#fff;border-color:var(--sun)}
+.tag.far{border-color:var(--rock);color:var(--rock)}
+.tag.unv{border-color:var(--warn);color:var(--warn)}
+nav.jump{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;font-size:.92rem;margin:1.2rem 0 0;padding-top:1rem;border-top:1px solid var(--line)}
+nav.jump a{color:var(--sea);text-decoration:none}
+nav.jump a:hover{text-decoration:underline}
+h2{font-family:var(--serif);font-size:1.5rem;margin:2.6rem 0 .3rem;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 1rem;max-width:46rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(20rem,1fr));gap:1rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:.6rem;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.45rem}
+.card h3{font-family:var(--serif);font-size:1.15rem;margin:0;line-height:1.35}
+.card .where{color:var(--muted);font-size:.92rem}
+.card .why{margin:0}
+.card .when{font-size:.92rem}
+.card .when b{font-weight:700;color:var(--sea)}
+.card .warn{font-size:.9rem;background:var(--warn-bg);color:var(--warn);border-radius:.4rem;padding:.35rem .6rem}
+.card .src{font-size:.78rem;color:var(--muted);margin-top:auto;padding-top:.3rem;border-top:1px dashed var(--line);word-break:break-all}
+.card .src a{color:var(--muted)}
+.card .src .by{font-family:var(--mono);font-size:.7rem;letter-spacing:.04em}
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--sea);border-radius:.5rem;padding:1rem 1.2rem;margin:1.2rem 0;max-width:46rem}
+.note p{margin:0 0 .5rem}
+.note p:last-child{margin:0}
+ul.plain{padding-left:1.2rem;margin:.4rem 0}
+ul.plain li{margin:.3rem 0}
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem;max-width:46rem}
+a:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="eyebrow">高雄 · 鼓山 · 國立中山大學與西子灣 · 2026-09-03 整理</p>
+  <h1>西子灣山海圖鑑：熱門的、私密的，還有對岸看回來的</h1>
+  <p class="lede">一所大學把珊瑚礁山、日治隧道、海水浴場和一群獼猴圈進校園。這頁把觀光客都知道的和校友才走的路分開列，每一條都寫「為什麼迷人」而不是形容詞，附來源。</p>
+  <div class="legend">
+    <span class="tag hot">熱門必去</span>
+    <span class="tag hidden">私密小眾</span>
+    <span class="tag far">北柴山 · 旗津對岸</span>
+    <span class="tag unv">來源未核或互相打架</span>
+  </div>
+  <nav class="jump">
+    <a href="#hot">熱門必去</a>
+    <a href="#hidden">私密小眾</a>
+    <a href="#far">北柴山與旗津</a>
+    <a href="#rules">出發前五件事</a>
+    <a href="#method">怎麼整理的</a>
+  </nav>
+</header>
+
+<h2 id="hot">熱門必去</h2>
+<p class="sub">觀光客都知道，但值得知道「怎麼看才對」。</p>
+<div class="grid">
+
+<div class="card">
+  <h3>西子灣夕陽與海堤</h3>
+  <div class="where">校門外沿海步道、海堤，往哨船頭一帶都是機位。</div>
+  <p class="why">太陽沉進台灣海峽，貨輪從畫面正中進出第一港口，對岸是旗後山。校友的話：「夕陽還是要秋天才好看」，夏天霧霾重。</p>
+  <div class="when"><b>秋冬傍晚</b>，日落前 30 到 60 分鐘到，日落時刻依季節查表。</div>
+  <div class="warn">颱風後浪會打上路面。海堤全日可走，下沙灘要買浴場票。假日停車難。</div>
+  <div class="src"><span class="by">Grok · Claude · Qwen · Sai</span> · <a href="https://jfsblog.com/taiwan/46987648">撰風人旅行誌</a> · <a href="https://bobbytravel.tw/2024-01-02-2630/">波比看世界</a> · <a href="https://khh.travel/zh-tw/attractions/detail/165/">高雄旅遊網</a></div>
+</div>
+
+<div class="card">
+  <h3>打狗英國領事館文化園區</h3>
+  <div class="where">蓮海路 20 號，校門斜對面的哨船頭山丘；山上官邸、山下辦公室，中間留著一條石階古道可以走上去。</div>
+  <p class="why">1879 年的官邸是台灣現存最老的西式建築，紅磚拱廊的露台同時看見西子灣、第一港口和旗後山。</p>
+  <div class="when"><b>下午四點後</b>喝茶，接著在露台等夕陽。</div>
+  <div class="warn">全票 99 元、學生 49 元。開放時間兩個官方網域寫法不同：一個寫平日 10:00 到 19:00、週三休；另一個寫週一休、09:00 起，且官邸曾整修。出發前打 07-5250100。Kimi 另查到：古蹟建築內部到 18:00（17:30 最後入館），山上戶外平台與景觀餐廳免費、開到 21:00。遊覽車進西子灣有管制。</div>
+  <div class="src"><span class="by">Claude · Qwen · Sai</span> · <a href="https://britishconsulate.kcg.gov.tw/">官網</a> · <a href="https://khh.travel/zh-tw/attractions/detail/195/">高雄旅遊網</a></div>
+</div>
+
+<div class="card">
+  <h3>西子灣隧道（壽山洞）</h3>
+  <div class="where">哈瑪星臨海二路通往校園的隧道，260 公尺長、6 公尺寬。</div>
+  <p class="why">1927 到 28 年日治時期開鑿，進校必經的時光走廊，夏天洞內明顯比外面涼。牆上掛的是學生作品，觀光客通常走過不看。</p>
+  <div class="when"><b>夏天正午</b>最涼，夜間燈火有氣氛。</div>
+  <div class="warn">只供行人與單車，汽機車不能進（Kimi 查到後把「人車混行」那一說推翻）；每日 24:00 到 04:30 封閉；洞內濕氣重。側邊防空洞平時不開放，見下面「秘境隧道」。</div>
+  <div class="src"><span class="by">Grok · Claude · Kimi</span> · <a href="https://guide.easytravel.com.tw/scenic/3828">四方通行</a> · <a href="https://vocus.cc/article/619f6489fd89780001dc2f81">方格子</a> · <a href="https://nchdb.boch.gov.tw/assets/overview/historicalBuilding/20201127000001">國家文化資產網</a></div>
+</div>
+
+<div class="card">
+  <h3>雄鎮北門</h3>
+  <div class="where">蓮海路 6 號，校門旁。</div>
+  <p class="why">清代哨船頭港埠的北門砲台，與旗津的「威震天南」砲台隔港對望，紅牆嵌在現代港區裡；現場有復刻的阿姆斯壯砲。</p>
+  <div class="when"><b>傍晚</b>，可以俯瞰航道。十分鐘看完。</div>
+  <div class="warn">2026 年初有部落格寫「整修中」，去前確認。注意蓮海路車流。</div>
+  <div class="src"><span class="by">Grok · Claude · Qwen</span> · <a href="https://bobbytravel.tw/2024-01-02-2630/">波比看世界</a> · <a href="https://pltravel.tw/article-87">pltravel</a></div>
+</div>
+
+<div class="card">
+  <h3>西子灣海水浴場與中山大學校門</h3>
+  <div class="where">蓮海路 51 號，校園西側行政大樓下方。</div>
+  <p class="why">全台唯一校園裡有海灘和海水浴場的大學；校門本身被校友認為是台灣最氣派的大學門面，門內是孫中山銅像。</p>
+  <div class="when">浴場 <b>夏季午後到黃昏</b>，浴季約 4 到 10 月；校門<b>日出</b>拍最好。</div>
+  <div class="warn">浴場平日 10:00 到 17:00、假日到 18:00，全票 150 元（來源版本略有出入）。校園外人管制 22:00 到翌日 04:30。</div>
+  <div class="src"><span class="by">Claude · Grok · Sai</span> · <a href="https://guide.easytravel.com.tw/scenic/2572">四方通行</a> · <a href="https://bobbytravel.tw/2024-01-02-2630/">波比看世界</a></div>
+</div>
+
+<div class="card">
+  <h3>哨船頭公園與一號船渠景觀橋</h3>
+  <div class="where">哨船街，領事館山下辦公室旁；西子灣遊客中心在這裡。</div>
+  <p class="why">平地視角一次收進鼓山旗津渡輪往返、高雄港和 85 大樓；新月形的景觀橋給行人和腳踏車走。</p>
+  <div class="when"><b>傍晚</b>到夜景。全日開放。</div>
+  <div class="warn">Qwen 寫這裡「猴群極多且兇猛」，其他三席和我搜到的資料都沒提，獼猴主要在壽山和校園山側，此條存疑。</div>
+  <div class="src"><span class="by">Claude · Qwen</span> · <a href="https://bobbytravel.tw/2024-01-02-2630/">波比看世界</a></div>
+</div>
+
+<div class="card">
+  <h3>鼓山旗津渡輪</h3>
+  <div class="where">鼓山輪渡站，哨船街底、鼓山魚市場旁；捷運西子灣站走得到。</div>
+  <p class="why">五分鐘航程把壽山、中山大學山腳和第一港口進出的船一次看完，也是從海上看整段柴山海岸的唯一角度；機車可以上船。</p>
+  <div class="when"><b>傍晚去程</b>看夕陽，回程看西子灣夜景。</div>
+  <div class="warn">班次密，旅遊文寫 05:00 起、末班約凌晨 02:00，確切以港務公司當日公告為準。</div>
+  <div class="src"><span class="by">Grok · Claude</span> · <a href="https://www.kkday.com/zh-tw/blog/56494/asia-taiwan-kaohsiung-cijin-onedaytrip">KKday</a></div>
+</div>
+
+<div class="card">
+  <h3>南壽山環境教育步道（校內段）</h3>
+  <div class="where">校內宿舍區後山，中山大學生態學實驗室設計，約 1.5 公里、1 到 2 小時。</div>
+  <p class="why">在校園裡就走進高位珊瑚礁和季風林，沿途獼猴、山羌、白鼻心、黃裳鳳蝶，高處回望西子灣，不必先去動物園大門那邊排隊。</p>
+  <div class="when"><b>清晨</b>，平日人少。</div>
+  <div class="warn">獼猴地盤。校友原話：「上山絕對不能拿塑膠袋」。銜接國家公園步道的地方別抄捷徑下海崖。</div>
+  <div class="src"><span class="by">Claude · Grok · Sai</span> · <a href="https://www.travelking.com.tw/tourguide/scenery102241.html">TravelKing</a> · <a href="https://guide.easytravel.com.tw/scenic/2572">四方通行</a></div>
+</div>
+
+<div class="card">
+  <h3>十八王公廟</h3>
+  <div class="where">高雄港入口的山岬上，英國領事館旁。</div>
+  <p class="why">清康熙年間起源的閩式廟宇，廟前一段陡階被說成「無誠勿登」；夜裡點燈後從廟前看港口進出的船，是觀光客白天不會排進去的一站。</p>
+  <div class="when"><b>夜晚</b>。</div>
+  <div class="warn">階梯陡峭濕滑；信仰場所，保持肅靜。</div>
+  <div class="src"><span class="by">Kimi</span> · <a href="https://khh.travel/zh-tw/attractions/detail/103/">高雄旅遊網</a></div>
+</div>
+
+<div class="card">
+  <h3>壽山情人觀景台</h3>
+  <div class="where">壽山公園，大型 LOVE 裝置那裡。</div>
+  <p class="why">高雄市景夜景的標準機位，圍欄上有 32 種語言的愛的宣言飾板。</p>
+  <div class="when"><b>夜景</b>。全日開放。</div>
+  <div class="warn">熱門到會塞，週末尤其。</div>
+  <div class="src"><span class="by">Sai</span> · <a href="https://bobbytravel.tw/2024-01-02-2630/">波比看世界</a></div>
+</div>
+
+</div>
+
+<h2 id="hidden">私密小眾</h2>
+<p class="sub">校友、在地人、跑過潮汐表的人才知道的。多數不是合法開發的景點，注意事項那一行是真的。</p>
+<div class="grid">
+
+<div class="card">
+  <h3>文學院旁秘境沙灘與崖上廢棄碉堡</h3>
+  <div class="where">柴山大路過文學院不久，道路左側小空地停車，順小路穿樹林下切。</div>
+  <p class="why">峭壁上 180 度海景；繞過大礁石往上看，有一座懸在崖邊的廢棄碉堡，從裡面往外看的框景是整條海岸最好的視角。媒體報導後校友說「已經不那麼神秘」。</p>
+  <div class="when"><b>清晨</b>人少，<b>退潮</b>才有灘。</div>
+  <div class="warn">峭壁左側要攀繩下沙灘，不適合帶小孩。猴子會翻機車車廂。雨後岩石極滑。</div>
+  <div class="src"><span class="by">Claude · Grok · Sai</span> · <a href="https://speedbug.cc/sizihwan-mystery-beach/">小蟲記事簿</a> · <a href="https://travel.setn.com/News/873453">三立旅遊</a></div>
+</div>
+
+<div class="card">
+  <h3>柴山阿朗壹（山海徑）</h3>
+  <div class="where">文學院斜對面鐵柵入口右側的開口，約五分鐘下到海岸；終點是柴山漁港北方沙灘或山海宮。</div>
+  <p class="why">早年軍事管制、高雄最後開放的一段海岸線：原始珊瑚礁岸、海蝕地形、廢棄碉堡和整群仙人掌，遠處是高雄港進出的船。</p>
+  <div class="when"><b>退潮時段</b>，避開夏季正午。單程約 2 公里 2 小時，加海蝕洞至少 3 小時。</div>
+  <div class="warn">必看潮汐表，漲潮前走完。防滑鞋、厚手套；有作者五月正午帶兩倍水仍脫水。無救生。回程可在文學院站搭 99 公車。</div>
+  <div class="src"><span class="by">Claude · Grok</span> · <a href="https://navyblue77.pixnet.net/blog/post/49376136">navyblue77</a> · <a href="https://joshuaworldtravel.com/chaishan-alangyi/">joshuaworldtravel</a> · <a href="https://travel.setn.com/News/873453">三立旅遊</a></div>
+</div>
+
+<div class="card">
+  <h3>柴山海蝕洞與洞後的半月型沙灘</h3>
+  <div class="where">柴山大路幾乎到底，導航「海角咖啡」，停車後順欄桿到底往左沿岩石小徑下海灘；在山海宮北邊約 700 公尺。</div>
+  <p class="why">洞不大，但洞左側有個成人彎腰能過的小洞，鑽過去是一片被礁岩圍住的半月型沙灘。</p>
+  <div class="when"><b>清晨、退潮</b>；傍晚光線好但浪會變高。</div>
+  <div class="warn">從柴山大路下切海角咖啡那段極陡，機車注意煞車。漲潮淹礁，浪會打上主礁石。周圍全是尖銳珊瑚礁，摔了會割傷。下山小徑只有一人寬。</div>
+  <div class="src"><span class="by">Sai · Claude</span> · <a href="https://speedbug.cc/sizihwan-mystery-beach-sea-cave/">小蟲記事簿</a> · <a href="https://hiking.biji.co/index.php?act=info&id=17308&q=news">健行筆記</a></div>
+</div>
+
+<div class="card">
+  <h3>柴山小漁港與山海宮</h3>
+  <div class="where">柴山大路盡頭，導航設「柴山山海宮」；從龍哥土雞城旁的階梯往下。</div>
+  <p class="why">廟前廣場俯瞰整段海岸，村落石階下面藏著一個小漁港和幾家海景咖啡；在中山工作過的人記得廟前的黑輪攤。</p>
+  <div class="when"><b>傍晚</b>；初春巷弄有花。</div>
+  <div class="warn">路上獼猴多到會擋路、佔領廢棄空屋。</div>
+  <div class="src"><span class="by">Claude</span> · <a href="https://travel.yam.com/article/128904">yam 旅遊</a> · <a href="https://zoyo.tw/travel-20220618/">zoyo</a></div>
+</div>
+
+<div class="card">
+  <h3>「小自然」礁岸潮池</h3>
+  <div class="where">柴山後山往海的叉路之一，在地分「小自然、大自然、小漁港」三處，無門牌。</div>
+  <p class="why">潮池裡看得到螃蟹、寄居蟹、海草，回頭是中山大學的建築。比阿朗壹更碎、更滑。</p>
+  <div class="when"><b>退潮</b>，白天。</div>
+  <div class="warn">暴潮或颱風後別去。要拉繩；獼猴、仙人掌刺；礁岩佈滿藤壺。不是合法開發景點。</div>
+  <div class="src"><span class="by">Grok · Claude</span> · <a href="https://travel.ettoday.net/article/1061002.htm">ETtoday</a> · <a href="https://jamesdiscover.tw/blog/14771">jamesdiscover</a></div>
+</div>
+
+<div class="card">
+  <h3>蔣公行館、西灣藝廊，以及地板下的日治溫浴池</h3>
+  <div class="where">蓮海路 70 號校內，幼兒園旁。1937 年建的兩層日式木構。</div>
+  <p class="why">保留蔣介石夫婦的早餐室、書房、寢室；2024 年修復時挖出 1935 年「高雄觀光館」的圓形湧泉浴池和磁磚，比「蔣公房間打卡」有意思得多。</p>
+  <div class="when">依<b>展演與校方公告</b>。</div>
+  <div class="warn">開放時段沒有任何來源給出可核的固定時間，去前查校方公告。古蹟，別踩池。</div>
+  <div class="src"><span class="by">Grok · Claude · Sai</span> · <a href="https://udn.com/news/story/7327/7758995">聯合報</a> · <a href="https://gushan.kcg.gov.tw/cp.aspx?n=8C7507E6D2888051">鼓山區公所</a></div>
+</div>
+
+<div class="card">
+  <h3>海洋科學學院的海洋彩繪階梯「人生海海」</h3>
+  <div class="where">海科院教學大樓戶外正立面階梯。</div>
+  <p class="why">2024 年 5 月海保署署長與藝術家許殷豪共同創作，階梯正面是蔚藍漸層的海，側面畫從古早潛水帽到中山自己研發的水下載具，是校內最貼近大海的藝術地景，觀光地圖幾乎都漏。</p>
+  <div class="when"><b>白天</b>，避開上下課人潮。</div>
+  <div class="warn">仍是教學區，別擋通道。</div>
+  <div class="src"><span class="by">Grok · Kimi</span> · <a href="https://news.tvbs.com.tw/life/2523045">TVBS</a> · <a href="https://ocacnews.net/article/372155">僑務電子報</a></div>
+</div>
+
+<div class="card">
+  <h3>登山街 60 巷</h3>
+  <div class="where">鼓山區登山街 60 巷，西子灣隧道的哈瑪星端、校園外側。</div>
+  <p class="why">清代運砲、取淡水的山溝聚落，校慶健走把它和隧道、海灘綁成「三大秘境」之一。</p>
+  <div class="when"><b>平日</b>巷弄較空。</div>
+  <div class="warn">住家巷，保持安靜；階梯多。</div>
+  <div class="src"><span class="by">Grok</span> · <a href="https://news.nsysu.edu.tw/p/404-1120-177060.php?Lang=zh-tw">中山新聞</a></div>
+</div>
+
+<div class="card">
+  <h3>西子灣隧道側洞群（秘境隧道）</h3>
+  <div class="where">主隧道牆後的日治坑道網，約 400 公尺，可容 2,150 人：指揮中心、民防管制室、醫療室、物資儲備區。</div>
+  <p class="why">2017 年校慶「秘境健走」才首度帶民眾進去；近年有限時的沉浸式展演，聲音、影像、燈光還原戰時氣氛，洞內沒有手機訊號。</p>
+  <div class="when">只在<b>官方導覽場次</b>：曾以高雄幣平台線上預約、免費、每場 15 到 20 分鐘、武德殿集合。</div>
+  <div class="warn">平時上鎖管制。自行鑽洞有封閉段、落差和權屬問題，網路上的「蔣公地下指揮所」探險片不是行程。密閉恐懼者留意。</div>
+  <div class="src"><span class="by">Sai · Grok · Qwen · Kimi</span> · <a href="https://nellydyu.tw/blog/post/b7">跟著尼力</a> · <a href="https://news.nsysu.edu.tw/p/404-1120-177061.php?Lang=zh-tw">聯合晚報轉載</a> · <a href="https://tcmb.culture.tw/zh-tw/detail?indexCode=Culture_Place&id=219173">國家文化記憶庫</a> · <a href="https://engage.nsysu.edu.tw/zh/news/%E5%A3%BD%E5%B1%B1%E9%98%B2%E8%A1%9B%E5%B1%95/">中山社會實踐中心</a></div>
+</div>
+
+<div class="card">
+  <h3>清晨的獼猴、武嶺宿舍與樹梢的白鸚鵡</h3>
+  <div class="where">武嶺宿舍區階梯、文學院、藝術大樓、海科院外環。</div>
+  <p class="why">校友寫清晨五點多出宿舍，獼猴會對人吱叫、階梯上有猴糞；在校工作過的人記得樹梢有白色鸚鵡。校內獼猴多到外號「桃太郎大學」。這是日常生態，不是園區表演。</p>
+  <div class="when"><b>日出後兩小時</b>，人少，山海對看最清楚。</div>
+  <div class="warn">食物進包、別直視、母猴帶幼體時繞路。獼猴幾乎只在宿舍區和山側，很少進教學區。</div>
+  <div class="src"><span class="by">Claude · Grok</span> · <a href="https://jfsblog.com/taiwan/46987648">撰風人旅行誌</a> · <a href="https://zh.wikipedia.org/wiki/國立中山大學">維基</a> · <a href="https://www.dcard.tw/f/nsysu/p/256607732">Dcard 防猴指南</a></div>
+</div>
+
+<div class="card">
+  <h3>後山步道高處看整個西子灣</h3>
+  <div class="where">從校內後山步道往阿朗壹方向走，不走馬路。</div>
+  <p class="why">少人、安靜，從高處把整個西子灣和港口看成一張圖。</p>
+  <div class="when"><b>清晨</b>。</div>
+  <div class="warn">獼猴。</div>
+  <div class="src"><span class="by">Claude</span> · <a href="https://udn.com/news/story/12395/6860818">聯合報</a></div>
+</div>
+
+<div class="card">
+  <h3>渡輪的首班與末班甲板</h3>
+  <div class="where">鼓山輪渡站甲板。</div>
+  <p class="why">觀光客擠的是白天那五分鐘；凌晨前後的班次看得到港區的燈和進出的船，人幾乎沒有。</p>
+  <div class="when"><b>末班前後或首班</b>。</div>
+  <div class="warn">當日時刻先確認；風大甲板冷。</div>
+  <div class="src"><span class="by">Grok</span> · <a href="https://www.kkday.com/zh-tw/blog/56494/asia-taiwan-kaohsiung-cijin-onedaytrip">KKday</a></div>
+</div>
+
+<div class="card">
+  <h3>校門口堤岸的「蘿蔔坑」</h3>
+  <div class="where">校門口海岸護堤那一排石柱之間的凹槽。</div>
+  <p class="why">早期石柱間距剛好塞得下兩個人並肩看海，被學生叫「蘿蔔坑」，是無數情侶和深夜宵夜的集體記憶；當年堤邊有三家海產攤開到凌晨。校門整修後石柱改成灰白磨砂的「白蘿蔔」，空間變小，攤子沒了，但坑還在。</p>
+  <div class="when"><b>深夜到凌晨</b>，聽浪。</div>
+  <div class="warn">已不復當年熱鬧；東北季風期浪大別坐邊上。</div>
+  <div class="src"><span class="by">Kimi</span> · <a href="https://www.thec.org.tw/upload/22/2022112316500416058.pdf">高教基金會刊物（PDF）</a></div>
+</div>
+
+<div class="card">
+  <h3>北堤防綠燈塔的深夜釣客</h3>
+  <div class="where">校園內西子灣北堤防，綠燈塔一帶。</div>
+  <p class="why">過去是釣客翻欄杆的違法秘境釣點，近年港務公司有條件開放成合法垂釣區；深夜堤防上釣客聚集，綠燈塔獨自發亮，遠處是船燈，只有夜貓子知道的畫面。</p>
+  <div class="when"><b>深夜到凌晨</b>，看潮汐。</div>
+  <div class="warn">有條件開放，守港務公司規定；夜間視線差，海風強。</div>
+  <div class="src"><span class="by">Kimi</span> · <a href="https://www.nsysu.edu.tw/p/404-1000-43337.php?Lang=zh-tw">中山大學公告</a> · <a href="https://gotoformosa.com/entry/4131374">gotoformosa</a></div>
+</div>
+
+<div class="card">
+  <h3>鳳凰花季</h3>
+  <div class="where">校園各處，尤其中華一路與校園步道兩旁。</div>
+  <p class="why">五六月鳳凰木開成一片焰紅，襯著高雄的藍天，是畢業季的背景；跟哨船頭山碉堡那條同一個花季。</p>
+  <div class="when"><b>五到六月</b>，越熱越開。</div>
+  <div class="warn">花期短；防曬補水。</div>
+  <div class="src"><span class="by">Kimi</span> · <a href="https://www.nsysu.edu.tw/p/404-1000-117298.php?Lang=zh-tw">中山大學新聞</a></div>
+</div>
+
+<div class="card">
+  <h3>哨船頭山的二戰碉堡（秘林步道） <span class="tag unv">未核</span></h3>
+  <div class="where">哨船頭社區後山，由里長推動的秘林步道往上。</div>
+  <p class="why">站在二戰遺留的機槍碉堡上，五六月被鳳凰花圍住俯瞰海港。</p>
+  <div class="when"><b>五到六月</b>鳳凰花季。</div>
+  <div class="warn">來源只有一支臉書影片，其他席位沒查到；步道青苔落葉多，長袖防蚊蛇。</div>
+  <div class="src"><span class="by">Qwen</span> · <a href="https://www.facebook.com/ch4TKTV/videos/1991924648084017/">臉書影片</a></div>
+</div>
+
+<div class="card">
+  <h3>文學院後方礫灘的「月光海」 <span class="tag unv">未核</span></h3>
+  <div class="where">文學院機車停車場旁下切樹林，被珊瑚礁岩和樹林圍住的隱密礫灘。</div>
+  <p class="why">無光害的海面上看月光。地點可能就是上面那片秘境沙灘的夜間版本。</p>
+  <div class="when"><b>農曆十五</b>月圓夜或清晨。</div>
+  <div class="warn">入口無照明，結伴、防蚊、注意潮汐和蛇。Qwen 引的是校方頁面，我沒能打開核對。</div>
+  <div class="src"><span class="by">Qwen</span> · <a href="https://www.nsysu.edu.tw/p/404-1000-14226.php">中山大學（待核）</a></div>
+</div>
+
+</div>
+
+<h2 id="far">北柴山與旗津對岸</h2>
+<p class="sub">超出西子灣一帶，但高雄人說「柴山」多半指北段；旗津則是從對岸看回中山大學的視角。</p>
+<div class="grid">
+
+<div class="card">
+  <h3>泰國谷、一簾幽夢、天雨洞 <span class="tag far">北柴山</span></h3>
+  <div class="where">龍泉寺登山口起登 50 到 60 分鐘，小坪頂步道與山棕步道交界一帶。</div>
+  <p class="why">石灰岩裂谷像泰國的喀斯特地貌；錦屏藤氣根垂成天然珠簾（在地舊名「米粉嶺」）；天雨洞的洞頂即使沒下雨也持續滴水。</p>
+  <div class="when"><b>清晨</b>；錦屏藤 <b>三到四月</b>開花。有人週六下午走一小時沒遇到人。</div>
+  <div class="warn">天雨洞全黑濕滑，要頭燈、手腳並用，禁碰鐘乳石。狹窄段有落石風險，別偏離主步道。獼猴。</div>
+  <div class="src"><span class="by">Claude · Qwen</span> · <a href="https://julia1128.pixnet.net/blog/post/47256585">julia1128</a> · <a href="https://valerieblog.tw/shoushan-cave/">valerieblog</a> · <a href="https://gofunit.com/%E9%AB%98%E9%9B%84%E7%A7%98%E5%A2%83%E6%99%AF%E9%BB%9E/">gofunit</a></div>
+</div>
+
+<div class="card">
+  <h3>龍巖冽泉 <span class="tag far">北柴山</span></h3>
+  <div class="where">柴山北側登山口，龍泉寺旁。</div>
+  <p class="why">龍目井的泉水在巨石間奔流，大雨後呈「噴雪翻花」，是雨季才出現的景。</p>
+  <div class="when"><b>夏季或颱風過後</b>的豐水期。</div>
+  <div class="warn">石階青苔極滑；水清但別生飲。</div>
+  <div class="src"><span class="by">Qwen（Claude 也記得，未另查）</span> · <a href="https://khh.travel/zh-tw/event/news/4496/">高雄旅遊網</a></div>
+</div>
+
+<div class="card">
+  <h3>柴山西岸泥岩露頭 <span class="tag far">柴山西海岸</span></h3>
+  <div class="where">柴山西海岸，古亭坑層泥岩延伸到這裡。</div>
+  <p class="why">同一座山，珊瑚礁旁邊突然變成月世界的惡地紋理，配海蝕和寄居蟹。</p>
+  <div class="when"><b>斜陽</b>。</div>
+  <div class="warn">無護欄，潮汐會切斷後路；雨後別走泥坡。</div>
+  <div class="src"><span class="by">Grok</span> · <a href="https://www.seasbay.com.tw/spot/">seasbay</a></div>
+</div>
+
+<div class="card">
+  <h3>旗後燈塔與旗後砲台 <span class="tag far">旗津</span></h3>
+  <div class="where">旗津區旗下巷 34 號，旗後山頂；砲台在燈塔旁。</div>
+  <p class="why">白色八角燈塔是從對岸回望西子灣與中山大學的視角；光緒年間「威震天南」砲台是目字形格局，入口磚牆上罕見的「囍」字。</p>
+  <div class="when"><b>白天</b>，排成半日遊。</div>
+  <div class="warn">舊資料寫 09:00 到 16:00、週一休，近年有夜間開放的說法，出發前查。要先渡輪再爬坡，夏天無遮蔭。</div>
+  <div class="src"><span class="by">Grok · Qwen</span> · <a href="https://kcginfo.kcg.gov.tw/Publish_Content.aspx?n=114AAE178CD95D4C&s=9C7DC909B4C3A855">高雄市府</a> · <a href="https://www.seasbay.com.tw/spot/21/">seasbay</a></div>
+</div>
+
+<div class="card">
+  <h3>旗津星空隧道 <span class="tag far">旗津</span></h3>
+  <div class="where">旗津三路，旗後山腰，連接燈塔與海側。</div>
+  <p class="why">舊軍事防空洞改的涼隧道，內部投射十二星座與海洋圖騰。</p>
+  <div class="when"><b>午後到傍晚</b>。</div>
+  <div class="warn">隧道內禁騎車，牽車或步行。</div>
+  <div class="src"><span class="by">Qwen</span> · <a href="https://bunnyann.tw/qijin-tunnel/">bunnyann</a></div>
+</div>
+
+<div class="card">
+  <h3>旗津高字塔 <span class="tag far">旗津最南</span></h3>
+  <div class="where">旗津三路盡頭附近海岸。</div>
+  <p class="why">1967 年建的船舶信號塔，一個巨大的灰色混凝土「高」字立在海邊。</p>
+  <div class="when"><b>午後到夕陽</b>的光。</div>
+  <div class="warn">偏遠，無廁所無商家，風極大。</div>
+  <div class="src"><span class="by">Qwen</span> · <a href="https://travel.yam.com/article/134861">yam 旅遊</a></div>
+</div>
+
+</div>
+
+<h2 id="rules">出發前五件事</h2>
+<div class="note">
+  <ul class="plain">
+    <li><strong>校園管制。</strong>外人 22:00 到翌日 04:30 管制進入；外車有門禁時段（一個來源寫約 06:00 到 24:00）。訪客走前門，壽山側哨口通常要校內證。</li>
+    <li><strong>獼猴守則。</strong>塑膠袋不拿在手上、食物進包、別直視、別餵。牠們會翻機車車廂。</li>
+    <li><strong>潮汐表。</strong>阿朗壹、海蝕洞、小自然、秘境沙灘全部看退潮；漲潮會淹礁、切後路。</li>
+    <li><strong>開放時間互相打架。</strong>領事館、浴場、燈塔、渡輪末班，不同來源寫法不同，這頁把衝突寫出來不替你挑；出發前查官網或打電話。</li>
+    <li><strong>秘境隧道只走官方場次。</strong>平時上鎖，自己鑽洞不是勇敢是麻煩。</li>
+  </ul>
+</div>
+
+<h2 id="method">怎麼整理的</h2>
+<div class="note">
+  <p>2026 年 9 月 3 日，Nova team 的教練 Sai 出題給四個網頁版顧問（Claude Fable、Kimi K3、Grok、Qwen 3.8）各自上網找，每條要附網址並標「查到的」還是「記得的」；Sai 自己再搜一輪交叉核對。卡片底部的名字是誰找到的。</p>
+  <p>Kimi 補了三條別席沒有的（蘿蔔坑、綠燈塔釣客、鳳凰花季）並解掉隧道通行方式的衝突。標「未核」的兩條只有單一來源，或引的頁面打不開；Qwen 說哨船頭公園猴群兇猛，其他來源都沒有，也標在卡片裡。所有「做得到」的地方都寫了「做不到會怎樣」。</p>
+</div>
+
+<footer>
+  <p>整理：Sai（Nova team）。頁面自帶字體以外沒有外部資源。錯誤與更新請直接改這一頁。</p>
+</footer>
+</main>
+</body>
+</html>
