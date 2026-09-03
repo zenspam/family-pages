@@ -1,4 +1,0 @@
-{
-  "rewrites": [{ "source": "/", "destination": "/kaohsiung-nsysu/index.html" }],
-  "cleanUrls": true
-}
