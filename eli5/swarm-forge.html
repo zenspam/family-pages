@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>紙條工廠</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap">
+<style>
+:root{--paper:#FBFAF6;--ink:#1E1E1E;--muted:#6B6B6B;--accent:#D9541E;--soft:#F1EDE3;--ok:#2E7D4F;--bad:#B3261E}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#15171A;--ink:#EDEDE8;--muted:#A3A39B;--accent:#FF7A45;--soft:#22262B;--ok:#7FD09A;--bad:#FF8A80}}
+:root[data-theme="dark"]{--paper:#15171A;--ink:#EDEDE8;--muted:#A3A39B;--accent:#FF7A45;--soft:#22262B;--ok:#7FD09A;--bad:#FF8A80}
+*{box-sizing:border-box}html{color-scheme:light dark}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans TC","PingFang TC",system-ui,sans-serif;font-size:20px;line-height:1.6}
+.wrap{max-width:720px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:44px;font-weight:900;margin:0 0 6px;line-height:1.15}
+.sub{color:var(--muted);margin:0 0 40px;font-size:18px}
+section{margin:0 0 56px}
+h2{font-size:28px;font-weight:900;margin:0 0 6px}
+p{margin:0 0 14px;max-width:32em}
+figure{margin:0;background:var(--soft);border-radius:14px;padding:18px 14px;overflow-x:auto}
+svg{display:block;width:100%;height:auto;color:var(--ink);font-family:inherit}
+.big{font-size:22px;font-weight:700}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.ac{color:var(--accent)}
+.last{border-top:3px solid var(--ink);padding-top:22px;font-size:22px;font-weight:700;max-width:30em}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>紙條工廠</h1>
+<p class="sub">swarm-forge 在做什麼，五張圖講完。</p>
+
+<section>
+<h2>1. 六個工人，六間房</h2>
+<p>每個 AI 有自己的一間房，房裡是一份自己的程式碼副本。誰也碰不到別人房裡的東西。</p>
+<figure><svg viewBox="0 0 720 200" role="img" aria-label="六間並排的房間，各有一個工人">
+<g fill="none" stroke="currentColor" stroke-width="3">
+<rect x="10" y="40" width="100" height="120" rx="8"/><rect x="130" y="40" width="100" height="120" rx="8"/><rect x="250" y="40" width="100" height="120" rx="8"/><rect x="370" y="40" width="100" height="120" rx="8"/><rect x="490" y="40" width="100" height="120" rx="8"/><rect x="610" y="40" width="100" height="120" rx="8"/>
+</g>
+<g fill="currentColor">
+<circle cx="60" cy="90" r="14"/><rect x="42" y="108" width="36" height="34" rx="8"/>
+<circle cx="180" cy="90" r="14"/><rect x="162" y="108" width="36" height="34" rx="8"/>
+<circle cx="300" cy="90" r="14"/><rect x="282" y="108" width="36" height="34" rx="8"/>
+<circle cx="420" cy="90" r="14"/><rect x="402" y="108" width="36" height="34" rx="8"/>
+<circle cx="540" cy="90" r="14"/><rect x="522" y="108" width="36" height="34" rx="8"/>
+<circle cx="660" cy="90" r="14"/><rect x="642" y="108" width="36" height="34" rx="8"/>
+</g>
+<g font-size="16" text-anchor="middle" fill="currentColor">
+<text x="60" y="30">寫規格</text><text x="180" y="30">寫程式</text><text x="300" y="30">清理</text><text x="420" y="30">看結構</text><text x="540" y="30">加固</text><text x="660" y="30">測試</text>
+</g>
+<g font-size="14" text-anchor="middle" fill="currentColor" opacity=".7">
+<text x="60" y="185">自己的副本</text><text x="180" y="185">自己的副本</text><text x="300" y="185">自己的副本</text><text x="420" y="185">自己的副本</text><text x="540" y="185">自己的副本</text><text x="660" y="185">自己的副本</text>
+</g>
+</svg></figure>
+</section>
+
+<section>
+<h2>2. 工作靠紙條傳，不靠喊</h2>
+<p>做完一段，寫一張紙條丟進下一個人的信箱。紙條只准寫四格。<span class="ac">版本號那格由系統蓋章，工人不准自己填。</span></p>
+<figure><svg viewBox="0 0 720 300" role="img" aria-label="一張四格紙條，右下角有系統蓋的章">
+<g fill="none" stroke="currentColor" stroke-width="3">
+<rect x="120" y="20" width="480" height="260" rx="10"/>
+<line x1="120" y1="80" x2="600" y2="80"/><line x1="120" y1="130" x2="600" y2="130"/><line x1="120" y1="180" x2="600" y2="180"/><line x1="120" y1="230" x2="600" y2="230"/>
+</g>
+<g font-size="22" fill="currentColor">
+<text x="150" y="60">類型：交件</text>
+<text x="150" y="112">給誰：清理</text>
+<text x="150" y="162">急不急：普通</text>
+<text x="150" y="212">要做什麼：把登入頁整理乾淨</text>
+<text x="150" y="262" opacity=".55">版本號：</text>
+</g>
+<g transform="translate(470 238) rotate(-8)">
+<rect x="0" y="0" width="120" height="40" rx="6" fill="none" stroke="var(--accent)" stroke-width="4"/>
+<text x="60" y="27" font-size="18" font-weight="700" text-anchor="middle" fill="var(--accent)">系統蓋章</text>
+</g>
+<g font-size="16" fill="currentColor" opacity=".7">
+<text x="20" y="150" transform="rotate(-90 20 150)" text-anchor="middle">工人只能寫這四格</text>
+</g>
+</svg></figure>
+</section>
+
+<section>
+<h2>3. 紙條在哪一格，就是進度</h2>
+<p>信箱有三格。不用問工人「做到哪」，看紙條在哪一格就知道。</p>
+<figure><svg viewBox="0 0 720 220" role="img" aria-label="三格信箱：新的、做一半、做完">
+<g fill="none" stroke="currentColor" stroke-width="3">
+<rect x="30" y="40" width="200" height="150" rx="10"/><rect x="260" y="40" width="200" height="150" rx="10"/><rect x="490" y="40" width="200" height="150" rx="10"/>
+</g>
+<g font-size="24" font-weight="700" text-anchor="middle" fill="currentColor">
+<text x="130" y="30">新的</text><text x="360" y="30">做一半</text><text x="590" y="30">做完</text>
+</g>
+<g fill="none" stroke="currentColor" stroke-width="2.5">
+<rect x="70" y="80" width="60" height="80" rx="4"/><rect x="100" y="95" width="60" height="80" rx="4"/>
+<rect x="330" y="88" width="60" height="80" rx="4" stroke="var(--accent)" stroke-width="4"/>
+<rect x="520" y="80" width="60" height="80" rx="4" opacity=".5"/><rect x="560" y="80" width="60" height="80" rx="4" opacity=".5"/><rect x="600" y="80" width="60" height="80" rx="4" opacity=".5"/>
+</g>
+<text x="360" y="210" font-size="16" text-anchor="middle" fill="var(--accent)">一次只准一張在這格</text>
+</svg></figure>
+</section>
+
+<section>
+<h2>4. 怎樣算「完成」</h2>
+<p>最後一個工人把紙條寄給全部人，系統就標「完成」。<span class="bad">沒有外面的人驗貨。</span></p>
+<figure><svg viewBox="0 0 720 240" role="img" aria-label="最後一個工人向其他五人寄紙條，旁邊沒有驗貨員">
+<g fill="currentColor"><circle cx="110" cy="110" r="22"/><rect x="82" y="138" width="56" height="50" rx="10"/></g>
+<text x="110" y="70" font-size="18" text-anchor="middle" fill="currentColor">測試的工人</text>
+<g fill="none" stroke="currentColor" stroke-width="3">
+<path d="M150 120 C 260 40, 320 40, 400 60"/><path d="M150 125 C 260 90, 320 90, 400 105"/><path d="M150 130 C 260 140, 320 140, 400 150"/><path d="M150 135 C 260 190, 320 190, 400 195"/><path d="M150 140 C 250 230, 320 230, 400 235"/>
+</g>
+<g fill="none" stroke="currentColor" stroke-width="2.5">
+<rect x="405" y="45" width="40" height="30" rx="3"/><rect x="405" y="90" width="40" height="30" rx="3"/><rect x="405" y="135" width="40" height="30" rx="3"/><rect x="405" y="180" width="40" height="30" rx="3"/><rect x="405" y="220" width="40" height="18" rx="3"/>
+</g>
+<g transform="translate(560 100)">
+<rect x="0" y="0" width="140" height="70" rx="8" fill="none" stroke="var(--bad)" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="70" y="30" font-size="18" text-anchor="middle" fill="var(--bad)">驗貨員</text>
+<text x="70" y="55" font-size="18" text-anchor="middle" fill="var(--bad)">（沒有這個人）</text>
+</g>
+<text x="480" y="30" font-size="16" fill="currentColor" opacity=".7">寄到全員 ＝ 完成</text>
+</svg></figure>
+</section>
+
+<section>
+<h2>5. 跟我們的關係</h2>
+<p>我們<span class="ok">有驗貨員</span>，這點比它強。但我們的工人交的是一個資料夾，交完還能改。它的「系統蓋章」剛好補這個洞。</p>
+<figure><svg viewBox="0 0 720 300" role="img" aria-label="左邊：資料夾交件後還能改，驗貨員驗到的東西會變；右邊：交件時蓋章，驗貨員只認章">
+<g font-size="20" font-weight="700" text-anchor="middle" fill="currentColor">
+<text x="180" y="30">現在</text><text x="540" y="30">改完</text>
+</g>
+<g fill="none" stroke="currentColor" stroke-width="3">
+<path d="M90 70 h70 l12 14 h98 v120 h-180 z"/>
+<path d="M450 70 h70 l12 14 h98 v120 h-180 z"/>
+</g>
+<text x="180" y="150" font-size="18" text-anchor="middle" fill="currentColor">資料夾</text>
+<text x="540" y="150" font-size="18" text-anchor="middle" fill="currentColor">資料夾</text>
+<g fill="var(--bad)"><path d="M120 225 l40 -20 l40 20 z"/><text x="180" y="262" font-size="16" text-anchor="middle">交完還能改</text></g>
+<g transform="translate(560 190) rotate(-10)">
+<rect x="0" y="0" width="110" height="38" rx="6" fill="none" stroke="var(--accent)" stroke-width="4"/>
+<text x="55" y="26" font-size="17" font-weight="700" text-anchor="middle" fill="var(--accent)">蓋章</text>
+</g>
+<text x="540" y="262" font-size="16" text-anchor="middle" fill="var(--ok)">章蓋了就改不了</text>
+<g fill="currentColor"><circle cx="360" cy="130" r="18"/><rect x="338" y="152" width="44" height="40" rx="8"/></g>
+<text x="360" y="100" font-size="16" text-anchor="middle" fill="currentColor">驗貨員</text>
+<text x="360" y="220" font-size="16" text-anchor="middle" fill="var(--ok)">只認章</text>
+</svg></figure>
+</section>
+
+<p class="last">一句話：它的紙條制度可以偷，它的「自己說完成」不能學。</p>
+</div>
+</body>
+</html>
