@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spark 面對面</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#F4F5F2;--ink:#16191B;--muted:#65707A;--rule:#D6DBDF;--accent:#8A3B12;--chip:#F3E4DA;--chip-ink:#6E2E0C;--ok:#1E6B4F;--ok-bg:#E1EFE8;--warn:#8A5A12;--warn-bg:#F6ECD9;--card:#FFFFFF;--sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#101314;--ink:#E7EAEA;--muted:#9AA5AB;--rule:#2A3237;--accent:#E8A07A;--chip:#3A2416;--chip-ink:#F2C6AD;--ok:#7CCBA6;--ok-bg:#17342A;--warn:#E3B565;--warn-bg:#3A2C12;--card:#171B1D}}
+:root[data-theme="dark"]{--paper:#101314;--ink:#E7EAEA;--muted:#9AA5AB;--rule:#2A3237;--accent:#E8A07A;--chip:#3A2416;--chip-ink:#F2C6AD;--ok:#7CCBA6;--ok-bg:#17342A;--warn:#E3B565;--warn-bg:#3A2C12;--card:#171B1D}
+*{box-sizing:border-box}html{color-scheme:light dark}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.65}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.wrap{max-width:740px;margin:0 auto;padding:28px 20px 64px}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:32px;font-weight:700;margin:6px 0 8px;line-height:1.2}
+.lead{font-size:18px;margin:0 0 24px;max-width:34em}
+h2{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:34px 0 12px;display:flex;align-items:center;gap:12px}
+h2::after{content:"";flex:1;height:1px;background:var(--rule)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:600px}
+th{text-align:left;font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.06em;color:var(--muted);padding:0 10px 8px 0;border-bottom:1px solid var(--rule)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-family:var(--mono);font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--chip-ink);margin-left:4px;white-space:nowrap}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.card{background:var(--card);border:1px solid var(--rule);padding:16px 18px;margin:0 0 12px}
+.card h3{margin:0 0 6px;font-size:17px}.card p{margin:0 0 6px}
+.pick{border-left:4px solid var(--accent)}
+.method{margin-top:30px;font-size:14px;color:var(--muted);line-height:1.6}
+@media (max-width:480px){body{font-size:16px}h1{font-size:27px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">2026-09-05 ・ 台北 ・ 兩輪六席（軟體一輪、硬體一輪）＋我逐條核</div>
+<h1>Spark 面對面</h1>
+<p class="lead">有人在玩，而且玩得很具體。桌上那個「臉」有現成商品，Spark 上量過延遲的軟體也有三個。這一頁分三層：買什麼當臉、裝什麼當腦、先走哪條。</p>
+
+<h2>一、桌上的臉：三種形體</h2>
+<div class="tablewrap">
+<table>
+<thead><tr><th>形體</th><th>是什麼</th><th>接 Spark</th><th>價</th><th>核過</th></tr></thead>
+<tbody>
+<tr><td><b>Reachy Mini Lite</b></td><td>Hugging Face 與 Pollen 的開源桌上機器人：28 公分高，廣角鏡頭、4 麥克風陣列、5 W 喇叭、6 軸會動的頭、2 根天線；Python 全開放，DIY 組裝</td><td>設計前提就是「腦在外面那台 Linux 電腦」，USB-C 資料線加獨立電源接 Spark<span class="chip warn">aarch64 SDK 未實測</span></td><td class="n">€350（Pollen 官方商店），下單後最長 90 天，運費關稅另計，台灣無代理</td><td><span class="chip ok">官方頁</span></td></tr>
+<tr><td>Reachy Mini Wireless</td><td>同上，加內建 Pi、電池、WiFi、加速度計</td><td>網路接 Spark，Pi 只當身體控制器</td><td class="n">US$449–499</td><td><span class="chip ok">官方頁</span></td></tr>
+<tr><td>Vector 2.0 加 wire-pod</td><td>舊款桌上寵物機器人，HD 鏡頭、麥克風陣列、喇叭、人臉辨識；wire-pod 是免月費的自架伺服器，可跑在 Spark 上</td><td>網路，Vector 只當身體；相機解析度低、語音只到指令層</td><td class="n">二手約 US$300–400</td><td>席位報，未核</td></tr>
+<tr><td>單品組合</td><td>會自動追臉的雲台鏡頭（OBSBOT Tiny 2 或 Insta360 Link 2）加會議音箱（Jabra Speak2 55）</td><td>USB-C 直插</td><td class="n">約 NT$15,000–17,000</td><td>雲台鏡頭價未核，音箱見<a href="https://zenspam.github.io/family-pages/gear/dgx-spark-av.html">昨天那頁</a></td></tr>
+<tr><td>自組</td><td>Pi 5 或 ESP32-S3 桌寵當感測器節點，音訊影像丟給 Spark；或 Jetson Orin Nano 加 ReSpeaker 陣列</td><td>網路</td><td class="n">NT$1,500–20,000</td><td>geek 路，成品感差</td></tr>
+</tbody>
+</table>
+</div>
+<div class="card pick">
+<h3>我的判斷</h3>
+<p>要「一個會看著你講話的東西」就是 Reachy Mini Lite，別的都是零件。它自帶四麥陣列，若要精準的聲源方向去驅動轉頭，一席建議另配下面那顆 ReSpeaker 把方向角餵給它。六席裡三席選單品組合，理由是馬達會有雜音、機器人形體對推理沒幫助，這是對的；但你問的是形體，形體只有它。先用昨天那頁的鏡頭加音箱把軟體跑通，Reachy 到貨再換臉，軟體不用重寫。</p>
+</div>
+
+<h2>二、聲學前端：一個零件值得認識</h2>
+<div class="card">
+<h3>ReSpeaker Mic Array（v2.0，或新款 XVF3800 USB）</h3>
+<p>四麥克風環形陣列，XMOS XVF-3000 晶片（新款 XVF3800 同架構、遠場 5 公尺、能直接外掛 5 W 喇叭當一體機）在硬體裡做回音消除、波束、聲源方向、噪音抑制；USB Audio Class 1.0，Linux 免驅動，方向角度也讀得到。約 NT$2,000 級。它沒有喇叭，要配一顆 USB 或 HDMI 喇叭，且回音消除要把喇叭訊號回接給它才有效，這步比買會議音箱麻煩。<span class="chip ok">Seeed wiki 核過</span></p>
+</div>
+
+<h2>三、腦：三條路，兩條在 Spark 上量過</h2>
+<div class="tablewrap">
+<table>
+<thead><tr><th>路</th><th>怎麼組</th><th>Spark 上的數字</th><th>看得到人</th><th>能插話</th></tr></thead>
+<tbody>
+<tr><td><b>級聯</b></td><td>語音辨識 → 視覺模型抽幀 → 語言模型 → 語音合成，用 Pipecat 或 LiveKit 串</td><td class="n">spark-realtime-chatbot：語音 320 ms、視訊 850 ms（Qwen3-VL＋Kokoro＋DeepFace）<span class="chip ok">清單核過</span></td><td>抽幀看</td><td>靠外層偵測</td></tr>
+<tr><td><b>一個模型看聽說</b></td><td>MiniCPM-o 4.5（9B：SigLIP2＋Whisper＋CosyVoice2＋Qwen3-8B），輸入輸出互不阻塞</td><td class="n">論文第 12 表：Spark 上 INT4 即時因子 0.20、11 GB；FP16 0.46、19 GB<span class="chip ok">論文核過</span></td><td>連續看</td><td>模型自己決定何時開口</td></tr>
+<tr><td><b>純語音全雙工</b></td><td>NVIDIA PersonaPlex（Moshi 架構＋角色聲線），有人做了 Spark 的 FP8 版</td><td class="n">每幀約 74 ms，全在機上<span class="chip ok">repo 核過</span></td><td>不看</td><td>原生，插話成功率最高</td></tr>
+</tbody>
+</table>
+</div>
+<p style="font-size:14px;color:var(--muted);margin-top:8px">Qwen3-Omni 30B-A3B 也裝得下（128 GB 是它的主場），但沒有原生全雙工，Spark 上沒有對話延遲數字。商業的 GPT-Live、Gemini Live、Grok Voice 都是同一件事跑在雲端，不是這台機器的用途。</p>
+
+<div class="card pick">
+<h3>先走哪條</h3>
+<p>六席分兩派：三席先做級聯（唯一在 Spark 上量過 320 與 850 毫秒的路，每段可換，中文有解），兩席先做 MiniCPM-o 4.5（唯一寫明視加音全雙工、論文直接給 Spark 數字的模型）。我的判斷：<b>兩條同時開，各給一週</b>。級聯先讓桌上的東西動起來；MiniCPM-o 用 llama.cpp-omni INT4 跑同一組鏡頭音箱，量三個數：首個聲音幾毫秒、你插話它停不停、中文掉不掉字。</p>
+<p>什麼會翻案：MiniCPM-o 首音低於 500 毫秒且中文不掉字，就換它當主線，因為「模型自己決定何時開口」是級聯永遠補不上的自然度；反過來，aarch64 跑不穩或端到端持續超過一秒，就級聯定案、PersonaPlex 當純語音備援。</p>
+</div>
+
+<h2>四、延遲住在哪</h2>
+<div class="card">
+<p>USB 音訊加鏡頭不到 50 毫秒，不是瓶頸。真正決定像不像人的是：判斷你講完了沒（300 到 700 毫秒，最大一段）、語音轉文字、模型第一個字、語音合成第一塊。影像獨立跑、只當上下文，不要串進語音的關鍵路徑。這一點六席一致。</p>
+</div>
+
+<div class="method">
+<p>怎麼做的：軟體一輪、硬體一輪，各六席同一題，全部在時限內作答。表裡標「核過」的是我親自開過官方頁、論文表或 repo 確認的；沒標的是席位報價，會浮動。Reachy Mini 的價格三席各講一個（US$299、399、台幣一萬二到三萬五），我用 Pollen 官方商店頁的 €350，麥克風數也以商店頁的四麥為準。整理於 2026-09-05 13:5x 台北。</p>
+</div>
+</div>
+</body>
+</html>
