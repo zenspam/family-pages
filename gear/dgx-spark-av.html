@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spark 桌上對話台</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#F6F5F1;--ink:#17191C;--muted:#66707A;--rule:#D8DCE0;--accent:#1E6B4F;--chip:#E3F0EA;--chip-ink:#155A41;--warn:#8A5A12;--warn-bg:#F6ECD9;--card:#FFFFFF;--sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#101314;--ink:#E7EAEA;--muted:#9AA5AB;--rule:#2A3237;--accent:#7CCBA6;--chip:#17342A;--chip-ink:#BFE8D3;--warn:#E3B565;--warn-bg:#3A2C12;--card:#171B1D}}
+:root[data-theme="dark"]{--paper:#101314;--ink:#E7EAEA;--muted:#9AA5AB;--rule:#2A3237;--accent:#7CCBA6;--chip:#17342A;--chip-ink:#BFE8D3;--warn:#E3B565;--warn-bg:#3A2C12;--card:#171B1D}
+*{box-sizing:border-box}html{color-scheme:light dark}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.65}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 64px}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:32px;font-weight:700;margin:6px 0 8px;line-height:1.2;text-wrap:balance}
+.lead{font-size:18px;margin:0 0 26px;max-width:34em}
+h2{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:34px 0 12px;display:flex;align-items:center;gap:12px}
+h2::after{content:"";flex:1;height:1px;background:var(--rule)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:560px}
+th{text-align:left;font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.06em;color:var(--muted);padding:0 10px 8px 0;border-bottom:1px solid var(--rule)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+td.role{color:var(--muted);white-space:nowrap}
+tr.sum td{font-weight:700;border-bottom:2px solid var(--ink)}
+.chip{display:inline-block;font-family:var(--mono);font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--chip-ink);margin-left:6px}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.card{background:var(--card);border:1px solid var(--rule);padding:16px 18px;margin:0 0 12px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{margin:0 0 6px}
+ul{padding-left:1.2em;margin:0}li{margin:4px 0}
+.method{margin-top:30px;font-size:14px;color:var(--muted);line-height:1.6}
+@media (max-width:480px){body{font-size:16px}h1{font-size:27px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">2026-09-05 ・ 台北 ・ 六席調研＋逐條驗連結</div>
+<h1>Spark 桌上對話台</h1>
+<p class="lead">DGX Spark 要跟人面對面講話，買三樣：一顆 UVC 鏡頭、一台會議音箱（麥克風加喇叭一體，硬體回音消除）、必要時一條 USB-A 轉 C。全部 Linux 免驅動。價格只列我在 PChome 頁面親眼核過的。</p>
+
+<h2>先看價格</h2>
+<div class="tablewrap">
+<table>
+<thead><tr><th>檔</th><th>角色</th><th>型號</th><th>核過的價</th><th>備註</th></tr></thead>
+<tbody>
+<tr><td>夠用</td><td class="role">鏡頭</td><td><a href="https://24h.pchome.com.tw/prod/DSBC78-A900GAWW4">Logitech C920R HD PRO</a></td><td class="n">$990</td><td>1080p30、78°、UVC；USB-A 頭</td></tr>
+<tr><td>夠用</td><td class="role">音箱</td><td><a href="https://24h.pchome.com.tw/prod/DYAQAR-A900HGLQ3">Jabra Speak 510 MS</a></td><td class="n">$6,380</td><td>硬體回音消除、收音 1.5 m、USB 加藍牙；USB-A 線</td></tr>
+<tr><td>夠用</td><td class="role">線</td><td>USB-A 母轉 USB-C 公 ×2</td><td class="n">約 $200–600</td><td>Spark 只有 USB-C</td></tr>
+<tr class="sum"><td></td><td></td><td>夠用合計</td><td class="n">約 $7,600–8,000</td><td></td></tr>
+<tr><td>好</td><td class="role">鏡頭</td><td><a href="https://24h.pchome.com.tw/prod/DSAR2U-A900DZXDM">Logitech C920e</a></td><td class="n">$3,290</td><td>商用版 C920，78° 固定視角、低光穩；USB-A 頭</td></tr>
+<tr><td>好</td><td class="role">音箱</td><td><a href="https://24h.pchome.com.tw/prod/DYBF08-A900G96MN">Jabra Speak2 55</a></td><td class="n">$7,390</td><td>全雙工（你插話 AI 會停）、USB-C 直插、附藍牙 dongle</td></tr>
+<tr class="sum"><td></td><td></td><td>好合計</td><td class="n">約 $10,900</td><td>再加一條轉接線</td></tr>
+<tr><td>好，再上</td><td class="role">音箱</td><td><a href="https://www.momoshop.com.tw/product/14022552">Jabra Speak2 75（momo 官方直營）</a></td><td class="n">頁面為準<span class="chip warn">價未核</span></td><td>4 麥、超寬頻、收音 2.5 m；席位報價一萬五到一萬六</td></tr>
+</tbody>
+</table>
+</div>
+<p style="margin-top:10px;font-size:14px;color:var(--muted)">六席另提的 Brio 300／Brio 500／MX Brio／Brio 4K／Anker PowerConf 系列，商品連結都打不開或指到別的東西，沒放進表。要買再各自到 <a href="https://24h.pchome.com.tw/store/DSAR2U">PChome 羅技視訊館</a> 找。MeetUp 五萬八，不是這個用途的東西。</p>
+
+<h2>Spark 這一側</h2>
+<div class="card">
+<h3>四個 USB-C，能用的三個</h3>
+<p>最左邊那個是 240 W 供電入口，不要插週邊。其餘三個資料埠約 20 Gbps，鏡頭一個、音箱一個、直插就好，不必 hub。真要 hub，選自帶電源的。</p>
+<p><span class="chip warn">沒人查到</span> 每個資料埠能供多少電，NVIDIA 沒寫。會吃 5V/2A 的音箱（Anker PowerConf S330 那類）別買；Jabra 有電池不受影響。</p>
+</div>
+<div class="card">
+<h3>Linux 免驅動的條件</h3>
+<p>鏡頭要 UVC，音箱要 USB Audio Class。Ubuntu 24.04 核心內建 uvcvideo 和 snd-usb-audio，aarch64 一樣有。羅技和 Jabra 的按鍵、藍牙雙模、AI 取景這些靠廠商軟體的功能在 Linux 沒有，但音訊和影像本體會通。</p>
+<p>DGX OS 偏伺服器導向，可能沒裝聲音服務。先裝再插：</p>
+<pre style="margin:6px 0 0;font-family:var(--mono);font-size:14px;overflow-x:auto">sudo apt install pipewire pipewire-audio wireplumber v4l-utils alsa-utils
+arecord -l ; v4l2-ctl --list-devices</pre>
+</div>
+
+<h2>面對面的實務</h2>
+<div class="card">
+<h3>回音消除靠音箱，不靠系統</h3>
+<p>會議音箱在自己的晶片裡拿喇叭輸出當參考消回音，送進 Linux 的已經是乾淨聲音。六席一致。分開買麥克風加喇叭就得靠 PipeWire 的軟體回音消除，對延遲不穩的 USB 路徑很敏感，調不好會自聽自答。</p>
+</div>
+<div class="card">
+<h3>麥克風陣列：一公尺內不是重點</h3>
+<p>三席說 60 到 100 公分單顆全指向就夠，陣列是給兩三公尺會議室的；兩席說 Spark 風扇和鍵盤聲會讓四麥有感。分歧留著。花錢順位：全雙工先，回音消除品質次之，陣列最後。</p>
+</div>
+<div class="card">
+<h3>鏡頭：視角 78 到 90 度，低光比 4K 重要</h3>
+<p>這個距離要看到頭肩和雙手，78 到 90 度剛好。晚上室內是常態，感光元件比解析度值錢；一盞五百元的桌燈比升級鏡頭便宜。4K 只多吃 USB 頻寬。</p>
+</div>
+<div class="card">
+<h3>延遲在哪裡</h3>
+<p>USB 音訊和鏡頭加起來不到 50 毫秒，不是瓶頸。真正決定像不像人的是這一串：判斷你講完了沒（300 到 700 毫秒，最大一段，太短截話、太長很呆）、語音轉文字、模型第一個字、語音合成第一塊聲音。影像那條（人臉、手勢）獨立跑、只當上下文，不要串進語音的關鍵路徑。</p>
+</div>
+
+<div class="method">
+<p>怎麼做的：六個獨立搜尋來源同一題，全部在時限內作答。每條商品連結我用真瀏覽器打開讀標題和價格，只有標題對得上型號的才進表；三席給的 momo 商品編號和五個 PChome 編號打開是空頁，已剔除。價格是 2026-09-05 中午頁面顯示，會浮動。</p>
+</div>
+</div>
+</body>
+</html>
