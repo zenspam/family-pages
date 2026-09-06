@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>東伊豆有氛圍的旅館</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      font-style: normal !important;
+      text-decoration: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background-color: #f7f5f0;
+      color: #1a1a1a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Noto Sans TC", sans-serif;
+      font-size: 17px;
+      line-height: 1.7;
+      text-align: left;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .report-container {
+      max-width: 65ch;
+      margin: 0 auto;
+    }
+
+    /* 裁決框：第一屏核心 */
+    .verdict-box {
+      background-color: #ffffff;
+      border: 2px solid #184e45;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .meta-line {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 12px;
+    }
+
+    .verdict-statement {
+      font-size: 19px;
+      color: #184e45;
+      margin-bottom: 12px;
+    }
+
+    .key-number-row {
+      font-size: 17px;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 8px 18px;
+      background-color: #184e45;
+      color: #ffffff !important;
+      border-radius: 4px;
+      font-size: 17px;
+    }
+
+    .action-btn:focus {
+      outline: 3px solid #0f2e29;
+      outline-offset: 2px;
+    }
+
+    /* 導言與翻案條件 */
+    .intro-block {
+      background-color: #ffffff;
+      border: 1px solid #e5e0d8;
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .reversal-block {
+      background-color: #ffffff;
+      border-left: 4px solid #184e45;
+      border-top: 1px solid #e5e0d8;
+      border-right: 1px solid #e5e0d8;
+      border-bottom: 1px solid #e5e0d8;
+      border-radius: 0 6px 6px 0;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #184e45;
+      margin: 0 0 16px 0;
+    }
+
+    /* 旅館卡片 */
+    .hotel-card {
+      background-color: #ffffff;
+      border: 1px solid #e5e0d8;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hotel-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0ebe1;
+    }
+
+    .hotel-name-link {
+      color: #184e45;
+      font-size: 20px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .hotel-name-link:focus {
+      outline: 2px solid #184e45;
+      outline-offset: 2px;
+    }
+
+    /* 狀態徽章：必帶文字 */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      font-size: 14px;
+      border-radius: 3px;
+    }
+
+    .badge-primary {
+      background-color: #e6f4ea;
+      color: #137333;
+      border: 1px solid #ceead6;
+    }
+
+    .badge-neutral {
+      background-color: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+
+    .badge-alert {
+      background-color: #fce8e6;
+      color: #c5221f;
+      border: 1px solid #fad2cf;
+    }
+
+    .field-row {
+      margin-bottom: 10px;
+    }
+
+    .field-label {
+      color: #475569;
+      display: inline;
+    }
+
+    .field-content {
+      color: #1a1a1a;
+      display: inline;
+    }
+
+    .fact-tag {
+      font-size: 14px;
+      color: #475569;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed #ece7dc;
+    }
+
+    .fact-tag a {
+      color: #184e45;
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .fact-tag a:focus {
+      outline: 2px solid #184e45;
+      outline-offset: 2px;
+    }
+
+    /* 清單與附註 */
+    .tips-block {
+      background-color: #ffffff;
+      border: 1px solid #e5e0d8;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .tips-list {
+      margin: 0;
+      padding-left: 24px;
+    }
+
+    .tips-list li {
+      margin-bottom: 12px;
+    }
+
+    .tips-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .note-block {
+      font-size: 15px;
+      color: #475569;
+      padding: 12px 16px;
+      background-color: #f0ebe1;
+      border-radius: 4px;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <main class="report-container">
+
+    <!-- 第一屏：裁決框 -->
+    <section class="verdict-box" aria-label="裁決框">
+      <div class="meta-line">評估日期：2026-09-06｜資料截止：2026 年 9 月</div>
+      <div class="verdict-statement">
+        <strong>推薦花吹雪，數千坪森林綠意與免費貸切湯最貼近需求。</strong>
+      </div>
+      <div class="key-number-row">
+        關鍵基準價：大人 1 名約 <strong>29,100 円</strong>（平日 2 名 1 室含朝夕食）
+      </div>
+      <div>
+        <a class="action-btn" href="#hotel-1"><strong>查看花吹雪方案</strong></a>
+      </div>
+    </section>
+
+    <!-- 前言段落 -->
+    <section class="intro-block" aria-label="導言">
+      <div>幫妳把東伊豆符合綠意、安靜與人情味的旅館都整理好囉。大部分落在每人兩到三萬日圓，先挑出貼近妳喜好的幾家讓妳參考。</div>
+    </section>
+
+    <!-- 翻案條件 -->
+    <section class="reversal-block" aria-label="翻案條件">
+      <div class="field-row">
+        <strong>決策翻案條件</strong>
+      </div>
+      <div>若預算能調升至每人每晚五萬日圓以上，首選改為極致隱密的獨棟宿「お宿うち山」；若偏好精緻法式全餐而非傳統和食，改選私廚風格的「マストランプ」；若預算嚴格限制在每人兩萬日圓以下，首選改為「かわづの里」或「福田家」。</div>
+    </section>
+
+    <!-- 旅館評選清單 -->
+    <section aria-label="旅館評選卡片列表">
+
+      <!-- 1. 花吹雪 -->
+      <article class="hotel-card" id="hotel-1">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.hanafubuki.co.jp/" target="_blank" rel="noopener noreferrer">1. 花吹雪</a>
+          <span class="badge badge-primary"><strong>首選推薦</strong>（狀態：正常營業）</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">伊豆高原（城ヶ崎溫泉）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">17–20室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">大人1名あたり29,100円（2名利用時、平日朝夕食付き）；じゃらん 2 名税込 66,000 円〜（一人約 33,000 起）；每人約 2.5–3.5 萬日圓</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">數千坪森林中客室散落在樹林間，環境清幽安靜。設有多座免費免預約的貸切溫泉，並有精緻料理茶屋。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">平日每人約兩萬九千多日圓接近預算上限，部分客房較舊且下雨需撐傘、無車站接送。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.hanafubuki.co.jp/" target="_blank" rel="noopener noreferrer">花吹雪官網方案</a>）</div>
+      </article>
+
+      <!-- 2. 玉峰館 -->
+      <article class="hotel-card" id="hotel-2">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.gyokuhokan.jp/" target="_blank" rel="noopener noreferrer">2. 玉峰館</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">河津町（峰溫泉）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">16室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">兩人一室 56,000 日圓起＝28,000／人（JTB含餐檔）；平日約一人 30,000 日圓起</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">大正時代老舖結合現代設計與日本庭園，泉量相當豐富。員工密度高且服務細緻周到，很有溫暖的人情味。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">設計旅館感強於純樸鄉村感，離伊東較遠且近期隔壁溫泉櫓工程影響環境安寧。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.gyokuhokan.jp/" target="_blank" rel="noopener noreferrer">玉峰館官網</a>）</div>
+      </article>
+
+      <!-- 3. 湯ヶ野温泉 福田家 -->
+      <article class="hotel-card" id="hotel-3">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="http://fukudaya-izu.jp/" target="_blank" rel="noopener noreferrer">3. 湯ヶ野温泉 福田家</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">河津町（湯ヶ野溫泉）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">約12室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">標準價格帶 12,750 円〜21,150 円（一人含二食）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">明治時代木造本館歷史氛圍濃厚，伴隨溪流蟲鳴很有純樸秘湯感。夜間浴場可以直接掛牌貸切，享受不被打擾的安靜時光。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">建築與設備真正老舊且隔音較差，餐點為家常山村菜餚且山側無海景。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="http://fukudaya-izu.jp/" target="_blank" rel="noopener noreferrer">福田家官網</a>）</div>
+      </article>
+
+      <!-- 4. つるや吉祥亭 -->
+      <article class="hotel-card" id="hotel-4">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.tsuruya-kisshotei.com/" target="_blank" rel="noopener noreferrer">4. つるや吉祥亭</a>
+          <span class="badge badge-alert">狀態：休業中（災害修復）</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">北川溫泉</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">約20間</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">價位剛好在預算內；價格常超過每人三萬日圓</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">周遭樹木多且環境安靜，氛圍很接近那須的綠意與靜謐。餐點用心且女將接待親切，帶著滿滿的人情味。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">目前因土砂災害休業中且復業未定，且常態價格常超出預算。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.tsuruya-kisshotei.com/" target="_blank" rel="noopener noreferrer">吉祥亭官網休業公告</a>）</div>
+      </article>
+
+      <!-- 5. お宿うち山 -->
+      <article class="hotel-card" id="hotel-5">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.jalan.net/yad305840/" target="_blank" rel="noopener noreferrer">5. お宿うち山</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">伊豆高原</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">6室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">じゃらん頁標示 2 名税込 100,160 円〜，一人五萬起</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">全館只有6間獨棟客房，座落環境清幽且極具隱密感。整體度假氛圍與綠意質感，非常契合妳心中的理想模樣。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">兩人一室每人每晚高達五萬日圓起跳，大幅超出預算上限。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.jalan.net/yad305840/" target="_blank" rel="noopener noreferrer">じゃらん專案頁</a>）</div>
+      </article>
+
+      <!-- 6. あゆの風 -->
+      <article class="hotel-card" id="hotel-6">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.ayunokaze.com/" target="_blank" rel="noopener noreferrer">6. あゆの風</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">伊東溫泉</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">5室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">兩人利用一泊二食每人約 27,000–29,700 日圓（Yahoo 旅遊兩人 59,400 日圓起、美伊豆兩人利用 27,000 日圓起）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">全館只有5間房的小巧規模，座落高台環境相當清幽。服務人員能認得每位客人面孔，照顧得細心又周到。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">不接待孩童入住，且位於高台需依賴車輛接送。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.ayunokaze.com/" target="_blank" rel="noopener noreferrer">あゆの風官網</a>）</div>
+      </article>
+
+      <!-- 7. お宿 癒楽里 -->
+      <article class="hotel-card" id="hotel-7">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.izukougen.info/" target="_blank" rel="noopener noreferrer">7. お宿 癒楽里</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">伊豆高原（富戶高台）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">5室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">一泊二食 20,636 日圓起／人</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">兼具綠意與海景且一天僅接待五組客人，環境清幽單純。客房附專屬露天風呂，還能在房內悠閒享用餐點。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">預約極為熱門常顯示客滿，且館內部分樓梯較陡不利年長者行動。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.izukougen.info/" target="_blank" rel="noopener noreferrer">癒楽里資訊頁</a>）</div>
+      </article>
+
+      <!-- 8. マストランプ -->
+      <article class="hotel-card" id="hotel-8">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="http://www.mastlamp.com" target="_blank" rel="noopener noreferrer">8. マストランプ</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">伊東（岡）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">6室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">兩人一室每人 37,000 日圓起（Precious）；夕朝食付兩人 76,076 日圓起＝約 38,000／人（一休）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">僅6間房的溫馨別墅尺度，擁有源泉掛流的貸切湯。環境小巧安靜，並以精緻法式料理為核心特色。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">每人價格常超過三萬日圓上限，且餐點為全套法式料理而非和食。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="http://www.mastlamp.com" target="_blank" rel="noopener noreferrer">マストランプ官網</a>）</div>
+      </article>
+
+      <!-- 9. 潮雲 -->
+      <article class="hotel-card" id="hotel-9">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.ushiogumo.com/" target="_blank" rel="noopener noreferrer">9. 潮雲</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">河津濱溫泉</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">7室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">兩人一室合計 57,474 日圓起＝28,737／人（JTB 含餐方案）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">全新小規模的7間房建築，客房皆配備掛流露天風呂。窗外坐擁如庭園般的海景，氣氛清靜悠閒。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">館內無電梯且客房位於二樓，屬姊妹館體系而非純樸家族親營。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.ushiogumo.com/" target="_blank" rel="noopener noreferrer">潮雲官網</a>）</div>
+      </article>
+
+      <!-- 10. かわづの里 -->
+      <article class="hotel-card" id="hotel-10">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="http://kawazunosato.com/index.html" target="_blank" rel="noopener noreferrer">10. かわづの里</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">河津溫泉</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">2室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">レギュラーシーズン兩人一室 19,800 日圓／人（寫明含餐）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">一天只接待兩組客人極為單純寧靜，避開吵雜人潮。服務專注且近乎一對一照顧，充滿溫暖人情味。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">硬體設施較為樸素，且官網資訊偏舊需透過電話或郵件確認現價與菜單。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="http://kawazunosato.com/index.html" target="_blank" rel="noopener noreferrer">かわづの里官網</a>）</div>
+      </article>
+
+      <!-- 11. みはるや -->
+      <article class="hotel-card" id="hotel-11">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://miharuya.net/" target="_blank" rel="noopener noreferrer">11. みはるや</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">熱川温泉</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">10室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">1泊2食付平日 20,000円〜35,000円（2名1室）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">大正時代老舖建築風情別致，客室數量少不易遇到其他客人。大浴場享受自家源泉掛流，泡湯時有如包場般安靜自在。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">位於熱川站前使森林綠意氛圍較弱，且老舖部分硬體較為陳舊。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://miharuya.net/" target="_blank" rel="noopener noreferrer">みはるや官網</a>）</div>
+      </article>
+
+      <!-- 12. アルシオン -->
+      <article class="hotel-card" id="hotel-12">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.alcyon-izu.com/" target="_blank" rel="noopener noreferrer">12. アルシオン</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">伊豆高原</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">9室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">オフシーズン スタンダードツイン利用 お一人様 14,890円〜（平日2名なら2万円前後的可能性）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">全館僅9間客房並被森林綠意包圍，是座清幽的小型隱宿。提供在地食材法式料理與24小時貸切露天風呂，度假感十足。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">餐點以法式料理為主不適合和食偏好者，且官網方案資訊較簡素。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.alcyon-izu.com/" target="_blank" rel="noopener noreferrer">アルシオン官網</a>）</div>
+      </article>
+
+      <!-- 13. 風曜日 -->
+      <article class="hotel-card" id="hotel-13">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.jalan.net/yad373872/" target="_blank" rel="noopener noreferrer">13. 風曜日</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">伊豆高原</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">4室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">2名税込31,800円〜（平日朝夕食付き）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">一日僅接待4組客人的超小規模隱宿，座落在極安靜隱密的地點。全客室皆附露天風呂，能自在享受清幽的私人假期。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">價格略超出預算上限，且無獨立官網僅能透過訂房平台預約。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.jalan.net/yad373872/" target="_blank" rel="noopener noreferrer">じゃらん風曜日頁</a>）</div>
+      </article>
+
+      <!-- 14. HINASAKU - ひなさく - -->
+      <article class="hotel-card" id="hotel-14">
+        <header class="hotel-header">
+          <a class="hotel-name-link" href="https://www.jalan.net/yad338912/" target="_blank" rel="noopener noreferrer">14. HINASAKU - ひなさく -</a>
+          <span class="badge badge-neutral">狀態：正常營業</span>
+        </header>
+        <div class="field-row">
+          <span class="field-label">地點：</span>
+          <span class="field-content">伊豆高原（富戶駅近く）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">房間數：</span>
+          <span class="field-content">3室</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">價格：</span>
+          <span class="field-content">29,001～30,000円（大人1人あたり、平日朝夕食付き、部屋出し）</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">契合原因：</span>
+          <span class="field-content">全館僅3間房且常伴清脆鳥鳴，規模極小而清幽。具備家族經營的溫暖接待與客房用餐，人情味非常濃郁。</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">缺點：</span>
+          <span class="field-content">溫泉為人工光明石溫泉而非天然溫泉，且車站接送僅限16點後並須預約。</span>
+        </div>
+        <div class="fact-tag">事實標記：查到的（資料來源：<a href="https://www.jalan.net/yad338912/" target="_blank" rel="noopener noreferrer">じゃらん HINASAKU 頁</a>）</div>
+      </article>
+
+    </section>
+
+    <!-- 建議清單（Tips） -->
+    <section class="tips-block" aria-label="預訂建議">
+      <h2 class="section-title">預訂建議與注意事項</h2>
+      <ul class="tips-list">
+        <li>平日與淡季入住價格通常最親民，部分旅館平日兩人成行每人約可落在兩萬日圓左右。</li>
+        <li>各家平台與官網專案價差不小，例如 JTB 或じゃらん偶有含餐優惠，建議下訂前多方比價。</li>
+        <li>房數只有2至5間的隱密型小宿非常搶手容易客滿，如果有中意的建議儘早預約，或直接以電話、郵件向旅館確認。</li>
+      </ul>
+    </section>
+
+    <!-- 備註（Note） -->
+    <footer class="note-block">
+      <div>旅館價格會隨平假日與預訂方案浮動，資料依 2026 年 9 月最新資訊整理。</div>
+    </footer>
+
+  </main>
+</body>
+</html>
