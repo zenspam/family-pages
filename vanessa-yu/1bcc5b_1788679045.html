@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>好</title>
+  <style>
+    :root {
+      --bg: #f8f6f0;
+      --card-bg: #ffffff;
+      --text: #191919;
+      --muted: #383838;
+      --line: #dcd7cc;
+      --line-strong: #bcb4a3;
+      --accent: #1e40af;
+      --status-bg: #e6f4ea;
+      --status-text: #137333;
+      --status-border: #86efac;
+      --tag-bg: #f0ece1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      font-size: 17px;
+      line-height: 1.7;
+      text-align: left;
+      padding: 24px 16px 48px;
+    }
+
+    h1, h2, h3, h4, th, td, dt, dd, p, span, summary, label, li {
+      font-weight: normal;
+      font-style: normal;
+      text-align: left;
+      line-height: 1.7;
+    }
+
+    strong, b {
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    em, i, cite {
+      font-style: normal;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 65ch;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* 第一屏：裁決框 */
+    .verdict-box {
+      background-color: var(--card-bg);
+      border: 2px solid var(--accent);
+      border-radius: 4px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .verdict-meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      font-size: 17px;
+    }
+
+    .verdict-headline {
+      font-size: 20px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .stat-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stat-chip {
+      background-color: var(--bg);
+      border: 1px solid var(--line-strong);
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 17px;
+    }
+
+    .action-row {
+      background-color: var(--bg);
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      font-size: 17px;
+    }
+
+    .intro-paragraph {
+      font-size: 17px;
+      color: var(--text);
+      padding-top: 4px;
+    }
+
+    /* 事實與狀態標籤 */
+    .tag {
+      display: inline-block;
+      background-color: var(--tag-bg);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      padding: 2px 8px;
+      margin-left: 4px;
+      font-size: 17px;
+      line-height: 1.4;
+      vertical-align: middle;
+    }
+
+    .tag a {
+      color: var(--accent);
+      min-height: auto;
+      display: inline;
+    }
+
+    .status-tag {
+      background-color: var(--status-bg);
+      color: var(--status-text);
+      border: 1px solid var(--status-border);
+      border-radius: 3px;
+      padding: 2px 8px;
+      font-size: 17px;
+    }
+
+    /* 區塊 */
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 19px;
+      border-bottom: 1px solid var(--line-strong);
+      padding-bottom: 8px;
+    }
+
+    /* 證據比較表（純 CSS 橫滾陰影） */
+    .table-scroll-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background:
+        linear-gradient(to right, #ffffff 30%, rgba(255,255,255,0)),
+        linear-gradient(to right, rgba(255,255,255,0), #ffffff 70%) 100% 0,
+        radial-gradient(farthest-side at 0 50%, rgba(0,0,0,0.15), rgba(0,0,0,0)),
+        radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,0.15), rgba(0,0,0,0)) 100% 0;
+      background-repeat: no-repeat;
+      background-color: var(--card-bg);
+      background-size: 30px 100%, 30px 100%, 10px 100%, 10px 100%;
+      background-attachment: local, local, scroll, scroll;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 320px;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 17px;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .table-caption-box {
+      padding-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .table-so-what {
+      font-size: 17px;
+      color: var(--text);
+    }
+
+    .table-meta {
+      font-size: 17px;
+      color: var(--muted);
+    }
+
+    /* 卡片 */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-title-area {
+      font-size: 20px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    .card-title-link {
+      font-size: 20px;
+      color: var(--accent);
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .card-dl {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-label {
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .card-value {
+      font-size: 17px;
+      color: var(--text);
+    }
+
+    /* 倒金字塔折疊細節 */
+    details {
+      background-color: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 16px;
+    }
+
+    summary {
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      color: var(--accent);
+      font-size: 17px;
+    }
+
+    summary:focus-visible {
+      outline: 2px solid var(--accent);
+    }
+
+    .details-inner {
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      margin-top: 12px;
+    }
+
+    /* Tips 與 Note */
+    .tips-list {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding-left: 0;
+    }
+
+    .tips-item {
+      background-color: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+
+    .note-box {
+      background-color: var(--card-bg);
+      border-left: 4px solid var(--line-strong);
+      border-top: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 16px;
+      font-size: 17px;
+    }
+
+    /* 翻案條件 */
+    .rebuttal-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .rebuttal-list {
+      list-style-type: disc;
+      padding-left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* 來源 */
+    .sources-box {
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sources-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+
+    <!-- 第一屏：裁決框（一句結論、一個關鍵數字、一個動作；旁邊日期＋資料截止時間；不放 hero 圖、不放目錄；加兩句 intro） -->
+    <header class="verdict-box">
+      <div class="verdict-meta">
+        <span>評估日期：2026-09-06</span>
+        <span>資料截止：2026-09-06 15:20</span>
+      </div>
+
+      <p class="verdict-headline">
+        <strong>推薦選勝博殿信義A8，能事先訂位且備有兒童椅與兒童餐。</strong>
+      </p>
+
+      <div class="stat-badge-row">
+        <span class="stat-chip">首選 <strong>1</strong> 家推薦方案</span>
+        <span class="status-tag">狀態：符合全數條件</span>
+      </div>
+
+      <div class="action-row">
+        <p>動作：<strong>立即致電或線上預訂勝博殿信義A8席位</strong></p>
+      </div>
+
+      <p class="intro-paragraph">
+        幫妳整理好清單囉。妳先看這家喜不喜歡。<span class="tag">[記得的]</span>
+      </p>
+    </header>
+
+    <!-- 證據表：負責比較，小於等於3欄，第一欄為「建議」；圖表下一句「所以呢」，來源與更新日掛圖下 -->
+    <section class="section">
+      <h2 class="section-title">方案比較表</h2>
+      <div class="table-scroll-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">建議</th>
+              <th scope="col">候選店家</th>
+              <th scope="col">預訂與兒童配套</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="status-tag">首選推薦</span></td>
+              <td>勝博殿信義A8</td>
+              <td>可事先訂位、備兒童椅與兒童餐</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-caption-box">
+        <p class="table-so-what">所以呢：勝博殿信義A8 是名單中唯一能確認預約並備妥幼童配套的保險選擇。<span class="tag">[推論]</span></p>
+        <p class="table-meta">來源：勝博殿官方門市網站｜更新日：2026-09-06</p>
+      </div>
+    </section>
+
+    <!-- 每家一張卡（名稱是連結、地點、房間數、價格、為什麼像她喜歡的、缺點） -->
+    <section class="section">
+      <h2 class="section-title">候選清單卡片</h2>
+      <article class="card">
+        <div class="card-title-area">
+          <a href="https://www.saboten.com.tw/store.php?city=7" class="card-title-link" target="_blank" rel="noopener noreferrer">勝博殿信義A8</a>
+        </div>
+        <dl class="card-dl">
+          <div class="card-item">
+            <dt class="card-label">地點</dt>
+            <dd class="card-value">新光三越A8 3樓 <span class="tag">[查到的：<a href="https://www.saboten.com.tw/store.php?city=7" target="_blank" rel="noopener noreferrer">門市資訊</a>]</span></dd>
+          </div>
+          <div class="card-item">
+            <dt class="card-label">房間數</dt>
+            <dd class="card-value">未提供／不適用（百貨商場餐廳無客房） <span class="tag">[推論]</span></dd>
+          </div>
+          <div class="card-item">
+            <dt class="card-label">價格</dt>
+            <dd class="card-value">依現場菜單計價，隨時浮動 <span class="tag">[查到的]</span></dd>
+          </div>
+          <div class="card-item">
+            <dt class="card-label">為什麼像她喜歡的</dt>
+            <dd class="card-value">這裡可以事先預訂，用餐安排很方便。店內提供兒童椅與兒童餐，很貼心體貼家人。 <span class="tag">[查到的：<a href="https://www.saboten.com.tw/store.php?city=7" target="_blank" rel="noopener noreferrer">店家服務</a>]</span></dd>
+          </div>
+          <div class="card-item">
+            <dt class="card-label">缺點</dt>
+            <dd class="card-value">清單上沒有特別標記缺點。 <span class="tag">[記得的]</span></dd>
+          </div>
+        </dl>
+      </article>
+    </section>
+
+    <!-- 最後 tips 清單與 note -->
+    <section class="section">
+      <h2 class="section-title">行動建議（Tips）</h2>
+      <ul class="tips-list">
+        <li class="tips-item">
+          <p>出發前記得提前預約訂位，省下現場排隊的時間。<span class="tag">[推論]</span></p>
+        </li>
+        <li class="tips-item">
+          <p>預訂時可以先告知需要保留兒童椅與準備兒童餐。<span class="tag">[記得的]</span></p>
+        </li>
+        <li class="tips-item">
+          <p>建議先查看店家營業資訊，確認預約相關規則。<span class="tag">[推論]</span></p>
+        </li>
+      </ul>
+
+      <div class="note-box">
+        <p>價格可能會隨時浮動，請以查詢當日的最新公告為準。<span class="tag">[查到的：<a href="https://www.saboten.com.tw/store.php?city=7" target="_blank" rel="noopener noreferrer">店家公告</a>]</span></p>
+      </div>
+    </section>
+
+    <!-- 倒金字塔折疊細節：翻案條件不可空 -->
+    <details>
+      <summary>檢視翻案條件與查驗邊界</summary>
+      <div class="details-inner">
+        <div class="rebuttal-box">
+          <h3 class="section-title">翻案條件</h3>
+          <p>若發生以下任一情境，本項推薦裁決立即失效並需重新評估：</p>
+          <ul class="rebuttal-list">
+            <li>預約額滿：致電或線上系統已無指定時段席位，需現場排隊。<span class="tag">[推論]</span></li>
+            <li>備品缺貨：門市無法保留兒童椅，或兒童餐點當日停售。<span class="tag">[推論]</span></li>
+            <li>成員偏好更換：同行者改為不食用炸物或偏好其他異國料理。<span class="tag">[記得的]</span></li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <!-- 倒金字塔最底層：來源 -->
+    <footer class="sources-box">
+      <h2 class="section-title">資料來源</h2>
+      <ul class="sources-list">
+        <li><a href="https://www.saboten.com.tw/store.php?city=7" target="_blank" rel="noopener noreferrer">勝博殿官方網站（台北信義A8店門市資訊）</a> <span class="tag">[查到的]</span></li>
+      </ul>
+    </footer>
+
+  </main>
+</body>
+</html>
