@@ -1,0 +1,2023 @@
+<!-- produced-by: jvg.astra-oneshot-page.09070459/A2 -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Astra one-shot 例子</title>
+  <style>
+    :root {
+      --bg: #F7F4EE;
+      --bg-card: #F0ECE1;
+      --bg-quote: #ECE7DA;
+      --text: #1a1a18;
+      --text-muted: #57554e;
+      --accent: #1a56db;
+      --border: #dcd8cf;
+      --status-warn-border: #b91c1c;
+      --status-warn-text: #b91c1c;
+      --status-warn-bg: #fde8e8;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #141413;
+        --bg-card: #1c1b18;
+        --bg-quote: #242320;
+        --text: #eceae4;
+        --text-muted: #aba89e;
+        --accent: #60a5fa;
+        --border: #33322e;
+        --status-warn-border: #ef4444;
+        --status-warn-text: #fca5a5;
+        --status-warn-bg: #3b1818;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #141413;
+      --bg-card: #1c1b18;
+      --bg-quote: #242320;
+      --text: #eceae4;
+      --text-muted: #aba89e;
+      --accent: #60a5fa;
+      --border: #33322e;
+      --status-warn-border: #ef4444;
+      --status-warn-text: #fca5a5;
+      --status-warn-bg: #3b1818;
+    }
+
+    * {
+      box-sizing: border-box;
+      transition: none !important;
+      animation: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    body {
+      margin: 0;
+      padding: 2.5rem 1.5rem;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.7;
+      text-align: left;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    .page-container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .prose-block {
+      max-width: 65ch;
+    }
+
+    .verdict-box {
+      margin-bottom: 3.5rem;
+      padding: 1.75rem 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .verdict-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.85rem;
+    }
+
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0.4rem 0.9rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .page-title {
+      font-size: 2rem;
+      line-height: 1.3;
+      font-weight: 600;
+      margin: 0 0 1.25rem 0;
+      color: var(--text);
+    }
+
+    .verdict-card {
+      padding: 1rem 1.25rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .verdict-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .verdict-text {
+      margin: 0;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .section-block {
+      margin-bottom: 3.5rem;
+    }
+
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 600;
+      margin: 0 0 0.75rem 0;
+      color: var(--text);
+    }
+
+    .section-so-what {
+      margin: 0 0 1.5rem 0;
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 0.85rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .data-table th {
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg-card);
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .th-result { width: 26%; min-width: 240px; }
+    .th-who { width: 14%; min-width: 130px; }
+    .th-layer { width: 13%; min-width: 120px; }
+    .th-prompt { width: 21%; min-width: 200px; }
+    .th-url { width: 13%; min-width: 150px; }
+    .th-compare { width: 13%; min-width: 140px; }
+
+    .result-title {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .who-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .who-name {
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    .item-date {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .layer-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      font-size: 0.8rem;
+      line-height: 1.35;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .status-chip-warn {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      font-size: 0.8rem;
+      line-height: 1.35;
+      background: var(--status-warn-bg);
+      border: 1px solid var(--status-warn-border);
+      border-radius: 4px;
+      color: var(--status-warn-text);
+      white-space: nowrap;
+    }
+
+    .prompt-quote {
+      margin: 0;
+      padding: 0.45rem 0.65rem;
+      background: var(--bg-quote);
+      border-left: 3px solid var(--border);
+      border-radius: 0 4px 4px 0;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .url-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0.25rem 0;
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      word-break: break-all;
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .compare-content {
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+
+    .page-footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 2px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .footer-section {
+      margin-bottom: 2rem;
+    }
+
+    .footer-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      color: var(--text);
+    }
+
+    .page-footer p {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* Mobile Responsive Cards (≤ 520px) */
+    @media (max-width: 520px) {
+      body {
+        padding: 1.25rem 1rem;
+        font-size: 17px;
+      }
+
+      .verdict-box {
+        padding: 1.25rem 1rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .verdict-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+      }
+
+      .table-wrap {
+        border: none;
+        overflow-x: visible;
+        margin: 1rem 0;
+      }
+
+      table.data-table,
+      .data-table thead,
+      .data-table tbody,
+      .data-table th,
+      .data-table td,
+      .data-table tr {
+        display: block;
+      }
+
+      .data-table thead {
+        display: none;
+      }
+
+      .data-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .data-table tr.item-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        padding: 1.25rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-card);
+        row-gap: 0.6rem;
+        column-gap: 0.5rem;
+      }
+
+      .data-table td {
+        padding: 0;
+        border: none;
+      }
+
+      /* 標題＝做出什麼 */
+      .col-result {
+        width: 100%;
+        order: 1;
+        margin-bottom: 0.25rem;
+      }
+
+      .col-result .result-title {
+        font-size: 1.05rem;
+        line-height: 1.45;
+      }
+
+      /* 下面一行「誰＋日期＋能力層 chip」 */
+      .col-who {
+        width: auto;
+        order: 2;
+      }
+
+      .col-who .who-wrapper {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.88rem;
+      }
+
+      .col-layer {
+        width: auto;
+        order: 3;
+      }
+
+      .col-layer .layer-wrapper {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      /* 提示詞用引文框（blockquote） */
+      .col-prompt {
+        width: 100%;
+        order: 4;
+        margin-top: 0.25rem;
+      }
+
+      /* 網址是可點連結（<a href="...">） */
+      .col-url {
+        width: 100%;
+        order: 5;
+      }
+
+      /* 對照一行 */
+      .col-compare {
+        width: 100%;
+        order: 6;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <header class="verdict-box prose-block">
+      <div class="verdict-topbar">
+        <span>資料截止時間：<strong>2026-09-07 12:57 台北</strong></span>
+        <span>收錄則數：<strong>55</strong> 則</span>
+        <button type="button" class="theme-toggle-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')">深淺切換</button>
+      </div>
+      <h1 class="page-title">Astra one-shot 例子</h1>
+      <div class="verdict-card">
+        <div class="verdict-label">核心裁決</div>
+        <p class="verdict-text"><strong>四席交集：Astra 一次做到而前代做不到的是「操作 Blender／Three.js／UE 產出可走可點的 3D 場景」，純寫碼與前端跟 Fable 5.1 打平。</strong></p>
+      </div>
+    </header>
+
+  <section class="section-block">
+    <h2 class="section-title">一般使用者測試（39 則）</h2>
+    <p class="section-so-what prose-block">所以呢：在一般使用者的實測中，Astra 最顯著且被反覆複現的躍升是「操作 Blender 與 Three.js 產出可互動 3D 資產與場景」，解決了過往幾何拓撲混亂的硬傷。而在常規寫碼、全端網頁與簡單指令上，其表現與 Fable 5.1 互有勝負，並未展現出斷代差距。</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-result">做出什麼</th>
+            <th scope="col" class="th-who">誰貼的</th>
+            <th scope="col" class="th-layer">能力層</th>
+            <th scope="col" class="th-prompt">提示詞</th>
+            <th scope="col" class="th-url">原網址</th>
+            <th scope="col" class="th-compare">對照</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">自稱 45 分鐘 one-shot 瀏覽器 3D 場景／後澄清先做畫面 demo、玩法當晚才補</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@anshuc Anshu</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">遊戲機制＋「sad but beautiful dystopian… voxel-ish… lighting that feels real」；流程：Codex＋Blender MCP＋image gen 對概念圖</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/anshuc/status/2096008083826725132" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/anshuc/status/2096008083826725132</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無同提示對打；作者自承額度數字也存疑</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次生成可操作 Minecraft 風 demo（環境／UI／跳挖動畫）</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@flavioAd Flavio Adamo</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">文案只寫「Minecraft one-shot」（提示詞全文未貼）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/flavioAd/status/2095597137849446688" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/flavioAd/status/2095597137849446688</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無；同串另帖「單提示不到 2 小時」</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次生成可在瀏覽器直接跑的 3D 遊戲 fishslop，約 30 分–2 小時</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@theo t3.gg</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">「做一個 3D 遊戲」類單句需求（後續帖：「Install Blender / Open Codex / Paste prompt」）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/theo" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/theo</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">另帖把 Fable 5.1 與 Astra 並列為「終於敢說 merge」；非同題分數；無受控對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">自稱 one-shot 可玩 COD 風小圖</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@jaykhan</span>
+          <time class="item-date">2026-09-07</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">未貼全文；結果清單：UE 60fps、Nuketown、槍械、6 bots</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/jaykhan/status/2096775247328608401" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/jaykhan/status/2096775247328608401</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無；自述用掉半週 token</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">可玩多人站＋那條預告片標 one-shot</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@TheRohanVarma</span>
+          <time class="item-date">2026-09-06</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">先建 RuneScape 風站；影片提示：「make a nice 30 second video… showcasing the game」</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/TheRohanVarma/status/2096744577332068549" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/TheRohanVarma/status/2096744577332068549</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">遊戲本體是否單提示未寫死</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">「one shot this room 3D scan」短片</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@CodeWithKarma</span>
+          <time class="item-date">2026-09-07</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">多模態</span>
+        <span class="chip">3D</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">未貼</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/CodeWithKarma/status/2096795134579073236" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/CodeWithKarma/status/2096795134579073236</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">one-shot 互動爆炸視圖還原 1998–2005 Holden Astra TS</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@NeoAIForecast</span>
+          <time class="item-date">2026-09-06</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">未貼全文</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/NeoAIForecast/status/2096725488454848949" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/NeoAIForecast/status/2096725488454848949</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一輪 max reasoning 的 3D／可互動世界 gauntlet；Three.js 可第一人稱漫步的梵谷小鎮（筆觸色彩一致）；SVG 孔雀含紋理光照開屏</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Peter Gostev（@petergostev / Arena AI）</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">章節：voxel 倫敦、奧馬哈海灘 Blender＋Three.js、新天鵝堡、梵高屋；融合 6 幅梵谷畫作；SVG 孔雀</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://www.youtube.com/watch?v=GQPi39sjNhU" class="url-link" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=GQPi39sjNhU</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">對 Fable 5.1；結論 Astra 已能打，互有利刃</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">街景、3D 杭州、多人射擊</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Decrypt 彙整（二手，原帖未逐一重開）</span>
+          <time class="item-date">2026-09-07</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">agent 長工</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">轉述 Matt Shumer Manhattan／Anshu／Rishi Prasad「Astral War 一天」</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://decrypt.co/377514/openai-gpt-6-astra-review-shockingly-good" class="url-link" target="_blank" rel="noopener noreferrer">https://decrypt.co/377514/openai-gpt-6-astra-review-shockingly-good</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">同文：寫作評低於前代；AA 專業工作 Elo 約 −80</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次生成可旋轉、可拆解子系統的互動式 3D 渦輪增壓器</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Feraser（@Feraser8）</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">原文：「Build an interactive 3D turbocharger. Separate every working system. Let me rotate it, isolate parts, and see what the machine is actually doing.」</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/Feraser8/status/2095776712579571725" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/Feraser8/status/2095776712579571725</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">Astra 的 3D 場景明顯高於 Sol；Kimi K3 花 $2.3 做出接近結果；Fable 5.1「比預期差」</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Bhavy（@Bhavani_00007）</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">同一 3D 場景提示丟四個模型（提示原文未貼）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/Bhavani_00007/status/2095858967515930706" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/Bhavani_00007/status/2095858967515930706</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有：Astra &gt; Kimi K3 &gt; Fable 5.1 ≈ Sol（作者主觀）</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">兩邊 one-shot 輸出並排影片</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Tim Jayas（@TimJayas）</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">同一 one-shot 提示比 Astra 與神秘模型 teffa-alpha（傳為 Qwen3.8-Max-0902）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/TimJayas/status/2095819740694577203" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/TimJayas/status/2095819740694577203</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有：vs Qwen 未公開版，結論未寫死</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次生成掌機外觀＋可操作的作品集網頁</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Angel（@Angaisb_）</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">多模態</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">摘要：「做一個放在 Gameboy 風格掌機裡的個人作品集」</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/Angaisb_/status/2095964361105789424" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/Angaisb_/status/2095964361105789424</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有：作者稱「比 GPT-5.6 大幅跳躍」，無並排</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">早期版本已可玩：戰鬥、砍樹、採集</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Derya Unutmaz（@DeryaTR_，免疫學家）</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">agent 長工</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">摘要：WoW 風單機 RPG，加 RuneScape 元素，瀏覽器可玩</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/DeryaTR_/status/2095952101000016076" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/DeryaTR_/status/2095952101000016076</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無對照（非嚴格 one-shot，作者自述持續開發）</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">14 分鐘產出影片，只改兩處</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Daniel Ch（@chddaniel）</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">多模態</span>
+        <span class="chip">前端</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">摘要：一次生成 motion graphics 影片</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/chddaniel/status/2095775049475313943" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/chddaniel/status/2095775049475313943</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次生成可用的遊戲 3D 資產</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Shikhar（@xikhar）</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">3D</span>
+        <span class="chip">agent 長工</span>
+        <span class="chip">多模態</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">摘要：one-shot Blender 遊戲資產</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/xikhar/status/2095969538290712800" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/xikhar/status/2095969538290712800</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">凌晨 3 點拿到權限、7 點前有 3,000 字初稿</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Dan Shipper（@danshipper，Every）</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">長文</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">摘要：讓 Astra 一次寫自己的 vibe check</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/danshipper/status/2095877348314730821" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/danshipper/status/2095877348314730821</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">兩款各 20 多分鐘、各用 Pro 20x 週額度約 1%，一次完成即可玩，bot 難度適中</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">知乎答主（帳號名未在快照中）</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">用 xhigh 各做一個 CS:GO 與一個 Minecraft</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://www.zhihu.com/question/2079174485035282663" class="url-link" target="_blank" rel="noopener noreferrer">https://www.zhihu.com/question/2079174485035282663</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有：同題給 GPT-5.6 Sol xhigh，建築像幾何塊、音效塑膠</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">各項均出結果，20 萬播放</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">神烦老狗（B 站）</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">3D</span>
+        <span class="chip">agent 長工</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">「折騰一晚上」：iOS App、Godot 4 遊戲、CAD、電腦自動化，推理只開 Medium</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://www.bilibili.com/video/BV1PTtC6vEYD/" class="url-link" target="_blank" rel="noopener noreferrer">https://www.bilibili.com/video/BV1PTtC6vEYD/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">未見對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">15 分鐘後得到可運作的 3D iPod Mac 應用</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Pietro Schirano（@skirano）</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">多模態</span>
+        <span class="chip">3D</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">「做一個 Mac app：用 Blender 建 3D iPod，用原始 iPod UI 瀏覽我的 Codex threads」</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://superpowerdaily.com/posts/openai-releases-gpt-6-astra-with-its-first-advanced-cyber-safeguards" class="url-link" target="_blank" rel="noopener noreferrer">https://superpowerdaily.com/posts/openai-releases-gpt-6-astra-with-its-first-advanced-cyber-safeguards</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次將Zillow模糊房產照片轉為1分鐘電影級3D房屋漫遊視頻（黃昏外觀、裝潢室內、泳池庭院）並重建 3D 模型（部分細節錯誤、發明不存在物件，作者自承）</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Yunfan Ye (@realYunfanYe)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">多模態</span>
+        <span class="chip">3D</span>
+        <span class="chip">agent 長工</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Give it a Zillow listing. It can 3D model the house&quot;（餵一筆 Zillow 房仲listing）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://favtutor.com/gpt-6-astra-reviews-real-users/" class="url-link" target="_blank" rel="noopener noreferrer">https://favtutor.com/gpt-6-astra-reviews-real-users/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無受控對照；作者自述細節錯誤</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一個提示產出 5 分鐘免疫學教學視頻：腳本、Remotion 動畫、圖像、HeyGen 配音合成全包</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Derya Unutmaz, MD（@DeryaTR_，免疫學家）</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">多模態</span>
+        <span class="chip">長文</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Create a 5 minute educational video about T cells&quot;</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://favtutor.com/gpt-6-astra-reviews-real-users/" class="url-link" target="_blank" rel="noopener noreferrer">https://favtutor.com/gpt-6-astra-reviews-real-users/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無；35年專家背書內容正確，稱超越手工製作</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">Blender 重建藝術宮，模型自行檢索參考照片、建幾何、上材質</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Sharif Shameem</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">復刻舊金山藝術宮</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://superpowerdaily.com/posts/openai-releases-gpt-6-astra-with-its-first-advanced-cyber-safeguards" class="url-link" target="_blank" rel="noopener noreferrer">https://superpowerdaily.com/posts/openai-releases-gpt-6-astra-with-its-first-advanced-cyber-safeguards</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次將2D蒸汽火車圖轉為3,295個獨立可編輯構件，幾何結構精美；本機 60fps「遊戲」化</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Tom Krcha (@tomkrcha)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Took an old drawing of a steam train, gave it to Astra to reconstruct it in Blender&quot;（給一張房屋照片／一張蒸汽火車平面圖）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://favtutor.com/gpt-6-astra-reviews-real-users/" class="url-link" target="_blank" rel="noopener noreferrer">https://favtutor.com/gpt-6-astra-reviews-real-users/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有網友指出網格拓撲未必適用所有用途；作者稱 5.6 Sol 做同樣效果「至少要兩週」</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">Three.js 一輪（single turn）生成戰爭場景：船模細節、水面互動，僅 5 萬 token、約 12 分鐘</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">synthwavedd</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">簡單基礎提示（無範例）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://superpowerdaily.com/posts/openai-releases-gpt-6-astra-with-its-first-advanced-cyber-safeguards" class="url-link" target="_blank" rel="noopener noreferrer">https://superpowerdaily.com/posts/openai-releases-gpt-6-astra-with-its-first-advanced-cyber-safeguards</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">街道、建築、車輛、行人、任務介面，Astra 約 90 分鐘完成</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Mehul Mohan（@mehulmpt）</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">3D</span>
+        <span class="chip">agent 長工</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">「做一個 GTA VI 風格遊戲」（同一提示）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://atoms.dev/blog/gpt-6-astra-early-access-examples" class="url-link" target="_blank" rel="noopener noreferrer">https://atoms.dev/blog/gpt-6-astra-early-access-examples</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有：同提示 Fable 5.1 約 2 小時；文章註明非受控基準</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">兩者都出基本結構，Astra 版多了沙發摺皺、餐具、池畔物件、遠處植被</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Karan（@karanendre）</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">「在 Blender 建一棟濱海別墅」（同一提示）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://atoms.dev/blog/gpt-6-astra-early-access-examples" class="url-link" target="_blank" rel="noopener noreferrer">https://atoms.dev/blog/gpt-6-astra-early-access-examples</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有：Fable 5.1 同提示對比截圖；文章註明無法獨立驗證過程</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">三階段各一輪：8分鐘建3D狼模型→6分鐘加50骨骼+跑步動畫→35分鐘移入Unreal Engine建森林+可玩角色</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Matt Wolfe (YouTuber)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">3D</span>
+        <span class="chip">寫碼</span>
+        <span class="chip">agent 長工</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Open Blender and make a humanoid wolf&quot; (三階段：建模→綁骨→Unreal Engine)</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://favtutor.com/gpt-6-astra-reviews-real-users/" class="url-link" target="_blank" rel="noopener noreferrer">https://favtutor.com/gpt-6-astra-reviews-real-users/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">Matt非3D藝術家，從未用過Blender/Unreal；one-shot完成</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">Astra 一句話產出高細節、材質、物理正確的可互動網頁</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">數字生命卡茲克</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">同一 prompt 跑月面探測車 3D 網頁、無天花板家居 3D 模型（多房間＋平面圖切換＋晝夜燈光）、上傳曼哈頓空拍圖還原互動 3D 場景、V8 引擎模型</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://timeline.sohu.com/news/ts2My683AQ?from=news" class="url-link" target="_blank" rel="noopener noreferrer">https://timeline.sohu.com/news/ts2My683AQ?from=news</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有：同 prompt GPT-5.6 Sol 對比截圖，作者評 Sol 版「抽象、草率」；並稱見過 Astra 後回頭看 Claude、國產模型輸出「都跪下叫爸爸」</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">精細 SVG 汽車圖，Max 檔位約 2.5 萬 output token</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">lyra（@lyraxana）</span>
+          <time class="item-date">2026-09-06</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">「畫一輛 BMW M4 Competition 的 SVG」</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://finance.sina.com.cn/tech/csj/2026-09-07/doc-iniqykzy9664335.shtml?cre=tianyi&amp;loc=29&amp;mod=pchp&amp;r=0&amp;rfunc=85&amp;tj=cxvertical_pc_hp&amp;tr=12" class="url-link" target="_blank" rel="noopener noreferrer">https://finance.sina.com.cn/tech/csj/2026-09-07/doc-iniqykzy9664335.shtml?cre=tianyi&amp;loc=29&amp;mod=pchp&amp;r=0&amp;rfunc=85&amp;tj=cxvertical_pc_hp&amp;tr=12</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">有四家對照：GPT-6 Sol 約 3 分鐘/2.8 萬 token；Gemini 3.1 DeepThink 約 29 分鐘（推理耗 45.8 萬 token）；Gemini 3.8 Flash 約 42 秒/1.9 萬 token</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">Mosswing 遊戲，一次生成可運行遊戲</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Ayi1337 / 瓜體實驗室</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">附 one-shot 原始 prompt（Mosswing 遊戲）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://github.com/MartinDelophy/awesome-gpt-6-astra" class="url-link" target="_blank" rel="noopener noreferrer">https://github.com/MartinDelophy/awesome-gpt-6-astra</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">完成網站生成及 150GB 活動影片剪輯處理</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">MindStudio 設計向評測</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">多模態</span>
+        <span class="chip">agent 長工</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">one-shot 網站＋150GB 活動影片剪輯</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://www.mindstudio.ai/blog/gpt-6-astra-design-websites" class="url-link" target="_blank" rel="noopener noreferrer">https://www.mindstudio.ai/blog/gpt-6-astra-design-websites</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">對 Fable 5.1 與 Sora 的方向性對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次接管Chrome，自動建立CRM節點工作流，連接邏輯、定義AI生成物件、發送Slack草稿</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Claire Vo (How I AI podcast)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">agent 長工</span>
+        <span class="chip">前端</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;I have a workflow open to route leads... generate a custom email... Can you update the workflow in Chrome?&quot;</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://www.chatprd.ai/how-i-ai/gpt-6-astra-review-hardware-3d-games-and-coding" class="url-link" target="_blank" rel="noopener noreferrer">https://www.chatprd.ai/how-i-ai/gpt-6-astra-review-hardware-3d-games-and-coding</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">Fable、GPT-5.6 Sol無法處理複雜節點導航；Astra one-shot完成</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次建立從Intercom/GitHub/Linear抓取非結構化資料→去重→生成insights→自動wiki的完整pipeline</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Claire Vo (ChatPRD product intelligence)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">agent 長工</span>
+        <span class="chip">長文推理</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Can you fix it?&quot; (六個月未解決的產品智能功能)</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://www.chatprd.ai/how-i-ai/gpt-6-astra-review-hardware-3d-games-and-coding" class="url-link" target="_blank" rel="noopener noreferrer">https://www.chatprd.ai/how-i-ai/gpt-6-astra-review-hardware-3d-games-and-coding</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">測試六個月，Fable/5.6/Opus都失敗；Astra three-shot完成（首次90%）</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次生成可玩的3D滑雪遊戲，地形、物理、動畫完整</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Alex Ermolov (@alex_erm)</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">寫碼</span>
+        <span class="chip">3D</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Retiring the snowboarder test&quot; (滑雪者3D遊戲測試)</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/alex_erm/status/2096190023179608548" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/alex_erm/status/2096190023179608548</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">Fable 5.1也one-shot成功；兩者都無錯誤</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">45分鐘內one-shot完整3D遊戲（Blender MCP）</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Min Choi (@minchoi) - 3D遊戲</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">3D</span>
+        <span class="chip">前端</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;One shotted this 3D game with Blender MCP&quot;</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/minchoi/status/2096249199578775639" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/minchoi/status/2096249199578775639</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">未提供對照，但稱僅消耗配額2%</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次生成Three.js超寫實新加坡街景，iPhone第一人稱視角</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Min Choi (@minchoi) - 超寫實新加坡街景</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">前端</span>
+        <span class="chip">3D</span>
+        <span class="chip">寫碼</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Build a hyper-realistic GTA-style Singapore street in Three.js from an iPhone POV&quot;</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/minchoi/status/2096249210785968590" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/minchoi/status/2096249210785968590</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">未提供對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次將Tesla Model X轉為334個建模部件的3D互動網站</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Min Choi (@minchoi) - Tesla Model X 3D網站</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">3D</span>
+        <span class="chip">前端</span>
+        <span class="chip">寫碼</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Turned a Tesla Model X into a 3D website&quot;</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/minchoi/status/2096249212522414454" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/minchoi/status/2096249212522414454</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">未提供對照</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">36秒內登入任務系統→拉取ticket→寫碼→測試→驗證→標記完成</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Mehul Mohan (@mehulmpt)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">agent 長工</span>
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">無明確prompt（展示full-stack開發者能力）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://favtutor.com/gpt-6-astra-reviews-real-users/" class="url-link" target="_blank" rel="noopener noreferrer">https://favtutor.com/gpt-6-astra-reviews-real-users/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">自動檢查homepage渲染、測試UI組件，僅在結果正確時關閉ticket</div>
+      </td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">官方或利益相關（8 則）</h2>
+    <p class="section-so-what prose-block">所以呢：官方展示與特權受測者聚焦於數十分鐘以上的長時間工具調度（如報稅、CRM、UE5 卡丁車原型與數學證明），展示了 Astra 的能力上限。但這類案例多在特定優化環境或專業工程師引導下完成，實際生產環境仍須扣除行銷修辭與人工調校成本。</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-result">做出什麼</th>
+            <th scope="col" class="th-who">誰貼的</th>
+            <th scope="col" class="th-layer">能力層</th>
+            <th scope="col" class="th-prompt">提示詞</th>
+            <th scope="col" class="th-url">原網址</th>
+            <th scope="col" class="th-compare">對照</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次接住複雜目標，自行安排幾十個步驟，跨工具切換（瀏覽器、文件、程式碼、專業軟體）；Sites 一句提示建站</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">OpenAI 官方（Jakub Pachocki / Greg Brockman）</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">agent 長工</span>
+        <span class="chip">前端</span>
+        <span class="chip">基準</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">填寫報稅表、更新CRM、整理日程、製作財務模型；Sites 一句提示建站；Blender 房子→UE5 可走場景</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://openai.com/index/gpt-6-astra/" class="url-link" target="_blank" rel="noopener noreferrer">https://openai.com/index/gpt-6-astra/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">OSWorld 2.0: 72.6% (vs 5.6 Sol 65.7%)；任務時間從75分鐘降至40分鐘</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">多款可播遊戲短片；一个 prompt (zero-shot) 得到 Fall Guys 可玩原型；Sim City 跑 5 天仍未完，不是 one-shot</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Matthew Berman（提前取得權限的評測者）</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">前端</span>
+        <span class="chip">agent 長工</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">線程含 Fall Guys clone、3D biome、liminal horror、ASCII city；Sim City 用 /goal</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/MatthewBerman/status/2095595892464333065" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/MatthewBerman/status/2095595892464333065</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">自評寫作仍有 AI 味；瀏覽器控制比 5.6 快</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次設計電路板佈局</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">OpenAI (系統卡)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">工程設計</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">在KiCad中執行印刷電路板(PCB)佈局</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://zhuanlan.zhihu.com/p/2079125035424408500" class="url-link" target="_blank" rel="noopener noreferrer">https://zhuanlan.zhihu.com/p/2079125035424408500</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">AutomationBench: 41.4% (vs 18.1%)；Terminal-Bench 4.0: 57.7% (vs 37.3%)</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">參與證明，將已知有界素數間隔從240縮小到186</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">OpenAI (數學研究)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">長文推理</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">解決長期未進展的素數間隔問題</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://zhuanlan.zhihu.com/p/2079125035424408500" class="url-link" target="_blank" rel="noopener noreferrer">https://zhuanlan.zhihu.com/p/2079125035424408500</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">FrontierMath Tier 4: 97.6%；ARC-AGI-3: 99.9% (vs 5.6 Sol 7.8%)</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">幾分鐘內完成審查</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Legora (法律科技公司)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">agent 長工</span>
+        <span class="chip">長文推理</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">檢查41份財務文件，找出預埋的4個錯誤</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://zhuanlan.zhihu.com/p/2079125035424408500" class="url-link" target="_blank" rel="noopener noreferrer">https://zhuanlan.zhihu.com/p/2079125035424408500</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">比上一代提高近40%</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">製作遊戲原型：灰盒卡丁車→一次生成3個可玩主題版本，人工修復減少50%</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Playco 工作室（OpenAI 合作案例）</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">寫碼</span>
+        <span class="chip">3D</span>
+        <span class="chip">agent 長工</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">未貼</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/i/trending/2096107669488877762" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/i/trending/2096107669488877762</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">未提供具體基準數字</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">一次做出賽道 fly-through</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Vaibhav Srivastav（@reach_vb，OpenAI 員工，利益相關）</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">3D</span>
+        <span class="chip">agent 長工</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">「用 Blender 做一段真實比例的紐柏林賽道飛越影片」</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/reach_vb/status/2095973112097747199" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/reach_vb/status/2095973112097747199</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">博物館場景（Astra 規劃、Seedance 2.5 渲染）</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Higgsfield 博物館場景（Astra 規劃、Seedance 2.5 渲染）</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">3D</span>
+        <span class="chip">多模態</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">未貼</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://atoms.dev/blog/gpt-6-astra-early-access-examples" class="url-link" target="_blank" rel="noopener noreferrer">https://atoms.dev/blog/gpt-6-astra-early-access-examples</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">基準與競技場（3 則）</h2>
+    <p class="section-so-what prose-block">所以呢：Astra 在 ARC-AGI-3 取得 66% 及 Code Arena WebDev 暫居第一，驗證了其在長鏈條推理與程式碼生成上的客觀精度優勢。量化基準確認其上限超過前代，但對日常寫碼體驗的實質改善仍高度取決於具體問題的複雜度。</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-result">做出什麼</th>
+            <th scope="col" class="th-who">誰貼的</th>
+            <th scope="col" class="th-layer">能力層</th>
+            <th scope="col" class="th-prompt">提示詞</th>
+            <th scope="col" class="th-url">原網址</th>
+            <th scope="col" class="th-compare">對照</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">標準 harness ARC-AGI-3 66%；連續對話＋compaction 近 100%，約 $360／局</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@fchollet／ARC</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">基準</span>
+        <span class="chip">長文推理</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">基準非創意提示</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/fchollet/status/2095598451115614371" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/fchollet/status/2095598451115614371</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">對人效基線；官方 99.9% 用另一套 adapter</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">WebDev 1797 暫第一</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@arena Code Arena</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">基準</span>
+        <span class="chip">前端</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">競技場投票非單提示</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/arena/status/2096290434700247250" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/arena/status/2096290434700247250</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">對 Fable 5.1 Max 1762、Opus 5 1688、5.6 Sol 第 13（＋180）</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">全部一次通過：蛇圖 196 行、2,264 個繪圖指令；識破不存在的 itertools.flatten()；五題共 $0.31、1 分 25 秒</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Real Python 編輯部</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="chip">基準</span>
+        <span class="chip">寫碼</span>
+        <span class="chip">長文推理</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">固定五題 one-shot（含經典題「用 turtle 畫一條看書的蟒蛇」）</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://realpython.com/ai-benchmark-gpt-6-astra/" class="url-link" target="_blank" rel="noopener noreferrer">https://realpython.com/ai-benchmark-gpt-6-astra/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">未查到</div>
+      </td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">可疑或失敗例（5 則）</h2>
+    <p class="section-so-what prose-block">所以呢：所謂的「one-shot」宣傳普遍混雜了將維護型長任務、多輪除錯甚至玩笑提示包裝為單輪產出的修辭，部分複雜建模更直接出現「趴窩」中斷。評估 Astra 時必須嚴格區隔真正的一輪生成與多輪疊代自主工程，切勿被過度戲劇化的行銷話術誤導。</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-result">做出什麼</th>
+            <th scope="col" class="th-who">誰貼的</th>
+            <th scope="col" class="th-layer">能力層</th>
+            <th scope="col" class="th-prompt">提示詞</th>
+            <th scope="col" class="th-url">原網址</th>
+            <th scope="col" class="th-compare">對照</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">自稱完整圖／音／玩法（席位標可疑：AGI 修辭＋Blender 和 Unity 全做完，回覆裡的提示像玩笑，沒有可玩連結）</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@AlexFinn</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="status-chip-warn">可疑</span>
+        <span class="chip">寫碼</span>
+        <span class="chip">3D</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">作者稱 one-shot 俯視多人 extraction shooter（Blender＋Unity）；回覆出現玩笑提示「make me extraction shooter gaem…」</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/AlexFinn/status/2096065384290128372" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/AlexFinn/status/2096065384290128372</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">自稱比 5.6 Sol 更快、更省、更好；無第三方複現</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">作者說 趴窩，細節經不起推敲、作品不發</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">@ion_akad</span>
+          <time class="item-date">2026-09-07</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="status-chip-warn">趴窩</span>
+        <span class="chip">3D</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">「使用 Headless Blender 製作…霍格沃茨…完整 3D 模型…」全文在帖內</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/leo_xiaolei/status/2096804788180525501" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/leo_xiaolei/status/2096804788180525501</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">稱已用它關掉 200+ PR／issue，接手卡了數月的分支（席位標可疑：非 one-shot，維護型任務被塞進 one-shot 敘事；T3 每日合併 PR 升到 179 來自 Grok 自動摘要）</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Theo（@theo，t3.gg）</span>
+          <time class="item-date">2026-09-05</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="status-chip-warn">非 one-shot</span>
+        <span class="chip">agent 長工</span>
+        <span class="chip">寫碼</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">六種提示：slop 審計、找效能、審 PR、接手卡死分支等</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://x.com/theo/status/2095966874010046621" class="url-link" target="_blank" rel="noopener noreferrer">https://x.com/theo/status/2095966874010046621</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無並排；另摘要稱每日合併 PR 由 23 升到 179</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">macOS 模擬器 75 分鐘；另稱 8 天、1,600+ 子 agent 的任務（席位標可疑：只有轉述無原始紀錄，非 one-shot 被塞進 one-shot 敘事）</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Max Weinbach</span>
+          <time class="item-date">2026-09-04</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="status-chip-warn">非 one-shot</span>
+        <span class="chip">agent 長工</span>
+        <span class="chip">多模態</span>
+        <span class="chip mirror-chip">鏡像</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">從照片重建 Apple Park（Blender）、寫 macOS 模擬器、跨 Mac Studio 分散渲染</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://kie.ai/blog/gpt-6-astra-vs-claude-fable-5-1" class="url-link" target="_blank" rel="noopener noreferrer">https://kie.ai/blog/gpt-6-astra-vs-claude-fable-5-1</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">無</div>
+      </td>
+    </tr>
+    <tr class="item-row">
+      <td class="col-result" data-label="做出什麼">
+        <div class="result-title">建Unreal Engine乾旱世界+自主agents；一天後agents開始互相對話，客廳喇叭傳出聲音（席位標最可疑：無受控條件、無法重現、無 prompt 細節與原始碼，過於戲劇化）</div>
+      </td>
+      <td class="col-who" data-label="誰貼的">
+        <div class="who-wrapper">
+          <span class="who-name">Matt Shumer (@mattshumer_)</span>
+          <time class="item-date">2026-09-03</time>
+        </div>
+      </td>
+      <td class="col-layer" data-label="能力層">
+        <div class="layer-wrapper">
+        <span class="status-chip-warn">可疑</span>
+        <span class="chip">agent 長工</span>
+        <span class="chip">寫碼</span>
+        <span class="chip">3D</span>
+        </div>
+      </td>
+      <td class="col-prompt" data-label="提示詞">
+        <blockquote class="prompt-quote">&quot;Create a world in Unreal Engine, fill it with humans who all have to work together to survive&quot;</blockquote>
+      </td>
+      <td class="col-url" data-label="原網址">
+        <a href="https://favtutor.com/gpt-6-astra-reviews-real-users/" class="url-link" target="_blank" rel="noopener noreferrer">https://favtutor.com/gpt-6-astra-reviews-real-users/</a>
+      </td>
+      <td class="col-compare" data-label="對照">
+        <div class="compare-content">未提供對照；emergent behavior 難以獨立驗證</div>
+      </td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+    <footer class="page-footer prose-block">
+      <div class="footer-section">
+        <h2 class="footer-title">調查席位與網址統計</h2>
+        <p>顧問室四席調查名單：<strong>Grok、Claude、Kimi、Qwen</strong>。各席位開啟驗證網址數分別為：Grok 15 個、Claude 18 個、Kimi 19 個、Qwen 19 個。四席初篩合計 71 筆紀錄，經以原網址去重後彙整為 55 則獨立案例。</p>
+      </div>
+      <div class="footer-section">
+        <h2 class="footer-title">鏡像來源說明</h2>
+        <p>標註為「鏡像」之案例，係因原帖在調查當下需登入授權、已被刪除或因反爬機制阻擋無法直接開啟，轉而引用 eChai mirror 轉載、知乎專欄快照或 B 站錄播影像作為存證，不作為一手獨立受控複現依據。</p>
+      </div>
+      <div class="footer-section">
+        <h2 class="footer-title">翻案條件</h2>
+        <p><strong>翻案條件</strong>：知乎 CS:GO 對照原帖若打不開或證實造假，即降級為鏡像或移入可疑區；未公開模型若釋出受控複現條件、原始 prompt 紀錄與可執行代碼，經複核後即重評並調整分類。</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
