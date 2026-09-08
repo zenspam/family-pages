@@ -182,4 +182,16 @@ li{margin:.3em 0}p{max-width:65ch}
 - 票 → git repo 裡 <code>tickets/&lt;編號&gt;.md</code>（標題／驗收指令／狀態三段），或 GitHub issues。
 - 隊列 → 共享目錄 <code>inbox/</code>、<code>taken/&lt;席位&gt;/</code>、<code>done/</code>、<code>dead/</code>；接活＝原子 <code>mv</code>；心跳＝<code>touch hb/&lt;席位&gt;</code>；兩次失敗 <code>mv</code> 進 <code>dead/</code>；席位每 30 秒掃 <code>inbox/</code>。
 - 事件 → 只增不改的 <code>events.log</code>，一行一筆 JSON（ts, kind, task_id, consumer）；<code>hs sync</code> 改讀它。</p>
-<p>現行實作裡交付資料夾本來就先於 valkey 訊息存在（<code>01_submit_task.py</code> 第 2 步），valkey 只是門鈴；拿掉門鈴只多延遲，流程不變。最小版本＝一個 git repo＋一個共享目錄，零服務。</p></main>
+<p>現行實作裡交付資料夾本來就先於 valkey 訊息存在（<code>01_submit_task.py</code> 第 2 步），valkey 只是門鈴；拿掉門鈴只多延遲，流程不變。最小版本＝一個 git repo＋一個共享目錄，零服務。</p>
+<h2>11. 搬家版預設路線：票當隊列（Ray 2026-09-08 13:22「ticket 本身不能帶認領／交回／deadletter 的字串嗎」）</h2>
+<p>把第 4 節的 valkey 整段換成票務系統本身（gitea／GitHub issues 都行）：</p>
+<ul>
+<li><strong>狀態機＝label</strong>：<code>queued</code> → <code>taken</code> → <code>done</code>｜<code>dead</code>。認領＝把 assignee 設成席位名並把 label 換成 <code>taken</code>。</li>
+<li><strong>事件＝留言</strong>：<code>taken &lt;席位&gt; &lt;ts&gt;</code>、<code>done &lt;out_dir&gt; &lt;ts&gt;</code>、<code>failed &lt;N&gt; &lt;原因&gt;</code>、<code>dead &lt;原因&gt;</code>；留言串就是 events.log，<code>hs sync</code> 改讀票的留言與 label。</li>
+<li><strong>認領規則</strong>：席位每 30 秒查 <code>label:queued no:assignee</code>；<code>PATCH assignee=自己</code> 後<strong>重讀一次</strong>，assignee 不是自己就放手（票務 API 沒有 compare-and-set，用重讀補）。撞車只是重排，不會雙做。</li>
+<li><strong>交付</strong>：仍在共享目錄 <code>runs/&lt;日期&gt;/&lt;task_id&gt;/</code>，票留言貼 out_dir；驗收指令在票身，綠了貼輸出關票，紅了留言退回、label 回 <code>queued</code>。</li>
+<li><strong>死信</strong>：失敗兩次 label→<code>dead</code>，留言寫理由；<code>hs sync</code> 把 dead 寫回清單。</li>
+<li><strong>清單</strong>：feature_list.json 退成票的快取（或直接以 <code>label:jvg</code> 查詢代替）；passes 仍只准 check 翻。</li>
+<li><strong>心跳</strong>：席位每分鐘更新自己的一張「席位狀態」票或共享目錄的 <code>hb/&lt;席位&gt;</code> 檔；stall_watch 改看 <code>taken</code> 超過 30 分鐘沒新留言。</li>
+</ul>
+<p>代價：延遲秒→半分鐘；票務系統掛了整條線停（valkey 版票掛了活還在跑）。以每天二十張、十四席的量，兩個都付得起。第 7 節七條驗收原樣適用，把「隊列零訊息」讀成「沒有 queued 票」、「tasks:dead 有一筆」讀成「label=dead」。</p></main>
