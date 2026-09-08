@@ -1,0 +1,349 @@
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Prompt audit 2026-09-08</title><style>
+:root{color-scheme:light dark;--bg:#faf8f3;--fg:#1d1c1a;--mut:#5c5a55;--acc:#8a4b1f;--line:#d9d4c8;--code:#f0ece3}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1b19;--fg:#ece8df;--mut:#a7a299;--acc:#e0a06a;--line:#3a3833;--code:#26241f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 -apple-system,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
+main{max-width:46em;margin:0 auto;padding:1.2em 1em 4em}h1{font-size:1.5em;line-height:1.3}h2{font-size:1.2em;border-bottom:1px solid var(--line);padding-bottom:.2em;margin-top:2em}h3{font-size:1.05em;color:var(--acc)}
+table{border-collapse:collapse;display:block;overflow-x:auto;font-size:.92em}th,td{border:1px solid var(--line);padding:.35em .6em;vertical-align:top;text-align:left}th{background:var(--code)}
+code{background:var(--code);padding:.05em .3em;border-radius:3px;font-size:.9em}pre{background:var(--code);padding:.8em;overflow-x:auto;font-size:.82em;line-height:1.5}pre code{background:none;padding:0}
+li{margin:.3em 0}p{max-width:65ch}
+</style><main><h1>Prompt audit — Sai 的 Claude Code 環境（目標模型 Fable 5.1）</h1>
+<p>量於 2026-09-08 08:5x 台北。流程：<code>/claude-api prompt-audit</code>（bundled skill 2.1.258，shared/prompt-audit.md）。<strong>只提案不動檔</strong>；每條附位置、證據、模式、為何在 Fable 5.1 下過時、信心。</p>
+<h2>假設（Step 0）</h2>
+<ul>
+<li>範圍：Ray 說「現有的 CLAUDE.md、Skills」。我把「送進模型的文字」全算進去：<code>/app/CLAUDE.md</code>、共享規則頁（gbrain <code>claude.md</code>，開機 hook 注入）、<code>~/.claude/skills/*/SKILL.md</code>（9 個）、<code>~/.claude/agents/*.md</code>（2 個）、每回合 hook 注入的文字（<code>~/.claude/hooks/</code>、<code>/app/adr_frontier/</code>、<code>/app/handoff/hs.py</code>）、auto-memory 索引 <code>MEMORY.md</code>（每場注入）、superpowers 外掛的 SessionStart 注入、MCP 工具描述（nova／bus／discord）、設定檔（<code>~/.claude/settings.json</code>、<code>/app/.claude/settings.json</code>、<code>opus50.sh</code>、<code>.mcp.json</code>）。</li>
+<li>目標模型：Fable 5.1（settings.json <code>model: claude-fable-5-1[1m]</code>，Ray 指名）。</li>
+<li>沒問人，直接跑；範圍太寬可縮小重跑。</li>
+</ul>
+<h2>一句話</h2>
+<p><strong>CLAUDE.md 本身的喊話密度低（一律 5、必須 2、不准 3，全帶原因），真正的債在三處：每回合重覆注入的提醒（七道 hook）、寫進規則檔的事故考古（23 行帶日期）、以及七條靠我手跑的 daemon 自癒指令（可以是 code 卻是散文）。</strong> 舊模型代號零筆，這格乾淨。</p>
+<h2>計數</h2>
+<table>
+<thead>
+<tr>
+<th>群</th>
+<th>高</th>
+<th>中</th>
+<th>低／flag</th>
+<th>乾淨</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 過時 prompt 文字</td>
+<td>3</td>
+<td>4</td>
+<td>2</td>
+<td>舊模型代號 0、update suppressor 0</td>
+</tr>
+<tr>
+<td>2 脆弱 skill</td>
+<td>1</td>
+<td>4</td>
+<td>2</td>
+<td>algebra／defuddle／agents 兩檔</td>
+</tr>
+<tr>
+<td>3 工具描述</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>discord reply</td>
+</tr>
+<tr>
+<td>4 設定</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>settings.json 模型欄</td>
+</tr>
+</tbody>
+</table>
+<p>影響最大的三條：<strong>(H1) 七道每回合注入</strong>——Fable 5.1 記得住講過一次的規則，重覆每回合付 token（帳單＝呼叫數×上下文，09-06 量過）；<strong>(H2) 七條 daemon 自癒散文</strong>——<code>ensure_daemons.sh</code> 已在 SessionStart 跑，卻只管本機五隻，qqs 那七隻靠我讀 CLAUDE.md 手跑；<strong>(H4) nova 工具描述</strong>——<code>dispatch</code> 九個參數零描述、timeout 預設 300 跟規則寫的 1800 對不上，這是合約不符，prompt 補不了。</p>
+<hr />
+<h2>高信心（文件明寫或在目標模型上會錯）</h2>
+<h3>H1 每回合重覆注入的提醒（Group 1d「Instruction re-insertion every few turns」）</h3>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>證據</th>
+<th>每回合？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.claude/hooks/telegram-channel-guard.sh:19-28</code></td>
+<td>🔴 <strong>DISCORD 通道紀律</strong> … <strong>MUST</strong> 透過 reply 送出 … 已漏送記錄：2026-08-18 ×2 … 帶 nonce 的提問尤其致命</td>
+<td>Discord 訊息每則</td>
+</tr>
+<tr>
+<td><code>~/.claude/hooks/capture_reminder.py:14</code></td>
+<td>⚡[B-capture] 回應前掃這一輪有沒有：決策／crux／開著的線 …（約 300 字）</td>
+<td>每回合</td>
+</tr>
+<tr>
+<td><code>/app/adr_frontier/sai_queue_local.py:32</code></td>
+<td>🚌[sai-pull] 你的隊首：P4a 窗尾結算（2026-08-12）… 挑題權在隊列不在你</td>
+<td>每回合＋每次工具後（throttle 600s）</td>
+</tr>
+<tr>
+<td><code>~/.claude/settings.json</code> UserPromptSubmit</td>
+<td><code>echo 'Be organized and concise.'</code></td>
+<td>每回合</td>
+</tr>
+<tr>
+<td><code>~/.claude/hooks/rg_recall.py</code></td>
+<td>[rg-recall：你以前講過這個] 逐字稿片段</td>
+<td>每回合</td>
+</tr>
+<tr>
+<td><code>~/.claude/hooks/brain-first.sh</code></td>
+<td>[Brain-first context] gbrain 三段</td>
+<td>每回合</td>
+</tr>
+<tr>
+<td><code>/app/handoff/hs.py nag</code></td>
+<td>兩小時沒動會罵；平時印「自己動手 N／派工 M」</td>
+<td>每回合</td>
+</tr>
+</tbody>
+</table>
+<p>為何過時：guide 1d 最後一列——重覆插入是給會忘指令的舊模型的拐杖；Fable 5.1 一次講過就記得，每次重覆都付 token，而且在 preserved thinking 下若日後被拿掉還算 history edit。Discord 那條的強制已經由 Stop hook <code>discord_reply_guard.py</code> 用 code 做了（1d「Enforce in code」），散文是第二份。
+區分：brain-first／rg-recall 每回合帶的是<strong>新資料</strong>不是同一句話，不算重覆（但 rg-recall 常命中自己的話，價值低，見 L2）。
+動作：
+- Discord 紀律 → <code>rewrite</code>：留一行事實「這則來自 Discord，發問者看不到終端；用 reply 工具回」，刪 🔴／MUST／漏送史／nonce 段（歷史留在 memory <code>feedback_discord_send_is_active_action</code>）。
+- B-capture → <code>move</code>：改成 Stop hook 只在偵測到「決策詞」時提醒，或每場一次。
+- <code>Be organized and concise.</code> → <code>remove</code>：Ray 的「短」檔已在 memory，這句是通用美德（1c padding）。
+- sai-pull → 見 H3。</p>
+<h3>H2 七條 daemon 自癒指令寫成散文（Group 1d「Unenforced instructions … could be hooks」＋keep list 3 的反面）</h3>
+<p>位置：<code>/app/CLAUDE.md:37-58</code>（snapshot／arxiv feed／doorman／heartbeat／LINE 橋／relay／stall_watch）＋ <code>:79</code>（jvg_bridge）。
+證據：每條都是「<code>nova exec qqs</code> 跑 <code>D=…; P=$(cat $D/.pid); { … } || setsid … &amp;</code>」外加一段為什麼。
+為何過時：<code>ensure_daemons.sh</code> 已在 SessionStart 跑（本場輸出：snapshot／cdp_tunnel／silence_watch／daily_jobs／family_orders 五隻），qqs 側七隻卻靠我每場讀規則手跑——這正是「行為規則能寫成 hook 就別當散文」。精確腳本本身該留（keep list 3），但該住在腳本裡不是規則裡。
+動作：<code>move</code>——把七條併進 <code>ensure_daemons.sh</code>（經 <code>nova exec qqs</code>，pidfile＋/proc 判活照舊），CLAUDE.md 縮成一行「開機 hook 印 [ensure_daemons] 十二格；❌ 的那格附補法」。每條的「為什麼」與坑（kill -0 殭屍、LINE_LIVE=1、時戳跟週期一起判）留在腳本註解或 gbrain。</p>
+<h3>H3 停在 2026-08-12 的隊首每回合注入（Group 1d fossils）</h3>
+<p>位置：<code>/app/adr_frontier/sai_queue_local.py:32</code>（資料在 valkey <code>sai:queue</code>）。
+證據：「你的隊首：P4a 窗尾結算（2026-08-12）…挑題權在隊列不在你；Ray 的話=唯一例外通道」。
+為何過時：27 天沒推進，本場每回合注入同一句；規則「挑題權在隊列」在每一份逐字稿裡都被違反（Ray 直接下題）——「nothing enforces it and nobody misses it」。
+動作：<code>remove</code>（停這道 hook）或清隊列後只在隊首變動時注入。決定權 Ray：隊列制還要不要。</p>
+<h3>H4 nova 工具描述不足（Group 3「Under-described — add」）</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>現況</th>
+<th>缺</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mcp__nova__dispatch</code></td>
+<td>「派工給指定 agent 執行任務(透過 claude -p)…結構化派工…舊式派工:直接填 prompt(向下相容)」</td>
+<td><code>task／tools／acceptance／verify／deps／ticket／timeout</code> 七個參數零描述；<code>timeout</code> 預設 300 但共享規則寫「預設 1800」；「舊式」是遷移語（1d）；沒寫何時不用（純 shell 用 exec）</td>
+</tr>
+<tr>
+<td><code>mcp__nova__exec</code></td>
+<td>「在指定 agent 的容器裡執行 shell 命令。適合檔案操作、狀態檢查。」</td>
+<td>逾時行為（rc=144 跟 paramiko 逾時同形；靜默 300s 必死）；<code>timeout</code> 預設 30；輸出上限；不回傳什麼</td>
+</tr>
+<tr>
+<td><code>mcp__bus__say</code></td>
+<td>「…to 要指名到哪一個腦——tui-grok/cligrok/...,不要寫裸 grok」</td>
+<td>收件人清單用「...」省略；<code>corr</code> 何時必帶</td>
+</tr>
+</tbody>
+</table>
+<p>為何過時：guide Group 3——工具描述的尺是合約精確度，最常見的病是描述不足；合約與行為不符（300 vs 1800）prompt 救不了。
+動作：<code>add</code>。提案文字見下方 diff（住 DGX 的 nova MCP server，開單派席位改）。</p>
+<h3>H5 superpowers 外掛的開場注入（Group 1a 壓力語＋1c 禁令牆）</h3>
+<p>位置：<code>~/.claude/plugins/cache/claude-plugins-official/superpowers/6.3.0/skills/using-superpowers/SKILL.md</code>（SessionStart 注入全文）。
+證據：「If you think there is even a 1% chance a skill might apply … you ABSOLUTELY MUST invoke the skill … This is not negotiable. You cannot rationalize your way out of this.」＋ 12 列「Red Flags」表。
+為何過時：1a——對舊模型的觸發加壓，在 Fable 5.1 上變成過度觸發（本場實例：為回一則 Discord 貼圖說明也去載 skill）；1c——禁令牆把「不要做 X」錨向 X。
+動作：<code>flag</code>（外掛檔不能改）。選項：關掉 superpowers（<code>settings.json enabledPlugins</code>），把真正用到的 brainstorming／systematic-debugging 兩個 skill 複製成 user skill；或留著接受 4 KB／場。Ray 定。</p>
+<h3>H6 設定裡的死旗標（Group 4 API fossils）</h3>
+<p>位置：<code>/app/opus50.sh:5-7</code>。
+證據：<code>--dangerously-load-development-channels server:discord server:park server:hotline server:bus</code> ＋ <code>--channels plugin:telegram@…</code>。
+為何過時：memory <code>reference_mcp_json_is_the_loader</code>（2026-09-01 實測）：<code>server:&lt;name&gt;</code> 旗標不生效，<code>.mcp.json</code> 才是載入途徑；telegram 外掛本場連線失敗，聊天 08-28 已搬 Discord。
+動作：<code>remove</code> 兩段旗標（先驗：拿掉後 <code>.mcp.json</code> 八個 server 仍掛上）；telegram 留不留 Ray 定。</p>
+<hr />
+<h2>中信心（廣泛觀察到的模式）</h2>
+<h3>M1 規則檔裡的事故考古（Group 2「History narratives」）</h3>
+<p>位置：<code>/app/CLAUDE.md</code> 23 行帶日期。例：<code>:35</code>「背景：2026-09-02 rg 逐字稿，一個月 23 次同型責罵…我把它讀成設計」；<code>:43</code>「2026-09-01 我自己誤判過」；<code>:98</code>「今晚 dogfood：grok_gate 抓到我把 pipeline smoke 講成核心機制」；<code>:111</code>「2026-09-06 死兩次」；共享規則頁「派工紀律」表的 slug 欄。
+為何過時：規則的權威是它規定的行為，不是引發它的事故；日期與「今晚」會過期（<code>今晚</code> 已經是 07-17）。原因（why）要留，敘事（when、who、幾次）搬 gbrain／memory。
+動作：<code>rewrite</code>——每條留「規則＋一句原因」，刪日期與次數。示例見 diff。</p>
+<h3>M2 遷移相對語（Group 1d「Migration-relative phrasing」）</h3>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>證據</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/app/CLAUDE.md:54</code></td>
+<td>「#281 起沒設就是 dry-run」</td>
+</tr>
+<tr>
+<td><code>/app/CLAUDE.md:62</code></td>
+<td>「（結尾標記判完成＋到場表，09-05 起）」</td>
+</tr>
+<tr>
+<td>共享規則頁 動詞表 check brain</td>
+<td>「<strong>不要再</strong> <code>get_episodes(daily-*)</code>——那條 2026-09-01 退役…episodes 自 08-20 起零寫入」</td>
+</tr>
+<tr>
+<td>共享規則頁 Graphiti group_id</td>
+<td>「~~daily-{YYYYMMDD}~~ <strong>2026-09-01 退役</strong>」</td>
+</tr>
+<tr>
+<td><code>~/.claude/hooks/telegram-channel-guard.sh:14-16</code></td>
+<td>「2026-08-18：加上 discord。這道閘 07-14 就建好了但只認 telegram」</td>
+</tr>
+</tbody>
+</table>
+<p>為何過時：文字是對舊版 prompt 的 diff，模型沒看過舊版；「不要再」暗示一個幽靈選項。
+動作：<code>rewrite</code> 成「現行規則就是唯一規則」：「LINE 橋要 <code>LINE_LIVE=1</code> 才真的推」「check brain＝list_pages；Graphiti 只查血緣」。</p>
+<h3>M3 「仍是自律、hook 待建」的自白（Group 1d「Unenforced instructions」）</h3>
+<p>位置：<code>/app/CLAUDE.md:98</code>。證據：「⚠️ 這條寫在 claude.md 仍是『自律』——真正的強制機制是 hook（待建）」。
+為何過時：memory <code>feedback_grok_gate_positioning</code>：Ray 已裁「別自主建強制 hook，第三腳是 Ray」——所以「待建」永遠不會建，這句是死待辦。
+動作：<code>rewrite</code>——刪「待建」句，留「報 claim 前過 grok_gate，verdict 一起帶給 Ray」。</p>
+<h3>M4 共享規則頁的團隊配置表（Group 2「Volatile specifics」）</h3>
+<p>位置：gbrain <code>claude.md</code>「團隊配置」。證據：Port／Model 欄＋「⚠️ 這張表會過期，開機一律先跑 check latency」＋ 9993/9991 誤寫史。
+為何過時：自己承認會過期又沒有驗證日；check latency 才是真相來源。
+動作：<code>rewrite</code>——留 Agent／角色兩欄，Port／Model 改「以 check latency 當日輸出為準」，刪 9993/9991 敘事（已在 snapshot）。</p>
+<h3>M5 html-page skill 的事故敘事＋重覆清單（Group 2「History narratives」＋「duplicated info」）</h3>
+<p>位置：<code>~/.claude/skills/html-page/SKILL.md:11-13,27,36,43-56</code>。
+證據：「<strong>我 2026-08-10 只載了第一個。</strong>…盲改三次、三次都宣告修好」；<code>v7_run_claude.sh:55</code>；「報告頁 12 條驗收」全文（gbrain <code>research-pro-html-report-committee-20260905</code> 已有）。
+為何過時：規則（手寫 SVG 用 currentColor；沒截圖不說修好）是好的，敘事與行號會過期；12 條在兩處會漂移。
+動作：<code>rewrite</code>——留兩條規則＋原因一句；12 條改成一行指標。</p>
+<h3>M6 coach skill 寫死路徑（Group 2「Volatile specifics」）</h3>
+<p>位置：<code>~/.claude/skills/coach/SKILL.md:48</code>。證據：「Set cwd before every dispatch: <code>{"action":"cd","path":"/team/Kimi/qq4"}</code>」。
+為何過時：<code>/team/Kimi/qq4</code> 是七月的工作目錄；派工現在走 valkey／Gitea（<code>hs open</code>→<code>hs dispatch</code>），skill 描述的整條流程（dispatch→verify→iterate）跟現行「兩群分開、Fable 只開單驗收」相反。
+動作：<code>rewrite</code> 或 <code>remove</code> 整個 skill（<code>disable-model-invocation: true</code>，只手動觸發，沒人用）。Ray 定。</p>
+<h3>M7 web-seat-ops／show_debug_flow 標題帶事故引句（Group 2）</h3>
+<p><code>web-seat-ops/SKILL.md:6</code>「（Ray 2026-09-03：『操作網頁有夠爛』之後立的）」；<code>show_debug_flow/SKILL.md:8</code>「Ray 2026-07-30 定的動詞。範本＝telegram 入向失聯那場」。
+動作：<code>rewrite</code> 標題只留名字；出處一行搬 frontmatter 註解。內文的 CDP 埠、profile 路徑、「不准改寫回覆原文」是環境事實與真約束，<strong>留</strong>。</p>
+<h3>M8 MEMORY.md 索引（Group 2「recency trap」＋「patch accretion」）</h3>
+<p>位置：<code>~/.claude/projects/-app/memory/MEMORY.md</code>（170 行、34 KB，每場注入）。
+證據：每行一個事故成規則：「已犯 16 次」「一天四犯」「一晚六犯」；同主題多條（驗證類 9 條、橋接類 2 條、探針類 3 條）。
+為何過時：guide 2「一次跌倒寫成永久規則，下一場繞一個不存在的坑」；同主題多條讓模型花力氣調和措辭。這是我自己維護的檔，不是 Ray 寫的。
+動作：<code>rewrite</code>（合併同題），提案：驗證 9 條→3 條、探針 3→1、橋接 2→1，目標 &lt;120 行。不是刪內容，是把「為什麼」合成原則。要 Ray 點頭才動（memory 是共享 volume，Celta 同掛）。</p>
+<hr />
+<h2>低信心／flag</h2>
+<ul>
+<li><strong>L1 字數上限</strong>（1f）：共享規則 snapshot ≤4,500 字、handoff ≤3,500 字、boot 門檻 10000 字。guide 說數字上限是舊模型的夾子；但這裡是 hook 注入截斷的機械預算（<code>[boot-eof] 完整</code>），是真約束。<strong>留</strong>，建議改寫成「要塞得進開機注入（hook 印 [boot-eof] 完整）」而不是裸數字。</li>
+<li><strong>L2 rg-recall 每回合</strong>：命中的多是我自己的話（memory <code>feedback_rg_recall_cross_agent</code>），本場三次全是雜訊。flag：量一週命中被引用的次數再決定。</li>
+<li><strong>L3 taste-skill（87 KB，21 個 MUST／ALWAYS／NEVER）與 mono-color（34 KB）</strong>：第三方 skill，「一口氣讀不完」訊號；description 短所以只在觸發時付費。flag。</li>
+<li><strong>L4 hook 數量</strong>：settings.json 約 30 個 hook 掛在 8 種事件，<code>dump_probe.py</code> 掛 8 處；沒有「每回合注入幾 KB」的計數（Group 4「No token accounting」）。建議先加一個計數（turn_journal 已在，加一欄 injected_bytes），之後每條刪減才量得到。</li>
+</ul>
+<h2>明確不動的（keep list）</h2>
+<ul>
+<li>Ray 的六條可及性規則（第一行即答案、禁表格禁檔名行號、粗體最多一個）：guide 1d 說 Fable 5.1 已經 under-format、anti-formatting 規則會剝掉讀者要的格式——但這是<strong>讀者的可及性需求（ADHD＋閱讀障礙）</strong>，keep list 1「context is never cruft」。留。</li>
+<li>CLAUDE.md「不准整檔重寫」：Fable 5.1 遷移指南明列 whole-file rewrites 是本模型行為，這條是對的模型對的病。留。</li>
+<li>共享規則「行為紅線」表 13 列 NEVER／MUST 每列帶「已付代價」：1e 說有原因的禁令留。留。</li>
+<li>共享規則「不卡終端／timeout 1800／雙向驗屍」：工具合約。留。</li>
+<li>algebra skill「2026-07-25 裸考 4/24、有表 21/24」：這是讀速查表的<strong>原因</strong>，不是敘事。留。</li>
+<li>家庭群組節：受眾與產品事實。留。</li>
+<li>舊模型代號：範圍內零筆；settings <code>claude-fable-5-1[1m]</code>。乾淨。</li>
+</ul>
+<h2>翻案條件</h2>
+<ul>
+<li>H1 若量出七道注入合計 &lt;2 KB／回合，token 論點站不住，只剩「重覆」論點（仍成立但降中）。</li>
+<li>H2 若 <code>nova exec qqs</code> 在 SessionStart 逾時常態化（&gt;5 s），搬進 hook 會拖慢開機，改成背景執行。</li>
+<li>M8 若 Celta 反對合併（共享 volume），只合我這邊的 feedback_* 不動她引用的。</li>
+</ul>
+<hr />
+<h2>提案 diff（Step 6，只含高／中信心；一條一 hunk，可以單獨拿）</h2>
+<h3>D1 <code>~/.claude/hooks/telegram-channel-guard.sh:19-28</code>（H1）</h3>
+<pre><code class="language-diff">-    jq -n --arg ctx &quot;🔴 **DISCORD 通道紀律（hook 強制注入，不靠記性）**
+-
+-這則訊息來自 Discord。發問者**看不到你的終端輸出**。
+-
+-**本回合的最終答案 MUST 透過 \`mcp__discord__discord__reply\` 送出。**
+-終端文字只是草稿。回合結束前沒有 reply 呼叫 = 漏送 = 對方只看到沉默。
+-
+-已漏送記錄：2026-08-18 ×2（Ray 追問「Sai!?」「人呢」「回報過來discord!?」）
+-帶 nonce 的提問尤其致命——對方在等那個字串來確認你讀到了。&quot; \
++    jq -n --arg ctx &quot;這則來自 Discord；發問者看不到終端。答案用 discord reply 工具送到同一個 chat_id（Stop hook 會擋沒送的回合）。&quot; \
+</code></pre>
+<h3>D2 <code>~/.claude/settings.json</code> UserPromptSubmit（H1）</h3>
+<pre><code class="language-diff">-      { &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;echo 'Be organized and concise.'&quot; },
+</code></pre>
+<h3>D3 <code>/app/adr_frontier/sai_queue_local.py</code>（H3）</h3>
+<pre><code class="language-diff">-        print(f&quot;🚌[sai-pull] 你的隊首：{head[1]}（{head[0]}）。做完 …&quot;)
++        # 只在隊首跟上次不同時才印；相同就沉默（隊列停在 08-12 那條 27 天）
++        if head[0] != last_seen: print(f&quot;🚌[sai-pull] 隊首變了：{head[1]}（{head[0]}）&quot;)
+</code></pre>
+<h3>D4 <code>/app/CLAUDE.md:37-58,79</code> → <code>ensure_daemons.sh</code>（H2）</h3>
+<pre><code class="language-diff">-- **確保自動 snapshot daemon 在跑**（…20 行…）
+-- **確保 arxiv feed daemon 在跑**（…）
+-- **確保 /team 頂層門房 daemon 在跑**（…）
+-- **確保心跳看守 daemon 在跑**（…）
+-- **確保 LINE 家人橋在跑**（…）
+-- **確保 relay 代班席 daemon 在跑**（…）
+-- **確保卡單看守 daemon 在跑**（…）
++- **daemon 自癒由 SessionStart hook `ensure_daemons.sh` 做**（本機五隻＋qqs 七隻；判活＝pidfile＋/proc State≠Z，kill -0 對殭屍回成功）。看 `[ensure_daemons]` 卡：❌ 的那格附補法。LINE 橋一定帶 `LINE_LIVE=1`，否則是 dry-run。
+</code></pre>
+<p>（<code>ensure_daemons.sh</code> 加七格，每格＝原 CLAUDE.md 那行 <code>nova exec qqs</code> 指令，經 <code>python3 /app/adr_frontier/nova_exec.py</code> 或現有 exec 包裝；坑的說明放腳本註解。）</p>
+<h3>D5 <code>/app/CLAUDE.md:98</code>（M3）</h3>
+<pre><code class="language-diff">-- ⚠️ **這條寫在 claude.md 仍是「自律」**——真正的強制機制是 hook（待建）。今晚 dogfood：grok_gate 抓到我把 pipeline smoke 講成「核心機制成立」。
+-- 相關教訓（今天）：[[feedback_fragment_not_runtime]]（讀片段≠runtime）、片段膨脹成產品命題是主罪。
++- 為什麼是自律不是 hook：Ray 裁定第三腳是他本人（memory feedback_grok_gate_positioning）。典型抓到的病：把 smoke 講成「核心機制成立」。
+</code></pre>
+<h3>D6 <code>/app/CLAUDE.md:35</code>（M1 示例）</h3>
+<pre><code class="language-diff">-  背景：2026-09-02 rg 逐字稿，一個月 23 次同型責罵「重啟又忘了怎麼到 /team／vk_xfer」——真因是容器重建清掉 `~/.valkey_pw` 與 `~/.ssh`，我把它讀成設計。密碼現在住 `/app/.valkey_pw`（gitignore，重建不掉）。
++  為什麼要量不要記：容器重建會清掉 `~/.ssh` 與家目錄的密碼檔，靠記憶會把「鑰匙沒了」讀成「設計不給」。密碼住 `/app/.valkey_pw`（gitignore，重建不掉）。
+</code></pre>
+<h3>D7 <code>/app/CLAUDE.md:54</code>（M2）</h3>
+<pre><code class="language-diff">-  —— **`LINE_LIVE=1` 必帶**：#281 起沒設就是 dry-run，log 有「LINE dry-run」但家人什麼都收不到。
++  —— 帶 `LINE_LIVE=1` 才真的推 LINE；沒帶是 dry-run，log 有字、家人收不到。
+</code></pre>
+<h3>D8 共享規則頁 動詞表 check brain（M2）</h3>
+<pre><code class="language-diff">-| **check brain** | `list_pages(sort=&quot;updated_desc&quot;, limit=10)`（＋要查血緣才 `search_memory_nodes`） | **不要再 `get_episodes(daily-*)`**——那條 2026-09-01 退役（Ray：…）。episodes 自 08-20 起零寫入，查了只會拿到空的 | `#243` |
++| **check brain** | `list_pages(sort=&quot;updated_desc&quot;, limit=10)`；血緣才查 Graphiti `search_memory_nodes` | 用 `get_episodes(daily-*)`——那裡沒有流水帳，只有空 | `#243` |
+</code></pre>
+<h3>D9 共享規則頁 團隊配置（M4）</h3>
+<pre><code class="language-diff">-| QQS | 9998 | Qwen 3.6-35B | Coder＋fast-gate/linter｜單＝1 artifact 粒度 |
+-…（Port／Model 兩欄）
+-⚠️ **這張表會過期，開機一律先跑 `check latency` 拿當天實況**。`agy_server.py` 預設寫 9993 實跑 9991、`agy2_server.py` 預設寫 9992 實跑 9989——信預設值重啟會同時弄掛兩台 gemini（`snapshot-20260726a-sai`）。
++| QQS | Coder＋fast-gate/linter｜單＝1 artifact 粒度 |
++…（只留 Agent／角色）
++埠與模型以當天 `check latency` 輸出為準；程式碼裡的預設埠不可信（見 `snapshot-20260726a-sai`）。
+</code></pre>
+<h3>D10 <code>~/.claude/skills/html-page/SKILL.md:9-13,36,43-56</code>（M5）</h3>
+<pre><code class="language-diff">-**我 2026-08-10 只載了第一個。** Ray 要 flow as html，我用 mermaid 畫圖、深色主題下白方格配淺字讀不到，
+-然後用 CSS 去蓋 mermaid 的樣式、再改成 `%%{init}%%` 主題變數，**盲改三次、三次都宣告修好、三次都沒改到**。
+-而 `artifact-diagramming` 第一段就寫著答案：**手寫 inline SVG，用 `currentColor`**。
+-我有那把鑰匙，沒去拿。
++為什麼兩個都載：圖的顏色失敗（深色主題白底淺字）在原始碼上看不出來，只有 `artifact-diagramming` 的 currentColor 寫法能結構性避免。
+…
+-2026-08-10 的紀錄：盲改三次、三次都宣告修好、三次都沒改到。
+…
+-## 報告頁 12 條驗收（…全文 12 條＋三個難讀＋可抄的站…）
++## 報告頁驗收
++12 條在 gbrain `research-pro-html-report-committee-20260905`；動手前讀一次，第一屏＝裁決框、表先行、正文 ≥17px 三條最常漏。
+</code></pre>
+<h3>D11 <code>/app/opus50.sh:5-7</code>（H6）</h3>
+<pre><code class="language-diff"> CLAUDE_FLAGS=&quot;--autocompact 400000 --dangerously-skip-permissions \
+-              --dangerously-load-development-channels server:discord server:park server:hotline server:bus \
+-              --channels plugin:telegram@claude-plugins-official&quot; \
++              &quot; \
+</code></pre>
+<p>（前提：<code>.mcp.json</code> 已列 discord／park／hotline／bus；telegram 要留就把第二行留下。）</p>
+<h3>D12 nova MCP 工具描述（H4，DGX 側 <code>nova</code> server，開單派席位）</h3>
+<pre><code class="language-diff">-&quot;派工給指定 agent 執行任務(透過 claude -p)。回傳完整結果。\n結構化派工:填 task + tools(選填)+ acceptance(選填),自動組合。\n舊式派工:直接填 prompt(向下相容)。&quot;
++&quot;在指定 agent 的容器裡用 headless CLI 跑一件任務，阻塞到完成或逾時才回傳全文。task＝要做的事（一件、一個 artifact）；tools＝允許的工具白名單（空＝預設）；acceptance＝完成判準，會原文附在任務尾；verify＝回傳前執行的驗證指令；deps＝先決任務 id；ticket＝Gitea 票號（沒票不派）；timeout 秒（預設 300；30 分鐘級長工設 1800，超過拆步）。純 shell、查狀態、讀檔用 exec 不用 dispatch。回傳 ok=true 只代表對方交回，不代表產物存在——驗 /team 檔案。&quot;
+-&quot;在指定 agent 的容器裡執行 shell 命令。適合檔案操作、狀態檢查。&quot;
++&quot;在指定 agent 的容器裡跑一段 shell，回傳 stdout/stderr 與 rc。timeout 秒，預設 30；靜默超過 300 秒會被切斷，長跑用 setsid 背景化再輪詢產物。rc=144 是逾時不是遠端錯誤。輸出很大時先落 /team 檔再讀片段。&quot;
+-&quot;…to 要指名到「哪一個腦」——tui-grok/cligrok/...,不要寫裸 grok,那是四個不同的東西。&quot;
++&quot;…to 是收件席位全名：tui-grok、cligrok、webgrok、webkimi、line:&lt;userId&gt;、webagent:out…（裸 grok 對不到人）。corr＝對話關聯 id，回覆某則時帶它的 corr。&quot;
+</code></pre>
+<h3>D13 <code>MEMORY.md</code>（M8，示意一組）</h3>
+<pre><code class="language-diff">-- [驗收前先刪證物](…)／[校驗碼找格式自帶的](…)／[Verify the verifier](…)／[驗測具](…) — gate 撿到殘留就綠燈…
+-- [對抗性驗證](…) — 失敗 case 非零…
+-- [驗檔不驗回應](…) — 判 worker 成敗看 file/artifact…
++- [驗收三原則](feedback_verification_principles.md) — 先刪殘留再驗；verifier 與 harness 本身要驗；判成敗看 artifact 不看回應（合併七檔，原檔保留）
+</code></pre>
+<h2>驗證計畫（Step 7）</h2>
+<p>每個 hunk 拿之前先量：<code>turn_journal</code> 加 injected_bytes 一週；D1／D2／D3 拿掉後看 Discord 漏送計數（<code>discord_reply_guard</code> 已在數）與 crux ledger 每日筆數有沒有掉——掉了就用最短形式加回，不恢復原文。D4 拿掉後跑一次容器重建演練確認十二格全綠。</p></main>
