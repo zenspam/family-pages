@@ -194,4 +194,15 @@ li{margin:.3em 0}p{max-width:65ch}
 <li><strong>清單</strong>：feature_list.json 退成票的快取（或直接以 <code>label:jvg</code> 查詢代替）；passes 仍只准 check 翻。</li>
 <li><strong>心跳</strong>：席位每分鐘更新自己的一張「席位狀態」票或共享目錄的 <code>hb/&lt;席位&gt;</code> 檔；stall_watch 改看 <code>taken</code> 超過 30 分鐘沒新留言。</li>
 </ul>
-<p>代價：延遲秒→半分鐘；票務系統掛了整條線停（valkey 版票掛了活還在跑）。以每天二十張、十四席的量，兩個都付得起。第 7 節七條驗收原樣適用，把「隊列零訊息」讀成「沒有 queued 票」、「tasks:dead 有一筆」讀成「label=dead」。</p></main>
+<p>代價：延遲秒→半分鐘；票務系統掛了整條線停（valkey 版票掛了活還在跑）。以每天二十張、十四席的量，兩個都付得起。第 7 節七條驗收原樣適用，把「隊列零訊息」讀成「沒有 queued 票」、「tasks:dead 有一筆」讀成「label=dead」。</p>
+<h2>12. 若重構現行系統（Ray 2026-09-08 13:31 問；Sai 提案，未拍板）</h2>
+<p>一句話：三個真相源收成一個，票就是狀態，其他全是票的投影。</p>
+<ol>
+<li>票當唯一真相（第 11 節）；feature_list.json 降成快取；拆 <code>jvg:dispatch</code>／<code>jvg:dispatched</code> 橋，教練直打票務 API。</li>
+<li>驗收變檔案：開票時寫 <code>CHECK.sh</code> 放席位寫不到的目錄，派工前封存 sha；check＝跑它。席位看得到題目、改不了考卷。</li>
+<li>worker 不重寫：心跳、冪等、兩次死信、產物檢查保留；只改兩處——執行端抽成介面（prompt、cwd、ok），事件從 XADD 改成票留言；owners 以 assignee 取代；刪 .bak。</li>
+<li>教練端五個動詞 open／dispatch／sync／check／finish，全部冪等、可放 cron；sync＋check 每十分鐘自動跑（無人值守的關鍵）。</li>
+<li>看守一條規則：taken 超過 30 分鐘沒新留言就喊；票表從票直接算。</li>
+<li>重構的驗收＝尺：改前改後各量十張票的通過率與永久掉件。沒尺不動手。</li>
+</ol>
+<p>順序：worker 事件寫進票留言（並存）→ 退役 JSON → 拆橋 → 換執行端；每步第 7 節七條全綠。不做：加閘、重寫 worker、換票務系統。</p></main>
