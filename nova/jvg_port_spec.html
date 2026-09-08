@@ -1,0 +1,178 @@
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>jvg 搬家 spec</title><style>
+:root{color-scheme:light dark;--bg:#faf8f3;--fg:#1d1c1a;--mut:#5c5a55;--acc:#8a4b1f;--line:#d9d4c8;--code:#f0ece3}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1b19;--fg:#ece8df;--mut:#a7a299;--acc:#e0a06a;--line:#3a3833;--code:#26241f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 -apple-system,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
+main{max-width:46em;margin:0 auto;padding:1.2em 1em 4em}h1{font-size:1.5em;line-height:1.3}h2{font-size:1.2em;border-bottom:1px solid var(--line);padding-bottom:.2em;margin-top:2em}h3{font-size:1.05em;color:var(--acc)}
+table{border-collapse:collapse;display:block;overflow-x:auto;font-size:.92em}th,td{border:1px solid var(--line);padding:.35em .6em;vertical-align:top;text-align:left}th{background:var(--code)}
+code{background:var(--code);padding:.05em .3em;border-radius:3px;font-size:.9em}pre{background:var(--code);padding:.8em;overflow-x:auto;font-size:.82em;line-height:1.5}pre code{background:none;padding:0}
+li{margin:.3em 0}p{max-width:65ch}
+</style><main><h1>jvg 搬家 spec — 把「JSON／valkey／gitea」派工流程移到另一台電腦給 agent 開發</h1>
+<p>寫於 2026-09-08 13:2x 台北。來源：Ray 語音「我要將 jvg 這套 flow 轉移到其他電腦上給 agent 開發，你把 spec 寫出來」。讀者＝要在新機器上把它蓋起來的 agent；每個零件寫「做什麼、介面是什麼、搬家要換什麼、怎麼驗」。現行實作的檔名只當參考，不是要照抄。</p>
+<h2>0. 一句話</h2>
+<p>一張活＝一張票（gitea）＋一筆隊列訊息（valkey）＋清單上一行（JSON）。教練只開票、派單、跑驗收；席位從隊列拉活、在共享目錄交件；事件流把「接了／做完／死了」寫回清單。<strong>passes 只准驗收指令跑綠翻，人手不能翻。</strong></p>
+<h2>1. 角色與機器</h2>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>做什麼</th>
+<th>現行住哪</th>
+<th>搬家後</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>教練（coach）</td>
+<td>開票、派單、sync、check、finish</td>
+<td>Sai 容器（沒掛共享目錄）</td>
+<td>任一台能連 valkey＋gitea 的機器；掛得到共享目錄就不需要橋</td>
+</tr>
+<tr>
+<td>橋（bridge）</td>
+<td>替教練在共享目錄落 spec、投隊列</td>
+<td>qqs 容器 <code>jvg_bridge.py</code></td>
+<td>教練掛得到共享目錄就省掉；掛不到就保留</td>
+</tr>
+<tr>
+<td>席位（worker）×N</td>
+<td>拉活、跑模型、交件、發事件</td>
+<td>每席一隻 <code>02_pull_worker.py</code>＋一個本機 <code>/control</code> HTTP 執行端</td>
+<td>每席一隻 worker＋任一個「收 prompt 回結果」的執行端（pi <code>--mode rpc</code>、<code>claude -p</code>、任何 HTTP）</td>
+</tr>
+<tr>
+<td>看守（optional）</td>
+<td>卡單告警、心跳、票表</td>
+<td><code>stall_watch.py</code>、<code>heartbeat/</code>、<code>tickets_page.py</code></td>
+<td>第二階段再搬</td>
+</tr>
+</tbody>
+</table>
+<p>共用基礎設施：一台 valkey（Redis 相容，要密碼）、一個 gitea（repo＋token）、一個所有席位都掛的共享目錄（現行 <code>/team</code>）。</p>
+<h2>2. 三份狀態檔（J）</h2>
+<p>全住 <code>HS_DIR</code>（環境變數，預設 <code>/app/handoff</code>），git 追蹤。</p>
+<p><strong>feature_list.json</strong>：<code>{"features":[…]}</code>，每項：</p>
+<pre><code class="language-json">{&quot;id&quot;:&quot;line-push-allowlist&quot;,
+ &quot;behavior&quot;:&quot;一句話說做完會怎樣（給票的標題與 spec 正文）&quot;,
+ &quot;check_template&quot;:&quot;dgx:cd {out_dir} &amp;&amp; test -s REPORT.md &amp;&amp; &lt;可執行的驗收指令&gt;&quot;,
+ &quot;check&quot;:&quot;（dispatch 後把 {out_dir} 代入 check_template 的結果）&quot;,
+ &quot;passes&quot;:false,
+ &quot;ticket&quot;:&quot;#299&quot;,&quot;opened_at&quot;:&quot;2026-09-07T20:36:35+08:00&quot;,
+ &quot;task_id&quot;:&quot;jvg.line-push-allowlist.09071307&quot;,
+ &quot;out_dir&quot;:&quot;/team/runs/20260907/jvg-20260907/jvg.line-push-allowlist.09071307&quot;,
+ &quot;stream_id&quot;:&quot;1788786446202-0&quot;,&quot;status&quot;:&quot;queue_task_done&quot;}
+</code></pre>
+<p>規則：<code>passes</code> 只由 <code>hs check &lt;id&gt;</code> 跑綠翻 true；<code>hs verify</code> 抓人手翻的。<code>check</code> 以 <code>dgx:</code> 開頭＝要在共享目錄那側跑（教練掛不到時交給橋）；沒前綴＝教練本機跑。<code>{out_dir}</code> 佔位符 dispatch 時代入。</p>
+<p><strong>progress.log</strong>：只增不改，一行一事，時戳台北：<code>2026-09-08T08:42:01+08:00 &lt;事&gt;</code>。<code>hs note "&lt;事&gt;"</code> 寫。</p>
+<p><strong>handoff.json</strong>：<code>{"current":{"feature_id","ticket","stopped_at","since"},"next":[],"blocked":[],"updated_at","last_finish_at"}</code>。<code>hs set-current &lt;id&gt; &lt;#票&gt; "&lt;停在哪&gt;"</code> 寫。</p>
+<h2>3. 教練命令（hs）</h2>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>做什麼</th>
+<th>對外呼叫</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>open &lt;id&gt;</code></td>
+<td>開票；票號寫回清單</td>
+<td>gitea <code>POST /repos/{repo}/issues</code>，title <code>[jvg] &lt;behavior 前 80 字&gt;</code>，body＝behavior＋「驗收（機器判）」程式碼塊＋來源</td>
+</tr>
+<tr>
+<td><code>dispatch &lt;id&gt; [--timeout 1500] [--owners only:&lt;seats&gt;] [--detail "&lt;只做這一件&gt;"] [--again]</code></td>
+<td>沒票不派；組 spec；投橋；等回執</td>
+<td>valkey <code>XADD jvg:dispatch</code>；<code>XREAD BLOCK jvg:dispatched</code> 等 <code>task_id</code> 對上</td>
+</tr>
+<tr>
+<td><code>sync</code></td>
+<td>事件流 → 清單 <code>status</code>（做完≠通過）</td>
+<td>valkey <code>XREVRANGE nova:events COUNT 3000</code>，只認 <code>queue_task_*</code>／<code>owners_*</code></td>
+</tr>
+<tr>
+<td><code>check &lt;id&gt;</code></td>
+<td>跑 check；綠翻 passes</td>
+<td>本機 shell，或 <code>dgx:</code> 交橋</td>
+</tr>
+<tr>
+<td><code>note</code>／<code>set-current</code>／<code>status</code>／<code>nag</code></td>
+<td>三檔讀寫；開機印停在哪；兩小時沒動就喊</td>
+<td>無</td>
+</tr>
+<tr>
+<td><code>finish -m "&lt;msg&gt;"</code></td>
+<td>三痕跡（新 note、handoff 更新、有東西可 commit）缺一拒；齊了 <code>git commit</code></td>
+<td>git</td>
+</tr>
+<tr>
+<td><code>hands &lt;#票&gt; "&lt;理由&gt;"</code></td>
+<td>教練自己改程式檔的例外憑證（配 PreToolUse hook）</td>
+<td>無</td>
+</tr>
+</tbody>
+</table>
+<p>Gitea 憑證：token 檔（現行走共享目錄的 creds 檔＋<code>whoami_cred.py</code>；新機器改環境變數 <code>GITEA_URL</code>／<code>GITEA_REPO</code>／<code>GITEA_TOKEN</code>）。valkey 密碼：檔案（現行 <code>/app/.valkey_pw</code>），新機器改 <code>VALKEY_HOST</code>／<code>VALKEY_PORT</code>／<code>VALKEY_PW</code>。<strong>現行程式碼把這些寫死，搬家第一件事是把常數抽成環境變數。</strong></p>
+<h2>4. 隊列協定（V）</h2>
+<h3>4.1 教練 → 橋：stream <code>jvg:dispatch</code></h3>
+<p>欄位：<code>task_id</code>（<code>jvg.&lt;feature_id&gt;.&lt;MMDDHHMM&gt;</code>）、<code>ticket</code>、<code>timeout</code>（秒）、<code>expected</code>（逗號分隔的產物相對路徑，至少 <code>REPORT.md</code>）、<code>verify</code>、<code>flow_id</code>（<code>jvg-YYYYMMDD</code>）、<code>spec_md</code>（整份 spec 正文）、<code>from</code>、<code>owners</code>（空或 <code>only:&lt;consumer,…&gt;</code>）。
+橋回 stream <code>jvg:dispatched</code>：<code>task_id, ok, out_dir, stream_id</code> 或 <code>task_id, ok=false, error</code>。</p>
+<h3>4.2 橋 → 隊列：<code>01_submit_task.py</code></h3>
+<ol>
+<li>落 <code>&lt;共享&gt;/runs/&lt;YYYYMMDD&gt;/specs/&lt;task_id&gt;.md</code>。</li>
+<li>建交付目錄 <code>&lt;共享&gt;/runs/&lt;YYYYMMDD&gt;/&lt;flow_id&gt;/&lt;task_id&gt;/</code>：<code>README.md</code>（任務摘要、判準、重跑指令）、<code>00_prompt.txt</code>（送達版 prompt 全文＝spec＋執行紀律）、<code>00_flow.lisp</code>（可省）、<code>in/</code>。</li>
+<li><code>XADD tasks:low</code>：<code>task_id, spec_path, out_dir, timeout_s, expected_outputs, run_id[, tier, orphan_idle, owners]</code>。</li>
+<li>印 out_dir 與 stream id（橋轉回 <code>jvg:dispatched</code>）。</li>
+</ol>
+<h3>4.3 席位 worker（每席一隻，consumer 名＝席位名）</h3>
+<ul>
+<li>consumer group on <code>tasks:low</code>；心跳 <code>SET worker:hb:&lt;consumer&gt; EX 30</code> 每 15 秒。</li>
+<li><code>XREADGROUP BLOCK 5000 COUNT 1</code>；沒新活每 3 輪讀自己的 PEL 撿未 ack。</li>
+<li>認領即 <code>XADD nova:events kind=queue_task_taken consumer task_id msg_id</code>。</li>
+<li><code>owners</code> 不含自己 → 重投隊尾（帶 <code>first_requeue_at</code>，只寫一次）；死信三種理由：目標席不在心跳名單／等超過 T／副本超過 200。</li>
+<li>冪等：<code>out_dir/manifest.json</code> 已存在 → XACK＋<code>kind=queue_task_skipped</code>。</li>
+<li>執行：把 <code>00_prompt.txt</code> 送本機執行端（現行 <code>POST http://127.0.0.1:&lt;port&gt;/control {"action":"cli","prompt":…,"timeout":…}</code>，HTTP timeout＝timeout+30）。<strong>執行端可換</strong>：任何「收 prompt、在 out_dir 工作、回 ok/非 ok」的東西。</li>
+<li>驗產物：<code>expected_outputs</code> 逐項存在且非空；沒給就檢 out_dir 非空。</li>
+<li>失敗：<code>HINCRBY task:attempts:&lt;task_id&gt;</code>；<code>kind=queue_task_failed</code>；滿 2 次 → <code>XADD tasks:dead</code>＋XACK＋<code>kind=queue_task_dead</code>。</li>
+<li>成功：寫 <code>manifest.json</code>（executed_by、steps、產物清單）→ XACK → <code>kind=queue_task_done</code>。</li>
+<li>事件 <code>kind</code> 全集：<code>queue_task_taken|done|failed|dead|skipped|interrupt|interrupted|overrun</code>、<code>owners_dead|delayed|raw|xclaim</code>、執行端錯誤 <code>cc_busy|cc_timeout|cc_error_api|cc_error|cc_disabled|cc_unavailable|cc_malformed</code>。</li>
+</ul>
+<h3>4.4 教練 ← 事件：<code>nova:events</code></h3>
+<p><code>hs sync</code> 用 <code>task_id</code> 對回清單，寫 <code>status</code>；不翻 passes。</p>
+<h2>5. 票（G）</h2>
+<ul>
+<li>開票時機：<code>hs open</code>，一項功能一張票，沒票不派（<code>ticket_gate</code> hook 攔 dispatch）。</li>
+<li>票身：title <code>[jvg] &lt;behavior&gt;</code>；body 三段：行為句、驗收指令塊、來源（清單 id＋「passes 只准 check 翻」）。</li>
+<li>收單：check 綠 → 留言貼驗收輸出 → <code>PATCH state=closed</code>。紅 → 留言退回，<code>hs dispatch --again</code>。</li>
+<li>票號回寫清單 <code>ticket</code>；<code>hs status</code> 對不上會喊。</li>
+</ul>
+<h2>6. 搬家要換的東西（照順序做）</h2>
+<ol>
+<li>常數抽環境變數：<code>HS_DIR</code>、<code>HS_REPO</code>、<code>VALKEY_*</code>、<code>GITEA_*</code>、<code>SHARED_ROOT</code>（取代寫死的 <code>/team</code>）、<code>RUNS_ROOT</code>。</li>
+<li>共享目錄：所有席位與橋掛同一個路徑；教練掛得到就把橋的兩步（落 spec、跑 submit）改成 hs 直呼，<code>jvg:dispatch</code>／<code>jvg:dispatched</code> 兩條 stream 可省。</li>
+<li>執行端：把 <code>/control</code> 換成新機器的模型執行端；只要求三件事：吃 prompt 文字、cwd＝out_dir、回 ok／非 ok＋stdout。用 pi 就是 <code>pi --mode rpc</code> 或 <code>pi -p</code>（非互動模式不會問 project trust，<code>.pi/</code> 資源要 <code>--approve</code> 或 <code>defaultProjectTrust=always</code>）。</li>
+<li><code>dgx:</code> 前綴改名成 <code>shared:</code>（含意＝在共享目錄那側跑）。</li>
+<li>hooks（可選）：<code>ticket_gate</code>（沒票不派）、<code>hands_gate</code>（改程式檔要憑證）、<code>discord_reply_guard</code> 之類是教練端 harness 的，不屬於 jvg 本體。</li>
+<li>第二階段：<code>stall_watch</code>（產物 30 分鐘沒 mtime → 票下留言＋告警）、<code>heartbeat</code>（每個 daemon 打卡，斷了喊）、<code>tickets_page</code>（票表發佈成網頁）。</li>
+</ol>
+<h2>7. 驗收（新機器上跑這幾條，全綠才算搬完）</h2>
+<ol>
+<li><strong>正向 e2e</strong>：<code>hs open demo-echo</code> → <code>hs dispatch demo-echo --timeout 120 --detail "在 out_dir 寫 REPORT.md 一行 ok"</code> → 30 秒內 <code>nova:events</code> 出現 <code>queue_task_taken</code> 再 <code>queue_task_done</code> → <code>hs sync</code> 把 status 寫回 → <code>hs check demo-echo</code> 綠、passes=true → <code>hs finish -m "demo"</code> 產生一個 commit，票關閉。</li>
+<li><strong>沒票不派</strong>：清單項沒 <code>ticket</code> 時 <code>hs dispatch</code> 非零退出、隊列零訊息。</li>
+<li><strong>死信</strong>：expected 寫一個席位不會產的檔名 → 兩次失敗後 <code>tasks:dead</code> 有一筆、<code>kind=queue_task_dead</code>、清單 status 跟上、passes 仍 false。</li>
+<li><strong>人手翻不算</strong>：手改 passes=true → <code>hs verify</code> 抓出來。</li>
+<li><strong>owners</strong>：<code>--owners only:&lt;不存在的席&gt;</code> → 進死信，理由 <code>target_absent</code>。</li>
+<li><strong>冪等</strong>：同 task_id 再投 → <code>queue_task_skipped</code>，不重跑。</li>
+<li><strong>三痕跡</strong>：沒 note 就 <code>hs finish</code> → 拒絕，無 commit。</li>
+</ol>
+<h2>8. 已知的坑（搬家時會再踩）</h2>
+<ul>
+<li>席位回「收到開始執行」rc=0 但沒檔＝假交付；判成敗只看 expected_outputs 與 manifest，不看回應文字。</li>
+<li>教練那側的 <code>pgrep</code> 會自我匹配；判活用 pidfile＋<code>/proc/&lt;pid&gt;/status</code> State≠Z，不用 <code>kill -0</code>（殭屍會回成功）。</li>
+<li>派工端說 ok、執行端死信，兩邊都不喊：<code>hs sync</code> 要定期跑（或 cron），不能只靠 dispatch 回執。</li>
+<li>執行端逾時 rc 跟網路逾時同形（現行 rc=144）；先看 out_dir mtime 再定罪。</li>
+<li>第一版 stall_watch 用真資料誤報 18 張：起 daemon 前先乾跑數一次。</li>
+</ul>
+<h2>9. 現行檔案索引（只當參考）</h2>
+<p>教練端：<code>/app/handoff/hs.py</code>、<code>feature_list.json</code>、<code>progress.log</code>、<code>handoff.json</code>；hooks <code>/app/adr_frontier/ticket_gate.py</code>、<code>hands_gate.py</code>。
+共享側：<code>/team/infra/jvg/jvg_bridge.py</code>（橋）、<code>/team/valkey_rollout/std/01_submit_task.py</code>（投單）、<code>/team/valkey_rollout/p2/02_pull_worker.py</code>（席位 worker）、<code>/team/infra/stall_watch/</code>、<code>/team/infra/heartbeat/</code>。</p></main>
