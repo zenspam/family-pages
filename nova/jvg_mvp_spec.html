@@ -1,0 +1,202 @@
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>jvg MVP spec</title><style>
+:root{color-scheme:light dark;--bg:#faf8f3;--fg:#1d1c1a;--mut:#5c5a55;--acc:#8a4b1f;--line:#d9d4c8;--code:#f0ece3}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1b19;--fg:#ece8df;--mut:#a7a299;--acc:#e0a06a;--line:#3a3833;--code:#26241f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 -apple-system,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
+main{max-width:46em;margin:0 auto;padding:1.2em 1em 4em}h1{font-size:1.5em;line-height:1.3}h2{font-size:1.2em;border-bottom:1px solid var(--line);padding-bottom:.2em;margin-top:2em}h3{font-size:1.05em;color:var(--acc)}
+table{border-collapse:collapse;display:block;overflow-x:auto;font-size:.92em}th,td{border:1px solid var(--line);padding:.35em .6em;vertical-align:top;text-align:left}th{background:var(--code)}
+code{background:var(--code);padding:.05em .3em;border-radius:3px;font-size:.9em}pre{background:var(--code);padding:.8em;overflow-x:auto;font-size:.82em;line-height:1.5}pre code{background:none;padding:0}
+li{margin:.3em 0}p{max-width:65ch}
+</style><main><h1>jvg MVP spec — 零服務版開票派工（git ＋ 一個共享目錄）</h1>
+<p>寫於 2026-09-08 13:4x 台北。給要在另一台機器上把它蓋起來的 agent。<strong>不裝 gitea、不裝 valkey、不開新 server。</strong> 硬需求只有：git、python3、一個所有席位都寫得到的目錄、每席一個能「吃 prompt、在指定目錄工作、回成功／失敗」的執行端。搬家版全文（含現行系統對照）在 https://zenspam.github.io/family-pages/nova/jvg_port_spec.html ；本頁只寫 MVP。</p>
+<h2>0. 目標與不做</h2>
+<p>目標：一張活從開票到關票，全程機器可讀、可重放、可無人值守；驗收綠燈只准機器翻。
+不做：網頁介面、權限系統、多隊列優先級、跨機器訊息服務、自動重構 prompt。這些等七條驗收綠了再談。</p>
+<h2>1. 目錄佈局（一個 git repo＝真相，一個共享目錄＝工作區）</h2>
+<pre><code>repo/                      # git 追蹤，教練與席位都 clone
+  tickets/0001.md          # 一張票一個檔，編號＝檔名
+  events.log               # 只增不改，一行一筆 JSON
+  progress.log             # 教練日誌，只增
+  handoff.json             # 教練停在哪
+  checks/0001.sh           # 驗收腳本，開票時寫，派工前封存 sha 進票
+  tests/t1_e2e.sh … t7_three_traces.sh
+  bin/hs                   # 教練 CLI（python，單檔）
+  bin/worker               # 席位 daemon（python，單檔）
+shared/                    # 共享目錄，不進 git
+  queue/inbox/             # 待接：0001.json
+  queue/taken/&lt;seat&gt;/      # 已接：0001.json（原子 mv 進來）
+  queue/done/              # 交回
+  queue/dead/              # 死信
+  hb/&lt;seat&gt;                # 心跳：檔案 mtime
+  runs/&lt;YYYYMMDD&gt;/&lt;task_id&gt;/   # 交付目錄：00_prompt.txt、REPORT.md、manifest.json、產物
+</code></pre>
+<h2>2. 檔案格式</h2>
+<p><strong>票 <code>tickets/0001.md</code></strong>（frontmatter＋三段）：</p>
+<pre><code>---
+id: 0001
+feature: demo-echo
+state: queued            # queued | taken | done | dead | closed
+assignee:                # 席位名，認領時填
+task_id: jvg.demo-echo.09081340
+out_dir: shared/runs/20260908/jvg.demo-echo.09081340
+check_sha: &lt;sha256 of checks/0001.sh&gt;
+opened_at: 2026-09-08T13:40:00+08:00
+passes: false            # 只准 hs check 翻
+---
+## 行為
+在 out_dir 寫 REPORT.md，內容一行 ok。
+## 驗收
+checks/0001.sh（封存 sha 見上）
+## 來源
+Ray 2026-09-08 語音；只做這一件。
+</code></pre>
+<p><strong>隊列訊息 <code>queue/inbox/0001.json</code></strong>：<code>{"task_id","ticket":"0001","spec_path":"repo/tickets/0001.md","out_dir","timeout_s":1500,"expected":["REPORT.md"],"attempts":0,"enqueued_at"}</code></p>
+<p><strong>事件 <code>events.log</code> 一行</strong>：<code>{"ts":"…+08:00","kind":"taken|done|failed|dead|skipped|opened|checked|closed","task_id":"…","ticket":"0001","seat":"ds2","note":"…"}</code></p>
+<p><strong>心跳 <code>hb/&lt;seat&gt;</code></strong>：worker 每 15 秒 <code>touch</code>；mtime 超過 60 秒＝死。</p>
+<p><strong>manifest.json</strong>（席位成功時寫）：<code>{"task_id","executed_by":"&lt;seat&gt;","started","finished","outputs":[…],"rc":0}</code></p>
+<p><strong>驗收腳本 <code>checks/0001.sh</code></strong>：<code>set -e; cd "$OUT_DIR"; test -s REPORT.md; grep -q '^ok$' REPORT.md</code>。席位對 <code>checks/</code> 只讀（git 權限或目錄權限擋）；派工時票裡記 sha，check 前先比對，不合就紅。</p>
+<h2>3. 教練 CLI <code>bin/hs</code>（五個動詞，全部冪等、可放 cron）</h2>
+<table>
+<thead>
+<tr>
+<th>動詞</th>
+<th>做什麼</th>
+<th>寫哪裡</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hs open &lt;feature&gt; "&lt;行為句&gt;" --check "&lt;shell&gt;"</code></td>
+<td>取下一個編號；寫票（state=queued）；寫 <code>checks/NNNN.sh</code>；算 sha 進票；events <code>opened</code>；commit</td>
+<td>tickets／checks／events</td>
+</tr>
+<tr>
+<td><code>hs dispatch &lt;NNNN&gt; [--timeout 1500] [--expected REPORT.md,…] [--again]</code></td>
+<td>票必須存在且 state∈{queued, dead(--again)}；建 out_dir＋<code>00_prompt.txt</code>（票全文＋執行紀律）；寫 <code>queue/inbox/NNNN.json</code>；票 task_id／out_dir 回填；commit</td>
+<td>shared／tickets</td>
+</tr>
+<tr>
+<td><code>hs sync</code></td>
+<td>讀 <code>events.log</code> 尾端（記游標）；把 taken／done／dead 寫回票的 state／assignee；commit</td>
+<td>tickets</td>
+</tr>
+<tr>
+<td><code>hs check &lt;NNNN&gt;</code></td>
+<td>比對 check_sha；<code>OUT_DIR=&lt;out_dir&gt; bash checks/NNNN.sh</code>；rc=0 → passes=true、state=closed、events <code>checked</code>＋<code>closed</code>；rc≠0 → events <code>checked</code> 帶 rc，state 留 done；commit</td>
+<td>tickets／events</td>
+</tr>
+<tr>
+<td><code>hs finish -m "&lt;msg&gt;"</code></td>
+<td>三痕跡：progress.log 有新行、handoff.json 有更新、工作樹有變更；缺一拒；齊了 commit</td>
+<td>git</td>
+</tr>
+</tbody>
+</table>
+<p>另兩個小工具：<code>hs note "&lt;事&gt;"</code>（progress.log 加一行）、<code>hs status</code>（印停在哪＋git log -1＋各 state 票數）。
+cron：<code>*/10 * * * * hs sync &amp;&amp; hs check --all-done</code>（把 state=done 且 passes=false 的全跑一遍）。</p>
+<p><strong>執行紀律（附在 <code>00_prompt.txt</code> 尾）</strong>：只做票的「行為」段；產物寫在 <code>$OUT_DIR</code>；一定要有 <code>REPORT.md</code>（做了什麼、怎麼驗、沒做什麼）；不改 <code>repo/checks/</code>；不碰 out_dir 以外的檔。</p>
+<h2>4. 席位 daemon <code>bin/worker &lt;seat&gt;</code>（約 200 行）</h2>
+<pre><code>loop 每 5 秒:
+  touch hb/&lt;seat&gt;
+  for f in sorted(queue/inbox/*.json):
+      try: os.rename(f, queue/taken/&lt;seat&gt;/f)      # 原子；輸了就 continue
+      except FileNotFoundError: continue
+      msg = load
+      if exists(out_dir/manifest.json): event skipped; mv → done/; continue      # 冪等
+      event taken
+      rc, stdout = executor.run(prompt=read(out_dir/00_prompt.txt), cwd=out_dir, timeout=msg.timeout_s)
+      ok = rc==0 and all(size(out_dir/e)&gt;0 for e in msg.expected)
+      if ok: write manifest.json; event done; mv → done/
+      else:
+          msg.attempts += 1; event failed(attempts, 摘 stdout 尾 500 字)
+          if msg.attempts &gt;= 2: event dead; mv → dead/
+          else: mv → inbox/（重排隊尾：改檔名時間戳）
+孤兒撿回（啟動時）: taken/&lt;其他席&gt;/ 裡 mtime 超過 2×timeout 且該席 hb 死 → mv 回 inbox/
+</code></pre>
+<p><strong>執行端介面 <code>executor.run(prompt, cwd, timeout) -&gt; (rc, stdout)</code></strong>，三個現成實作擇一：
+- <code>pi</code>：<code>subprocess.run(["pi","-p","--approve", prompt], cwd=cwd, timeout=timeout)</code>（非互動模式不問 project trust，<code>--approve</code> 放行 <code>.pi/</code> 資源）。
+- <code>claude</code>：<code>subprocess.run(["claude","-p","--dangerously-skip-permissions", prompt], cwd=cwd, timeout=timeout)</code>。
+- <code>http</code>：POST 任何 <code>/control</code> 類端點。
+逾時＝rc 124（跟執行端自己的錯誤分開記）。</p>
+<h2>5. 七條驗收（<code>tests/</code>，先寫先紅，做一步綠一條）</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>名</th>
+<th>步驟</th>
+<th>綠的定義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t1</td>
+<td>e2e</td>
+<td>open → dispatch → 起一個 worker（executor=echo 假執行端，直接寫 REPORT.md）→ 30 秒內 events 有 taken 再 done → sync → check → finish</td>
+<td>票 state=closed、passes=true、git log 多一筆、events 有 opened/taken/done/checked/closed</td>
+</tr>
+<tr>
+<td>t2</td>
+<td>沒票不派</td>
+<td><code>hs dispatch 9999</code></td>
+<td>非零退出；inbox 空</td>
+</tr>
+<tr>
+<td>t3</td>
+<td>死信</td>
+<td>expected 指定 <code>NOPE.md</code>；worker 跑</td>
+<td>兩筆 failed 後一筆 dead；票 state=dead；passes=false；檔在 dead/</td>
+</tr>
+<tr>
+<td>t4</td>
+<td>人手翻不算</td>
+<td>手改票 passes=true；<code>hs verify</code></td>
+<td>非零退出並點名該票（verify＝重跑 check 對照）</td>
+</tr>
+<tr>
+<td>t5</td>
+<td>考卷不可改</td>
+<td>派工後改 <code>checks/NNNN.sh</code> 一個字元；<code>hs check</code></td>
+<td>紅，理由 <code>check_sha mismatch</code></td>
+</tr>
+<tr>
+<td>t6</td>
+<td>冪等</td>
+<td>同一筆 inbox 訊息投兩次</td>
+<td>第二次 events 為 skipped，manifest 不變、REPORT 不重寫</td>
+</tr>
+<tr>
+<td>t7</td>
+<td>三痕跡</td>
+<td>不 <code>hs note</code> 直接 <code>hs finish</code></td>
+<td>拒絕、無 commit</td>
+</tr>
+<tr>
+<td>t8（加碼）</td>
+<td>孤兒撿回</td>
+<td>起 worker A 接單後 kill -9、hb 過期；起 worker B</td>
+<td>B 撿回並完成，events 有 <code>taken seat=B</code></td>
+</tr>
+</tbody>
+</table>
+<h2>6. 建置順序（每步結束都跑一次 tests/，只准變綠不准變紅）</h2>
+<ol>
+<li>偵察一小時 → <code>recon.md</code>：OS、python、git、共享目錄路徑與權限、執行端指令、席位數、票務系統有沒有。</li>
+<li>寫 tests/ 七支，全紅。</li>
+<li><code>bin/hs</code> open／dispatch／sync／check／finish → t2、t7 綠。</li>
+<li><code>bin/worker</code>＋echo 假執行端 → t1、t3、t6 綠。</li>
+<li>check_sha 與 verify → t4、t5 綠。</li>
+<li>換真執行端（pi 或 claude），第二個席位 → t8 綠，t1 用真模型重跑一次。</li>
+<li>cron 兩行（sync、check --all-done）；<code>hs status</code> 印各 state 票數。</li>
+<li>之後才談：接現成票務系統當載體（票的 frontmatter 對到 label／assignee／留言）、看守（taken 超過 30 分鐘沒事件就喊）、票表網頁。</li>
+</ol>
+<h2>7. 坑（現行系統流過血的）</h2>
+<ul>
+<li>席位回「做好了」但沒檔＝假交付：成敗只看 expected 與 manifest，不看 stdout。</li>
+<li>判活看 hb 檔 mtime，不用 <code>kill -0</code>（殭屍會回成功）。</li>
+<li>派工端寫了 inbox 不等於有人接：<code>hs sync</code> 要在 cron 上，不能靠人記得。</li>
+<li>逾時 rc 跟執行端錯誤分開記；先看 out_dir mtime 再定罪。</li>
+<li>看守第一版一定誤報：起 daemon 前先乾跑數一次。</li>
+</ul>
+<h2>8. 要 Ray 給的四樣</h2>
+<p>進那台機器的方式｜席位用哪個執行端｜票放純 git 還是接現成票務系統｜共享目錄路徑。</p></main>
