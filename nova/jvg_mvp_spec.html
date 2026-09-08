@@ -8,14 +8,14 @@ table{border-collapse:collapse;display:block;overflow-x:auto;font-size:.92em}th,
 code{background:var(--code);padding:.05em .3em;border-radius:3px;font-size:.9em}pre{background:var(--code);padding:.8em;overflow-x:auto;font-size:.82em;line-height:1.5}pre code{background:none;padding:0}
 li{margin:.3em 0}p{max-width:65ch}
 </style><main><h1>jvg MVP spec — 零服務版開票派工（git ＋ 一個共享目錄）</h1>
-<p>寫於 2026-09-08 13:4x 台北。給要在另一台機器上把它蓋起來的 agent。<strong>不裝 gitea、不裝 valkey、不開新 server。</strong> 硬需求只有：git、python3、一個所有席位都寫得到的目錄、每席一個能「吃 prompt、在指定目錄工作、回成功／失敗」的執行端。搬家版全文（含現行系統對照）在 https://zenspam.github.io/family-pages/nova/jvg_port_spec.html ；本頁只寫 MVP。</p>
+<p>寫於 2026-09-08 13:4x 台北，13:5x 依 Ray 逐條審查改五處（見第 9 節）。給要在另一台機器上把它蓋起來的 agent。<strong>不裝 gitea、不裝 valkey、不開新 server。</strong> 硬需求只有：git、python3、一個所有席位都寫得到的目錄、每席一個能「吃 prompt、在指定目錄工作、回成功／失敗」的執行端。搬家版全文（含現行系統對照）在 https://zenspam.github.io/family-pages/nova/jvg_port_spec.html ；本頁只寫 MVP。</p>
 <h2>0. 目標與不做</h2>
 <p>目標：一張活從開票到關票，全程機器可讀、可重放、可無人值守；驗收綠燈只准機器翻。
 不做：網頁介面、權限系統、多隊列優先級、跨機器訊息服務、自動重構 prompt。這些等七條驗收綠了再談。</p>
 <h2>1. 目錄佈局（一個 git repo＝真相，一個共享目錄＝工作區）</h2>
 <pre><code>repo/                      # git 追蹤，教練與席位都 clone
   tickets/0001.md          # 一張票一個檔，編號＝檔名
-  events.log               # 只增不改，一行一筆 JSON
+  events.log               # 只增不改，一行一筆 JSON；只有教練寫（hs sync 從 shared/events/ 收）
   progress.log             # 教練日誌，只增
   handoff.json             # 教練停在哪
   checks/0001.sh           # 驗收腳本，開票時寫，派工前封存 sha 進票
@@ -28,6 +28,7 @@ shared/                    # 共享目錄，不進 git
   queue/done/              # 交回
   queue/dead/              # 死信
   hb/&lt;seat&gt;                # 心跳：檔案 mtime
+  events/&lt;ts&gt;-&lt;seat&gt;-&lt;kind&gt;-&lt;task_id&gt;.json   # 席位寫的事件，一檔一事；sync 收走後留著不刪
   runs/&lt;YYYYMMDD&gt;/&lt;task_id&gt;/   # 交付目錄：00_prompt.txt、REPORT.md、manifest.json、產物
 </code></pre>
 <h2>2. 檔案格式</h2>
@@ -51,7 +52,8 @@ checks/0001.sh（封存 sha 見上）
 Ray 2026-09-08 語音；只做這一件。
 </code></pre>
 <p><strong>隊列訊息 <code>queue/inbox/0001.json</code></strong>：<code>{"task_id","ticket":"0001","spec_path":"repo/tickets/0001.md","out_dir","timeout_s":1500,"expected":["REPORT.md"],"attempts":0,"enqueued_at"}</code></p>
-<p><strong>事件 <code>events.log</code> 一行</strong>：<code>{"ts":"…+08:00","kind":"taken|done|failed|dead|skipped|opened|checked|closed","task_id":"…","ticket":"0001","seat":"ds2","note":"…"}</code></p>
+<p><strong>語義聲明</strong>：本系統 at-least-once；重複執行由 <code>manifest.json</code> 擋（同 task_id 只會成功一次）；席位可能重複看到同一筆訊息，但不會重複交付。</p>
+<p><strong>事件</strong>：席位寫 <code>shared/events/&lt;ts&gt;-&lt;seat&gt;-&lt;kind&gt;-&lt;task_id&gt;.json</code>（一檔一事，先寫 <code>.tmp</code> 再 rename）；<code>hs sync</code> 按檔名排序收集、append 進 repo 的 <code>events.log</code>、commit；游標＝最後收走的檔名，存 <code>handoff.json</code> 的 <code>events_cursor</code>。<code>events.log</code> 一行：<code>{"ts":"…+08:00","kind":"taken|done|failed|dead|skipped|opened|checked|closed","task_id":"…","ticket":"0001","seat":"ds2","note":"…"}</code></p>
 <p><strong>心跳 <code>hb/&lt;seat&gt;</code></strong>：worker 每 15 秒 <code>touch</code>；mtime 超過 60 秒＝死。</p>
 <p><strong>manifest.json</strong>（席位成功時寫）：<code>{"task_id","executed_by":"&lt;seat&gt;","started","finished","outputs":[…],"rc":0}</code></p>
 <p><strong>驗收腳本 <code>checks/0001.sh</code></strong>：<code>set -e; cd "$OUT_DIR"; test -s REPORT.md; grep -q '^ok$' REPORT.md</code>。席位對 <code>checks/</code> 只讀（git 權限或目錄權限擋）；派工時票裡記 sha，check 前先比對，不合就紅。</p>
@@ -72,13 +74,13 @@ Ray 2026-09-08 語音；只做這一件。
 </tr>
 <tr>
 <td><code>hs dispatch &lt;NNNN&gt; [--timeout 1500] [--expected REPORT.md,…] [--again]</code></td>
-<td>票必須存在且 state∈{queued, dead(--again)}；建 out_dir＋<code>00_prompt.txt</code>（票全文＋執行紀律）；寫 <code>queue/inbox/NNNN.json</code>；票 task_id／out_dir 回填；commit</td>
+<td>票必須存在且 state∈{queued, dead(--again)}；建 out_dir＋<code>00_prompt.txt</code>（票全文＋執行紀律）；寫 <code>queue/inbox/.NNNN.json.tmp</code> 再 <code>os.rename</code> 成 <code>NNNN.json</code>（worker 永遠讀不到半個檔）；票 task_id／out_dir 回填；commit。<strong><code>--again</code> 鑄新 task_id（時戳不同）與新 out_dir</strong>，舊 out_dir 留著驗屍；否則舊 manifest 會讓冪等鍵直接 skipped、永遠翻不了身</td>
 <td>shared／tickets</td>
 </tr>
 <tr>
 <td><code>hs sync</code></td>
-<td>讀 <code>events.log</code> 尾端（記游標）；把 taken／done／dead 寫回票的 state／assignee；commit</td>
-<td>tickets</td>
+<td>收 <code>shared/events/</code> 裡游標之後的檔，排序 append 進 <code>events.log</code>；把 taken／done／dead 寫回票的 state／assignee；游標寫 <code>handoff.json</code>；commit</td>
+<td>events／tickets／handoff</td>
 </tr>
 <tr>
 <td><code>hs check &lt;NNNN&gt;</code></td>
@@ -94,6 +96,7 @@ Ray 2026-09-08 語音；只做這一件。
 </table>
 <p>另兩個小工具：<code>hs note "&lt;事&gt;"</code>（progress.log 加一行）、<code>hs status</code>（印停在哪＋git log -1＋各 state 票數）。
 cron：<code>*/10 * * * * hs sync &amp;&amp; hs check --all-done</code>（把 state=done 且 passes=false 的全跑一遍）。</p>
+<p><strong>信任邊界（直說）</strong>：repo 的 git 寫權限只給教練；席位拿唯讀 clone（要改碼走 fork＋PR）。<code>passes</code> 只准 <code>hs check</code> 翻是靠這道權限擋的，不是靠約定；<code>hs verify</code> 是抓漏不是擋漏。席位對 <code>shared/</code> 全寫、對 <code>repo/</code> 只讀。</p>
 <p><strong>執行紀律（附在 <code>00_prompt.txt</code> 尾）</strong>：只做票的「行為」段；產物寫在 <code>$OUT_DIR</code>；一定要有 <code>REPORT.md</code>（做了什麼、怎麼驗、沒做什麼）；不改 <code>repo/checks/</code>；不碰 out_dir 以外的檔。</p>
 <h2>4. 席位 daemon <code>bin/worker &lt;seat&gt;</code>（約 200 行）</h2>
 <pre><code>loop 每 5 秒:
@@ -111,7 +114,7 @@ cron：<code>*/10 * * * * hs sync &amp;&amp; hs check --all-done</code>（把 st
           msg.attempts += 1; event failed(attempts, 摘 stdout 尾 500 字)
           if msg.attempts &gt;= 2: event dead; mv → dead/
           else: mv → inbox/（重排隊尾：改檔名時間戳）
-孤兒撿回（啟動時）: taken/&lt;其他席&gt;/ 裡 mtime 超過 2×timeout 且該席 hb 死 → mv 回 inbox/
+孤兒撿回（啟動時＋之後每 12 輪＝約 60 秒一次）: taken/&lt;其他席&gt;/ 裡 mtime 超過 2×timeout 且該席 hb 死 → mv 回 inbox/（events 記 reclaimed）
 </code></pre>
 <p><strong>執行端介面 <code>executor.run(prompt, cwd, timeout) -&gt; (rc, stdout)</code></strong>，三個現成實作擇一：
 - <code>pi</code>：<code>subprocess.run(["pi","-p","--approve", prompt], cwd=cwd, timeout=timeout)</code>（非互動模式不問 project trust，<code>--approve</code> 放行 <code>.pi/</code> 資源）。
@@ -199,4 +202,13 @@ cron：<code>*/10 * * * * hs sync &amp;&amp; hs check --all-done</code>（把 st
 <li>看守第一版一定誤報：起 daemon 前先乾跑數一次。</li>
 </ul>
 <h2>8. 要 Ray 給的四樣</h2>
-<p>進那台機器的方式｜席位用哪個執行端｜票放純 git 還是接現成票務系統｜共享目錄路徑。</p></main>
+<p>進那台機器的方式｜席位用哪個執行端｜票放純 git 還是接現成票務系統｜共享目錄路徑。</p>
+<h2>9. 審查紀錄（Ray 2026-09-08 13:46 逐條對照，五處全收）</h2>
+<ol>
+<li>events.log 寫入者矛盾 → 席位寫 <code>shared/events/</code> 一檔一事，<code>hs sync</code> 收集排序 append 並 commit；游標存 <code>handoff.json</code>。</li>
+<li>dispatch 寫 inbox 不原子 → 先寫 <code>.tmp</code> 再 rename。</li>
+<li><code>--again</code> 與冪等鍵碰撞 → 重派鑄新 task_id＋新 out_dir。</li>
+<li>孤兒撿回只在啟動 → 每 12 輪撿一次。</li>
+<li>信任邊界沒講破 → 明寫 git 寫權只給教練、席位唯讀 clone、verify 是抓漏不是擋漏。
+另補 at-least-once 語義聲明一句。</li>
+</ol></main>
