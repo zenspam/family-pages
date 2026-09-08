@@ -175,4 +175,11 @@ li{margin:.3em 0}p{max-width:65ch}
 </ul>
 <h2>9. 現行檔案索引（只當參考）</h2>
 <p>教練端：<code>/app/handoff/hs.py</code>、<code>feature_list.json</code>、<code>progress.log</code>、<code>handoff.json</code>；hooks <code>/app/adr_frontier/ticket_gate.py</code>、<code>hands_gate.py</code>。
-共享側：<code>/team/infra/jvg/jvg_bridge.py</code>（橋）、<code>/team/valkey_rollout/std/01_submit_task.py</code>（投單）、<code>/team/valkey_rollout/p2/02_pull_worker.py</code>（席位 worker）、<code>/team/infra/stall_watch/</code>、<code>/team/infra/heartbeat/</code>。</p></main>
+共享側：<code>/team/infra/jvg/jvg_bridge.py</code>（橋）、<code>/team/valkey_rollout/std/01_submit_task.py</code>（投單）、<code>/team/valkey_rollout/p2/02_pull_worker.py</code>（席位 worker）、<code>/team/infra/stall_watch/</code>、<code>/team/infra/heartbeat/</code>。</p>
+<h2>10. 核心精神與零服務版（Ray 2026-09-08 13:15 問「沒有 gitea 沒有 valkey 呢」）</h2>
+<p>精神：每件活留三個機器讀得懂的痕跡（票＝誰要什麼怎麼算過；隊列＝誰都能接走、有認領交回死信；清單＝一行一件、狀態由事件寫回），驗收綠燈只准機器翻，做完≠通過，判斷留教練、手腳交席位。</p>
+<p>載體可換：
+- 票 → git repo 裡 <code>tickets/&lt;編號&gt;.md</code>（標題／驗收指令／狀態三段），或 GitHub issues。
+- 隊列 → 共享目錄 <code>inbox/</code>、<code>taken/&lt;席位&gt;/</code>、<code>done/</code>、<code>dead/</code>；接活＝原子 <code>mv</code>；心跳＝<code>touch hb/&lt;席位&gt;</code>；兩次失敗 <code>mv</code> 進 <code>dead/</code>；席位每 30 秒掃 <code>inbox/</code>。
+- 事件 → 只增不改的 <code>events.log</code>，一行一筆 JSON（ts, kind, task_id, consumer）；<code>hs sync</code> 改讀它。</p>
+<p>現行實作裡交付資料夾本來就先於 valkey 訊息存在（<code>01_submit_task.py</code> 第 2 步），valkey 只是門鈴；拿掉門鈴只多延遲，流程不變。最小版本＝一個 git repo＋一個共享目錄，零服務。</p></main>
