@@ -1,0 +1,30 @@
+{
+  "title": "七夕",
+  "font": "/team/runs/20260909/jvg-20260909/jvg.holo-card-tanabata.09090707/fonts/NotoSerifSC.ttf",
+  "subtitle": "星河许愿人",
+  "technique": "鹊桥折光",
+  "tagline": "让星辉照亮每个心愿",
+  "edition": "2026 / 001",
+  "collection": "七夕全息典藏",
+  "description": "七夕之夜，少年与少女并肩提笔写下心愿，星光沿纸面流转，晕出彩虹色的全息光纹。",
+  "assets": {
+    "subject": "./assets/subject.png",
+    "background": "./assets/background.png",
+    "text": "./assets/text.png",
+    "lineart": "./assets/lineart.png",
+    "model": "./assets/card.glb"
+  },
+  "parameters": {
+    "subjectScale": 1.25,
+    "subjectDepth": 0.4,
+    "backgroundDepth": -0.25,
+    "foil": 0.65
+  },
+  "safeArea": {
+    "scale": 1.12,
+    "offset": [
+      -0.06,
+      -0.085
+    ]
+  }
+}
