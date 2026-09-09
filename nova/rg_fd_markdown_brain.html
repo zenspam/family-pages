@@ -1,0 +1,213 @@
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>rg／fd／markdown 當個人 agent 大腦</title><style>
+:root{color-scheme:light dark;--bg:#faf8f3;--fg:#1d1c1a;--mut:#5c5a55;--acc:#8a4b1f;--line:#d9d4c8;--code:#f0ece3}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1b19;--fg:#ece8df;--mut:#a7a299;--acc:#e0a06a;--line:#3a3833;--code:#26241f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 -apple-system,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
+main{max-width:46em;margin:0 auto;padding:1.2em 1em 4em}h1{font-size:1.5em;line-height:1.3}h2{font-size:1.2em;border-bottom:1px solid var(--line);padding-bottom:.2em;margin-top:2em}h3{font-size:1.05em;color:var(--acc)}
+table{border-collapse:collapse;display:block;overflow-x:auto;font-size:.92em}th,td{border:1px solid var(--line);padding:.35em .6em;vertical-align:top;text-align:left}th{background:var(--code)}
+code{background:var(--code);padding:.05em .3em;border-radius:3px;font-size:.9em}pre{background:var(--code);padding:.8em;overflow-x:auto;font-size:.82em;line-height:1.5}pre code{background:none;padding:0}
+li{margin:.3em 0}p{max-width:65ch}
+</style>
+<body><main>
+<h1>顧問室 — rg／fd／markdown 純檔案當個人 agent 大腦</h1>
+<p>2026-09-09 08:2x 台北。Ray 09-08 23:52 原話：「RG fd markdown應該可以cover大部分個人使用的 agent資料庫或大腦 Webcommite to search geek approach or repo」。星數與 push 日期由 Sai 用 GitHub API 逐一重查。</p>
+<h2>一句話</h2>
+<p>五席一致：對個人用，純 markdown＋rg／fd 夠，而且是所有主流方案的地板；撐不住的三條線都不是 rg 的速度。</p>
+<h2>到場表</h2>
+<table>
+<thead>
+<tr>
+<th>席</th>
+<th>真開網頁</th>
+<th>數字可信度</th>
+<th>備註</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>webclaude</td>
+<td>有</td>
+<td>7 個 repo 星數對到個位（qmd 報 26.8k，實 29.6k，略舊）</td>
+<td>最完整；提出「三個撐不住的點」</td>
+</tr>
+<tr>
+<td>webkimi</td>
+<td>有（GitHub API）</td>
+<td>8 個 repo 全對到個位</td>
+<td>補了 claude-mem／beads／claude-obsidian／simonw-til</td>
+</tr>
+<tr>
+<td>webgemini</td>
+<td>有</td>
+<td>5 個 repo 都存在，星數三個報高約一倍、日期不符</td>
+<td>只信它的網址不信它的數字</td>
+</tr>
+<tr>
+<td>webdeepseek</td>
+<td>無，自報無法開網頁</td>
+<td>無</td>
+<td>全部標未驗，沒編數字</td>
+</tr>
+<tr>
+<td>webqwen</td>
+<td>無，自報 web_search 未掛</td>
+<td>無</td>
+<td>給了比較表，全是記憶與推論</td>
+</tr>
+<tr>
+<td>webgrok</td>
+<td>缺席</td>
+<td>—</td>
+<td>檔案是上一題（pi）殘留，無本輪結尾標記</td>
+</tr>
+</tbody>
+</table>
+<h2>查到的 repo（GitHub API 2026-09-09）</h2>
+<table>
+<thead>
+<tr>
+<th>repo</th>
+<th>星</th>
+<th>最後 push</th>
+<th>路線</th>
+<th>檔案是真相？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/openclaw/openclaw">openclaw/openclaw</a> memory 三檔佈局</td>
+<td>389,242</td>
+<td>09-08</td>
+<td>MEMORY.md＋memory/日期.md＋USER.md；SQLite 混合檢索，無 embedding 退 FTS</td>
+<td>是（no hidden state）</td>
+</tr>
+<tr>
+<td><a href="https://github.com/thedotmack/claude-mem">thedotmack/claude-mem</a></td>
+<td>93,492</td>
+<td>09-08</td>
+<td>hooks 自動捕捉→SQLite＋Chroma</td>
+<td>否（DB 派）</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tobi/qmd">tobi/qmd</a></td>
+<td>29,615</td>
+<td>08-18</td>
+<td>BM25＋向量＋本地 GGUF rerank；CLI／MCP／Claude Code plugin</td>
+<td>是（不搬檔）</td>
+</tr>
+<tr>
+<td><a href="https://github.com/gastownhall/beads">gastownhall/beads</a></td>
+<td>26,980</td>
+<td>09-08</td>
+<td>issues.jsonl 為真相＋SQLite 當 cache</td>
+<td>是（JSONL）</td>
+</tr>
+<tr>
+<td><a href="https://github.com/AgriciDaniel/claude-obsidian">AgriciDaniel/claude-obsidian</a></td>
+<td>14,750</td>
+<td>08-26</td>
+<td>Obsidian vault＋skill 化 workflow</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/akitaonrails/ai-memory">akitaonrails/ai-memory</a></td>
+<td>6,132</td>
+<td>09-08</td>
+<td>git-backed .md wiki，DB 是可重建索引</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/basicmachines-co/basic-memory">basicmachines-co/basic-memory</a></td>
+<td>3,899</td>
+<td>09-08</td>
+<td>markdown＋frontmatter＋wikilink 圖譜，MCP</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zk-org/zk">zk-org/zk</a></td>
+<td>2,788</td>
+<td>08-31</td>
+<td>純文字＋wikilink 筆記 CLI</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zilliztech/memsearch">zilliztech/memsearch</a></td>
+<td>2,578</td>
+<td>09-08</td>
+<td>.md 真相＋Milvus 語意</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Yakitrak/notesmd-cli">Yakitrak/notesmd-cli</a>（原 obsidian-cli）</td>
+<td>1,580</td>
+<td>09-01</td>
+<td>Obsidian vault CLI</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/simonw/til">simonw/til</a></td>
+<td>1,454</td>
+<td>09-05</td>
+<td>582 篇 .md，Actions 建 SQLite／Datasette FTS，本地直接 rg</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jaredrhod/ai-memory-vault">jaredrhod/ai-memory-vault</a></td>
+<td>636</td>
+<td>08-31</td>
+<td>Obsidian vault 模板</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/shannhk/llm-wikid">shannhk/llm-wikid</a></td>
+<td>417</td>
+<td>08-24</td>
+<td>Karpathy LLM Wiki 起手式，內建 qmd</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mastersof-ai/harness">mastersof-ai/harness</a></td>
+<td>42</td>
+<td>03-19</td>
+<td>純 md 記憶，無向量</td>
+<td>是</td>
+</tr>
+<tr>
+<td><a href="https://github.com/netresearch/file-search-skill">netresearch/file-search-skill</a></td>
+<td>36</td>
+<td>09-08</td>
+<td>Claude Code skill：rg／fd／ast-grep</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jayzeng/agentmemory">jayzeng/agentmemory</a></td>
+<td>20</td>
+<td>09-08</td>
+<td>decisions／scratchpad／daily 三層；附 <a href="https://www.jayzeng.com/writing/agentmemory-field-report/">1,000+ session 實證文</a></td>
+<td>是</td>
+</tr>
+</tbody>
+</table>
+<p>文章：<a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">Karpathy LLM Wiki gist</a>（raw/ wiki/ index.md log.md，「index works up to a few hundred pages」）；<a href="https://mariozechner.at/posts/2025-11-02-what-if-you-dont-need-mcp/">Mario Zechner：What if you don't need MCP</a>（rg＋README 路線原典）；<a href="https://docs.openclaw.ai/concepts/memory">OpenClaw memory 文件</a>。</p>
+<h2>三題</h2>
+<p><strong>1. 夠不夠、哪裡撐不住。</strong> 速度不是瓶頸（rg 掃 Linux kernel 7.5 萬檔 0.08 秒，webkimi 引 BurntSushi 基準）。撐不住的三點，webclaude 與 webkimi 各自獨立給出同樣三點：</p>
+<ul>
+<li>「載入」先於「搜尋」撐不住：agent 要知道有什麼得先讀一份索引。Karpathy 說幾百頁、Anthropic 說 CLAUDE.md 200 行、OpenClaw 的 MEMORY.md 超過預算就截斷。門檻是塞進 context 的那份索引，不是檔案數。</li>
+<li>字面查得到、語意查不到：「commit ab3f2c1」rg 贏；「我對架構的看法演變」rg 要人下同義詞。</li>
+<li>寫入紀律：jayzeng 1,000+ session 的結論是「session 記錄做了什麼，memory 是對下一個 agent 該知道什麼的判斷」。沒有機制逼 agent 寫得可搜，檔案就變垃圾場。這是純檔案路線真正的死因，跟規模無關。</li>
+</ul>
+<p><strong>2. 跟資料庫式比。</strong> 各席都指出同一個訊號：qmd、OpenClaw、ai-memory、beads 全部把檔案當真相、資料庫當可重建的索引。「可讀、可 diff、可攜」是各陣營共識，差別只在檢索層疊什麼。向量贏在同義與跨語言、輸在精確符號與可稽核性，而且要養模型（qmd 三個 GGUF 約 2GB，中文要換 embedding）；SQLite FTS 是甜蜜點（rg 的一切加排名，索引壞了重建）；圖譜贏在關係查詢、輸在 agent 寫錯 frontmatter 就是壞資料。</p>
+<p><strong>3. 最省事組合。</strong> webclaude 與 webkimi 獨立推出同一套：純 markdown 目錄＋git＋rg／fd＋一份 200 行以內的索引檔（OpenClaw 三檔佈局或 Karpathy index.md）；超過幾百頁才裝 qmd（一條 collection add，檔案一個不動，Claude Code／pi／OpenClaw 三種 agent 共用同一索引）。不選 basic-memory／memsearch，因為它們的價值建立在 agent 寫對 frontmatter 或外部向量庫上；多席多廠商的環境，寫入規則越少越活得久。</p>
+<h2>Sai 的獨立評估（不是任何一席的話）</h2>
+<ul>
+<li>Nova 現況是兩套並存：gbrain（真相住 PGLite，向量＋FTS）與 Claude Code 的 memory 目錄（MEMORY.md 索引＋rg 掃逐字稿）。跟主流差的一格是 gbrain 的真相不住檔案，PGLite 停機打不開就要 export 重建，正是「索引不可重建」那種痛。</li>
+<li>三個撐不住的點裡，我們已經撞過兩個：MEMORY.md 索引膨脹（prompt-audit 已建議合併）、寫入紀律（memory 檔越寫越像流水帳）。第三個（語意落差）由 gbrain 的向量層在補。</li>
+<li>這輪沒有決策。Ray 的原話是假設，顧問室的答案是「成立，附三個條件」。要不要把 gbrain 的真相搬回 markdown 檔案，是另一題。</li>
+</ul>
+<h2>查到的／記得的／推論</h2>
+<ul>
+<li>查到的：上表全部星數與日期（GitHub API）、Karpathy gist 與 OpenClaw 文件回 HTTP 200。</li>
+<li>記得的：rg 掃 kernel 的秒數（webkimi 引基準文，Sai 沒重跑）。</li>
+<li>推論：「索引注入 context 是真門檻」「寫入紀律是死因」「Nova 兩套並存差在真相住哪」。</li>
+</ul>
+</main></body></html>
