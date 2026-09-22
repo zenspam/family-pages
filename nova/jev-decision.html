@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jev：裝不裝、怎麼用</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1b;--mute:#6b6b66;--line:#e4e1d8;--acc:#8a2b0f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171716;--fg:#ecebe6;--mute:#a09f98;--line:#33332f;--acc:#f0a081}}
+:root[data-theme="dark"]{--bg:#171716;--fg:#ecebe6;--mute:#a09f98;--line:#33332f;--acc:#f0a081}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.8 -apple-system,"PingFang TC","Noto Sans TC",sans-serif}
+main{max-width:640px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:22px;line-height:1.4;margin:0 0 6px}
+.meta{color:var(--mute);font-size:14px;margin-bottom:26px}
+h2{font-size:17px;color:var(--acc);margin:30px 0 8px;font-weight:600}
+p{margin:0 0 10px}
+.ans{font-size:19px;font-weight:700;margin-bottom:18px}
+ul{padding-left:20px;margin:0 0 10px}
+li{margin:0 0 8px}
+.src{color:var(--mute);font-size:14px}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<h1>Jev：裝不裝、怎麼用、要哪幾把鑰匙、跟 Laya 怎麼搭</h1>
+<div class="meta">Sai 寫給 Ray · 2026-09-23 01:3x 台北 · 事實由席位核過（25 個網址、官方文件、我們自己的兩張交件），判斷是我的</div>
+
+<p class="ans">不裝。一把鑰匙都不申請。值得做的是它示範的那個用法，用我們已有的東西做。</p>
+
+<h2>為什麼不裝</h2>
+<ul>
+<li>它的腦在別人家：每走一步，把整頁的按鈕清單送到美國的 TypeSafe 伺服器判斷下一步。家人的掛號頁、帳單頁都會出境。</li>
+<li>台灣家用網站的常態正好全在它的「不支援」清單：iframe、驗證碼、上傳、彈出視窗。掛號、繳費、下單做不了；能做的是「查到結果就停」。</li>
+<li>官方自己的招牌 demo 就是查機票查到結果頁為止，不選、不訂。</li>
+<li>它真正好用的用法是「第一次讓模型探路，之後錄成腳本天天重播、零模型」。這個用法根本不需要 Jev。</li>
+<li>網頁版（不用寫程式那種）還在排隊，官網寫 Coming soon。今天家人拿不到任何介面。</li>
+</ul>
+
+<h2>我們手上已經有什麼</h2>
+<ul>
+<li>它唯一開源的那半（把網頁變成編號選擇題）九月十九日已經搬進我們自己的瀏覽器席，測試過：13 個元素編號、點擊、輸入都通。</li>
+<li>Laya（免費、可自跑的判斷層）審過了：拿家人真實訊息分「小單／大單」，75 則裡 4 則大單一個都沒抓到，準確率還輸給「全部猜小單」。它現在不能當腦。</li>
+<li>所以「跟 Laya 怎麼搭」的答案是：不搭。它是分類器不是瀏覽器；它能派上用場的那格，數字說還不行。</li>
+</ul>
+
+<h2>鑰匙</h2>
+<ul>
+<li>TypeSafe：不申請。文件寫可以自助登入拿 key，但用量有放行管制，價格每百萬輸入字 0.042 美元；重點不是錢，是資料出境。</li>
+<li>OpenRouter 繞道：不接，同一個腦換個門。</li>
+<li>Exa：今晚已答 No，新的出向通道。</li>
+</ul>
+
+<h2>值得做的一件事</h2>
+<ul>
+<li>「爸爸錄一次，家人天天用」：挑一個家人每天或每週會看的固定網頁——包裹到哪、帳單到期、某個網站簽到、某段票價。</li>
+<li>用我們自己的席位錄一次，排程跑一週，把成功率報給你；家人在 LINE 問一句就拿到結果。</li>
+<li>這件不要任何新鑰匙，不出境，明天就能開單。缺的只有一樣：你點名是哪個網頁。</li>
+</ul>
+
+<h2>什麼時候回頭看 Jev</h2>
+<ul>
+<li>網頁版真的開門，而且有給不寫程式的人的介面。</li>
+<li>TypeSafe 放出可本地跑的版本。</li>
+<li>家裡出現「一天幾百步、頁面換得太慢」的任務——那才是它每步幾十毫秒的用武之地。</li>
+</ul>
+
+<h2>顧問室五席怎麼說</h2>
+<ul>
+<li>五席都說：爸爸花一個週末玩可以，家人今天用不到；能落地的是錄一次重播；掛號繳費卡在 iframe 與驗證碼。</li>
+<li>一席（Gemini）說能完全離線零成本，被官方文件推翻：決策層只有雲端 API。</li>
+<li>一席（Claude）把「網頁版排隊」和「拿 key 要排隊」混在一起；文件顯示 key 自助、排隊的是網頁版。</li>
+<li>Qwen 零字，Kimi 有答但引用的價格多是憑記憶。</li>
+</ul>
+
+<p class="src">數字出處：jev-ultrafast 專案 2026-09-16 建立、最後更新 09-18、17,794 顆星（09-22 實抓）；TypeSafe 文件 models 頁；Laya 審查交件 #345；瀏覽器席交件 #321；顧問室五席答案與逐條核對在 #358。</p>
+</main>
+</body>
+</html>
