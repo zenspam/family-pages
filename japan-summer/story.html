@@ -159,7 +159,9 @@ FACTS.chapters.forEach(function(ch){
 FAV_IDS.forEach(function(fid){ markers[fid]=addPin(fid,'fav',true); });
 
 var bounds = L.latLngBounds(allBounds);
-map.fitBounds(bounds,{padding:[40,40]});
+map.options.zoomSnap=0.25; var FITPAD={paddingTopLeft:[30,30],paddingBottomRight:[30,80]};
+map.invalidateSize(); map.fitBounds(bounds,FITPAD);
+window.addEventListener('load',function(){map.invalidateSize(); if(window.scrollY<50) map.fitBounds(bounds,FITPAD);});
 
 /* --- 台灣比例尺 --- */
 var R = 6371;
@@ -207,7 +209,7 @@ function focusChapter(ch){
     map.flyTo([COORDS[ch.id].lat, COORDS[ch.id].lng], ch.zoom||11, {duration:.9});
     setActivePin(ch.id);
   } else {
-    map.flyToBounds(bounds,{padding:[40,40],duration:.9});
+    map.flyToBounds(bounds,Object.assign({duration:.9},FITPAD));
     setActivePin(null);
   }
 }
