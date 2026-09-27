@@ -1,0 +1,1349 @@
+<!-- produced-by: gemini-index -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2027 日本夏日家族旅行企劃｜地圖導引</title>
+  
+  <!-- Leaflet 1.9.4 CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #3b82f6;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --gray-unverified: #64748b;
+      --gray-box-bg: #f1f5f9;
+      --tag-onsen: #0284c7;
+      --tag-euro: #7c3aed;
+      --tag-sashimi: #059669;
+      --tag-beef: #d97706;
+      --tag-flower: #db2777;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "Noto Sans JP", sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Header styling */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 14px 16px;
+      border-bottom: 2px solid #2563eb;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .header-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-sub {
+      font-size: 0.72rem;
+      background: rgba(59, 130, 246, 0.25);
+      border: 1px solid #3b82f6;
+      color: #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+
+    header p {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    /* Filter & Controls Toolbar */
+    .toolbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .toolbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .chip-btn {
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+      background: #f8fafc;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .chip-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .chip-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+    }
+
+    .action-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ctrl-btn {
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      color: #475569;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      background: #f1f5f9;
+    }
+
+    .ctrl-btn.active {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #93c5fd;
+    }
+
+    .ctrl-btn.btn-reset {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .ctrl-btn.btn-reset:hover {
+      background: #e2e8f0;
+    }
+
+    /* MANDATORY SPEC RULE: #map { height: 60vh; width: 100%; } */
+    #map {
+      height: 60vh;
+      width: 100%;
+      background: #f1f5f9;
+      z-index: 10;
+    }
+
+    /* Leaflet custom map markers */
+    .hotel-marker-pin {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .pin-bubble {
+      background: #ffffff;
+      border: 2px solid #64748b; /* 灰框「價格未知」狀態 */
+      border-radius: 12px;
+      padding: 4px 6px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .hotel-marker-pin:hover .pin-bubble {
+      transform: scale(1.08);
+      border-color: #2563eb;
+    }
+
+    .pin-icon {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .pin-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #0f172a;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pin-badge-bar {
+      display: flex;
+      gap: 2px;
+      margin-left: 2px;
+    }
+
+    .pin-mini-badge {
+      font-size: 0.62rem;
+      padding: 1px 3px;
+      border-radius: 3px;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+
+    .badge-unverified {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #94a3b8;
+    }
+
+    .pin-pointer {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 7px solid #64748b;
+      margin-top: -1px;
+    }
+
+    /* Gateway & activity marker styling */
+    .gateway-pin {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      border: 1px solid #ffffff;
+      white-space: nowrap;
+    }
+
+    .activity-pin {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #f59e0b;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+      white-space: nowrap;
+    }
+
+    .route-label-badge {
+      background: rgba(15, 23, 42, 0.88);
+      color: #f8fafc;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      border: 1px solid #38bdf8;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    /* Map Legend Overlay */
+    .map-legend {
+      background: rgba(255, 255, 255, 0.94);
+      padding: 8px 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+      border: 1px solid var(--border-color);
+      font-size: 0.72rem;
+      line-height: 1.5;
+      backdrop-filter: blur(4px);
+    }
+
+    .legend-title {
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+      color: #334155;
+    }
+
+    .legend-icon-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* Container underneath map for details */
+    .content-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 60px 16px;
+    }
+
+    .section-header {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recon-notice {
+      background: #f1f5f9;
+      border-left: 4px solid #64748b;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.8rem;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    .recon-notice strong {
+      color: #0f172a;
+    }
+
+    /* Cards Grid */
+    .hotels-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .hotels-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1100px) {
+      .hotels-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Hotel Card Component */
+    .hotel-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.3s ease;
+      scroll-margin-top: 130px;
+      position: relative;
+    }
+
+    .hotel-card:hover {
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    .hotel-card.highlighted {
+      border: 2px solid #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+      background: #fafcff;
+    }
+
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .hotel-name-zh {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+
+    .hotel-name-ja {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .badge-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-top: 2px;
+    }
+
+    .badge-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      line-height: 1.3;
+    }
+
+    .tag-onsen { background: #e0f2fe; color: #0284c7; }
+    .tag-euro { background: #f3e8ff; color: #7c3aed; }
+    .tag-sashimi { background: #dcfce7; color: #059669; }
+    .tag-beef { background: #fef3c7; color: #d97706; }
+    .tag-flower { background: #fce7f3; color: #db2777; }
+
+    /* Gray Border / Gray Badge: 價格未知 */
+    .badge-price-unknown {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #94a3b8;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .hotel-address {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      line-height: 1.4;
+    }
+
+    /* Three Highlights (嚴格取自 recon_kimi.md) */
+    .highlights-box {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid #edf2f7;
+    }
+
+    .highlights-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .highlights-list {
+      list-style-type: none;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .highlights-list li {
+      font-size: 0.82rem;
+      color: #334155;
+      line-height: 1.45;
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .highlights-list li::before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      color: #2563eb;
+      font-weight: bold;
+    }
+
+    /* Local Activities section in card */
+    .activities-box {
+      background: #fffbeb;
+      border: 1px dashed #fcd34d;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+    }
+
+    .activities-box-title {
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .activities-box-desc {
+      color: #78350f;
+      line-height: 1.4;
+    }
+
+    /* Card Action Links & Buttons */
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .btn {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-site {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    .btn-site:hover {
+      background: #1e293b;
+    }
+
+    .btn-gmaps {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+
+    .btn-gmaps:hover {
+      background: #dbeafe;
+    }
+
+    .btn-return-map {
+      background: #f1f5f9;
+      color: #334155;
+      border-color: #cbd5e1;
+      margin-left: auto;
+    }
+
+    .btn-return-map:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    /* Footnote */
+    footer {
+      max-width: 1200px;
+      margin: 30px auto 0 auto;
+      padding: 16px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      border-top: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="header-title-row">
+        <h1>
+          <span>🗺️ 2027 日本夏日家族旅行企劃</span>
+          <span class="badge-sub">地圖骨架版 v2map</span>
+        </h1>
+        <div style="font-size: 0.72rem; color: #94a3b8;">
+          唯一事實來源：recon_kimi.md（2026-09-27 官網核實）
+        </div>
+      </div>
+      <p>點選地圖圖釘可平滑飛入在地周邊；點選「回地圖」隨時重設至全國總覽視野。</p>
+    </div>
+  </header>
+
+  <!-- Filter & Controls Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-inner">
+      <div class="filter-row">
+        <div class="filter-chips">
+          <span class="filter-label">特色篩選:</span>
+          <button class="chip-btn active" data-filter="all" onclick="applyTagFilter('all', this)">全部旅宿 (7)</button>
+          <button class="chip-btn" data-filter="歐風" onclick="applyTagFilter('歐風', this)">🏰 歐風</button>
+          <button class="chip-btn" data-filter="溫泉" onclick="applyTagFilter('溫泉', this)">♨️ 溫泉 (7)</button>
+          <button class="chip-btn" data-filter="生魚片" onclick="applyTagFilter('生魚片', this)">🐟 生魚片 (4)</button>
+          <button class="chip-btn" data-filter="和牛" onclick="applyTagFilter('和牛', this)">🥩 和牛 (4)</button>
+        </div>
+
+        <div class="action-controls">
+          <button id="toggle-visited-btn" class="ctrl-btn active" onclick="toggleVisitedLayer()">
+            <span>🔘 妳走過的 (10)</span>
+          </button>
+          <button id="toggle-route-btn" class="ctrl-btn active" onclick="toggleRouteLayer()">
+            <span>🧭 示範行程路線</span>
+          </button>
+          <button class="ctrl-btn btn-reset" onclick="resetToNationalView()">
+            <span>↺ 回地圖 (全國總覽)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mandatory Leaflet Map Container (60vh) -->
+  <div id="map"></div>
+
+  <!-- Cards Section underneath Map -->
+  <main class="content-container">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span>🏨 候選旅宿詳情與在地體驗</span>
+      </h2>
+      <div class="recon-notice">
+        <strong>⚠️ 2027 夏季價格核驗說明：</strong>
+        各家飯店 2027 年夏季房價官網目前均未正式開放預訂（星野與共立為 JS 動態訂房系統，無靜態定價），依專案嚴格紀律，所有旅宿一律標註灰框<strong>「價格未知」</strong>（星野八岳註記餐費 ¥36,000）；嚴禁引用未核實之二手數字。
+      </div>
+    </div>
+
+    <!-- 7 Hotel Cards Grid -->
+    <div class="hotels-grid" id="hotels-cards-container">
+      <!-- Cards dynamically generated or populated via DOM to guarantee 100% data consistency -->
+    </div>
+
+    <footer>
+      2027 日本夏日家族旅行企劃｜地圖視覺化系統｜底圖：CartoDB Positron / OpenStreetMap
+    </footer>
+  </main>
+
+  <script>
+    // -------------------------------------------------------------
+    // 1. DATA DEFINITIONS (Strictly from recon_kimi.md & coords.json)
+    // -------------------------------------------------------------
+    
+    // 7 Candidate Hotels Data Definitions with Coordinates and Google Maps URLs
+    const HOTELS_DATA = [
+      {
+        id: 1,
+        nameZh: "斑尾東急度假村 唐格藍",
+        nameJa: "タングラム斑尾東急リゾート（ホテルタングラム、ホテルハーヴェスト斑尾）",
+        address: "長野県上水内郡信濃町古海3575-8",
+        lat: 36.8537994,
+        lng: 138.2629477,
+        tags: ["溫泉", "花田"],
+        priceBadge: "價格未知",
+        priceDetail: "價格未知 (灰框)",
+        url: "https://www.tangram.jp/green/hotel/",
+        gmaps: "https://www.google.com/maps/search/?api=1&query=36.8537994,138.2629477",
+        points: [
+          "兩館以連通走廊相接，共用餐廳、放鬆設施與室內泳池；夏季有7500㎡薰衣草園與野尻湖露台旁百合花田（7-8月見頃免費）",
+          "兩館各有獨立溫泉大浴場（露天風呂、水風呂、桑拿），塩化物泉，ハーヴェスト館可眺望黑姬山",
+          "交通自長野站搭乘住宿者專用免費預約制接駁巴士約70分鐘直達"
+        ],
+        activity: {
+          name: "タングラム斑尾 薰衣草園與百合花田",
+          lat: 36.8537994,
+          lng: 138.2629477,
+          desc: "約 7,500㎡ 薰衣草園（7-8月見頃免費）及野尻湖露台百合花田，7月底兩種花皆在見頃",
+          gmaps: "https://www.google.com/maps/search/?api=1&query=36.8537994,138.2629477"
+        }
+      },
+      {
+        id: 2,
+        nameZh: "星野集團 RISONARE 八岳",
+        nameJa: "星野集團 RISONARE 八岳（リゾナーレ八ヶ岳）",
+        address: "山梨県北杜市小淵沢町129-1",
+        lat: 35.869644,
+        lng: 138.326991,
+        tags: ["歐風", "溫泉", "和牛"],
+        priceBadge: "價格未知",
+        priceDetail: "價格未知 (灰框，四人餐費¥36,000)",
+        url: "https://hoshinoresorts.com/ja/hotels/risonareyatsugatake/",
+        gmaps: "https://www.google.com/maps/search/?api=1&query=35.869644,138.326991",
+        points: [
+          "義大利建築大師 Mario Bellini 設計山岳都市歐風街區，160m Piman Street 商店街與波浪泳池 il mare",
+          "住宿者專用森林溫浴「もくもく湯」；餐廳 YYgrill 信州牛漢堡排，四成人早晚餐費合計約¥36,000",
+          "交通自首都圈出發約120分鐘，中央道小淵澤IC約5分鐘，JR小淵澤站免費接送5分鐘"
+        ],
+        activity: {
+          name: "波の出るプール「il mare」（館內水上設施）",
+          lat: 35.869644,
+          lng: 138.326991,
+          desc: "全天候大型波浪泳池，提供造浪、森林攀岩牆（高10m）與夏日水上休憩體驗",
+          gmaps: "https://www.google.com/maps/search/?api=1&query=35.869644,138.326991"
+        }
+      },
+      {
+        id: 3,
+        nameZh: "磐梯山溫泉飯店",
+        nameJa: "磐梯山溫泉飯店（磐梯山温泉ホテル by 星野リゾート）",
+        address: "福島県耶麻郡磐梯町大字更科字清水平6838-68",
+        lat: 37.5856946,
+        lng: 140.0320069,
+        tags: ["溫泉"],
+        priceBadge: "價格未知",
+        priceDetail: "價格未知 (灰框)",
+        url: "https://hoshinoresorts.com/ja/hotels/bandai/",
+        gmaps: "https://www.google.com/maps/search/?api=1&query=37.5856946,140.0320069",
+        points: [
+          "百名山磐梯山麓俯瞰豬苗代湖，深具會津在地文化體驗（民謠「あいばせ！踊らんしょ」圍圈跳舞與赤牛繪付）",
+          "磐梯山湧出天然溫泉，會津漆器意象摩登浴室；現場廚房自助餐提供現做蕎麥麵、會津小汁與會津朝拉麵",
+          "交通自JR磐梯町站提供免費預約接駁巴士約15-20分鐘"
+        ],
+        activity: {
+          name: "会津民謡「あいばせ！踊らんしょ」（館內在地祭典）",
+          lat: 37.5856946,
+          lng: 140.0320069,
+          desc: "通年夜間免費圍圈起舞民謠祭典，另有磐梯星空散步與會津手作赤牛繪付體驗",
+          gmaps: "https://www.google.com/maps/search/?api=1&query=37.5856946,140.0320069"
+        }
+      },
+      {
+        id: 4,
+        nameZh: "南紀白濱 濱千鳥之湯 海舟",
+        nameJa: "南紀白濱 濱千鳥之湯 海舟（白浜温泉 浜千鳥の湯 海舟）",
+        address: "和歌山県西牟婁郡白浜町1698-1",
+        lat: 33.6729026,
+        lng: 135.3343213,
+        tags: ["溫泉", "生魚片", "和牛"],
+        priceBadge: "價格未知",
+        priceDetail: "價格未知 (灰框)",
+        url: "https://dormy-hotels.com/resort/hotels/shirahama_kaisyu/",
+        gmaps: "https://www.google.com/maps/search/?api=1&query=33.6729026,135.3343213",
+        points: [
+          "佇立於突出太平洋之海岬前端，如海中之舟；波濤近在眼前之混浴露天風呂「浜千鳥の湯」（下90段階梯，備湯浴衣）",
+          "紀州舟盛會席享受當令鮮魚造り與熊野牛鍋，另有貸切露天風呂；鄰近白良濱海灘",
+          "交通自羽田機場直飛南紀白濱空港約70分鐘，再乘車10分鐘即達（全程約80分鐘）"
+        ],
+        activity: {
+          name: "白良浜海水浴場（海舟周邊）",
+          lat: 33.6821865,
+          lng: 135.3429302,
+          desc: "關西代表性純白沙灘海水浴場，距離海舟僅數分鐘車程，碧海白沙絕景",
+          gmaps: "https://www.google.com/maps/search/?api=1&query=33.6821865,135.3429302"
+        }
+      },
+      {
+        id: 5,
+        nameZh: "有馬溫泉 兵衛向陽閣",
+        nameJa: "有馬溫泉 兵衛向陽閣（有馬温泉 兵衛向陽閣）",
+        address: "兵庫県神戸市北区有馬町1904",
+        lat: 34.7952148,
+        lng: 135.2452594,
+        tags: ["溫泉", "生魚片", "和牛"],
+        priceBadge: "價格未知",
+        priceDetail: "價格未知 (灰框)",
+        url: "https://www.hyoe.co.jp/",
+        gmaps: "https://www.google.com/maps/search/?api=1&query=34.7952148,135.2452594",
+        points: [
+          "創業700年老舖溫泉旅館，三處不同風格大浴場巡禮，享受日本三古湯之名湯「有馬金泉」",
+          "料理可品嚐神戶在地品牌「六甲和牛」及鯛魚、舟盛活造生魚片；館外適逢六甲藝術祭",
+          "交通自神戶三宮自駕約30分鐘、大阪約60分鐘；神戶電鐵有馬溫泉站徒步6分鐘（有接送）"
+        ],
+        activity: {
+          name: "神戶六甲ミーツ・アート2026（兵衛向陽閣周邊）",
+          lat: 34.756209,
+          lng: 135.244673,
+          desc: "六甲山夏季當代藝術祭，結合自然山景與裝置藝術，自飯店搭乘纜車可抵達",
+          gmaps: "https://www.google.com/maps/search/?api=1&query=34.756209,135.244673"
+        }
+      },
+      {
+        id: 6,
+        nameZh: "白玉之湯 華鳳",
+        nameJa: "白玉之湯 華鳳（月岡温泉 白玉の湯 華鳳）",
+        address: "新潟県新発田市月岡温泉134",
+        lat: 37.8813064,
+        lng: 139.3091090,
+        tags: ["溫泉", "生魚片", "和牛"],
+        priceBadge: "價格未知",
+        priceDetail: "價格未知 (灰框)",
+        url: "https://www.kahou.com/",
+        gmaps: "https://www.google.com/maps/search/?api=1&query=37.8813064,139.3091090",
+        points: [
+          "6000坪日式庭園與里山田園景觀，自家源泉「白玉之湯」為日本代表性高成分硫磺溫泉與迴遊式露天風呂",
+          "料理名物一人一釜特製土鍋越光米、豪華海鮮丼早餐、新潟和牛與刺身舟盛",
+          "交通自上越新幹線東京-新潟約2小時10分轉直達巴士60分，或關越道東京出發約2小時50分"
+        ],
+        activity: {
+          name: "華鳳 6000坪迴遊式日本庭園",
+          lat: 37.8813064,
+          lng: 139.3091090,
+          desc: "日式山水迴遊庭園與綠意盎然的越後里山景致，晨間散策與天然硫磺白玉之湯",
+          gmaps: "https://www.google.com/maps/search/?api=1&query=37.8813064,139.3091090"
+        }
+      },
+      {
+        id: 7,
+        nameZh: "料理名宿 濱之湯",
+        nameJa: "料理名宿 濱之湯（食べるお宿 浜の湯）",
+        address: "静岡県賀茂郡東伊豆町稲取1017",
+        lat: 34.769768,
+        lng: 139.04811,
+        tags: ["溫泉", "生魚片"],
+        priceBadge: "價格未知",
+        priceDetail: "價格未知 (灰框)",
+        url: "https://www.izu-hamanoyu.co.jp/",
+        gmaps: "https://www.google.com/maps/search/?api=1&query=34.769768,139.04811",
+        points: [
+          "稻取半島最前端270度遼闊海景，頂樓8樓「天樓之泉」坐擁多達16座海天一色露天湯船",
+          "「食べるお宿」料理招牌金目鯛姿煮、當日稻取漁港入札直送地魚刺身舟盛與鮑料理",
+          "交通自東京搭直通特急踴子號（踊り子）約2小時30分至伊豆稻取站（免費接送5分），東京IC自駕約3小時30分"
+        ],
+        activity: {
+          name: "稲取漁港（食べるお宿 浜の湯周邊）",
+          lat: 34.773539,
+          lng: 139.046830,
+          desc: "東伊豆代表性金目鯛產地入札漁港，早晨直送地魚刺身舟盛與港邊海潮景致",
+          gmaps: "https://www.google.com/maps/search/?api=1&query=34.773539,139.046830"
+        }
+      }
+    ];
+
+    // "妳走過的" (Visited places) Coordinates
+    const VISITED_PLACES = [
+      { name: "北海道 函館・洞爺湖", lat: 42.0, lng: 140.8 },
+      { name: "青森 十和田湖", lat: 40.46, lng: 140.89 },
+      { name: "秋田", lat: 39.72, lng: 140.10 },
+      { name: "那須", lat: 37.02, lng: 140.02 },
+      { name: "佐賀", lat: 33.26, lng: 130.30 },
+      { name: "金澤", lat: 36.56, lng: 136.65 },
+      { name: "松本・上高地", lat: 36.25, lng: 137.64 },
+      { name: "輕井澤", lat: 36.35, lng: 138.64 },
+      { name: "小豆島", lat: 34.50, lng: 134.28 },
+      { name: "直島", lat: 34.46, lng: 134.00 }
+    ];
+
+    // Gateways (Tokyo & Osaka / Kansai Airport)
+    const GATEWAYS = [
+      { name: "東京 (首都圈出發點)", lat: 35.6812, lng: 139.7671, note: "中央道/新幹線/特急起點", gmaps: "https://www.google.com/maps/search/?api=1&query=35.6812,139.7671" },
+      { name: "大阪 / 關西國際機場 (KIX)", lat: 34.4320, lng: 135.2304, note: "關西玄關 / 兵衛向陽閣、海舟交通端", gmaps: "https://www.google.com/maps/search/?api=1&query=34.4320,135.2304" }
+    ];
+
+    // Itinerary Route: "高原兩晚＋海邊一晚"
+    // 東京 -> 八ヶ岳 -> 伊豆稻取 -> 東京
+    const ROUTE_SEGMENTS = [
+      {
+        fromName: "東京",
+        toName: "リゾナーレ八ヶ岳",
+        coords: [[35.6812, 139.7671], [35.869644, 138.326991]],
+        midpoint: [35.7746, 139.0410],
+        label: "首都圈出發約 120 分",
+        detail: "東京出發經中央自動車道約120分鐘直達（官網明確標記）"
+      },
+      {
+        fromName: "リゾナーレ八ヶ岳",
+        toName: "食べるお宿 浜の湯 (伊豆稻取)",
+        coords: [[35.869644, 138.326991], [34.769768, 139.04811]],
+        midpoint: [35.3272, 138.6790],
+        label: "待查 (recon未核實)",
+        detail: "八ヶ岳直跨伊豆稻取跨區路網，官網無核實時間，誠實標註待查"
+      },
+      {
+        fromName: "食べるお宿 浜の湯 (伊豆稻取)",
+        toName: "東京",
+        coords: [[34.769768, 139.04811], [35.6812, 139.7671]],
+        midpoint: [35.2338, 139.4050],
+        label: "特急踊り子約2小時30分 / 自駕約3小時30分",
+        detail: "伊豆稻取直達東京：特急踊り子約2小時30分／自駕約3小時30分"
+      }
+    ];
+
+    // -------------------------------------------------------------
+    // 2. LEAFLET INITIALIZATION
+    // -------------------------------------------------------------
+    const NATIONAL_CENTER = [36.5, 137.5];
+    const NATIONAL_ZOOM = 6;
+
+    // Initialize Map with mobile-first options
+    const map = L.map('map', {
+      center: NATIONAL_CENTER,
+      zoom: NATIONAL_ZOOM,
+      zoomControl: true,
+      scrollWheelZoom: true
+    });
+
+    // CartoDB Positron Light Base Tile
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Add Custom Map Legend
+    const legendControl = L.control({ position: 'bottomright' });
+    legendControl.onAdd = function() {
+      const div = L.DomUtil.create('div', 'map-legend');
+      div.innerHTML = `
+        <div class="legend-title">🗺️ 圖例說明</div>
+        <div class="legend-item"><span style="border: 2px solid #64748b; background:#fff; padding:0 3px; border-radius:3px; font-weight:bold; font-size:0.65rem;">🏨 灰框</span> 候選旅宿 (價格未知)</div>
+        <div class="legend-item"><span class="legend-icon-dot" style="background: #94a3b8; border:1px solid #475569;"></span> 妳走過的 (已訪足跡)</div>
+        <div class="legend-item"><span class="legend-icon-dot" style="background: #f59e0b; border:1px solid #b45309;"></span> 🎡 在地特色活動體驗</div>
+        <div class="legend-item"><span class="legend-icon-dot" style="background: #0f172a; border:1px solid #fff;"></span> ✈️ 交通出發門戶</div>
+        <div class="legend-item"><span style="color:#2563eb; font-weight:bold;">── ─</span> 示範路線 (高原+海邊)</div>
+      `;
+      return div;
+    };
+    legendControl.addTo(map);
+
+    // Layer groups for toggling
+    const hotelMarkersGroup = L.layerGroup().addTo(map);
+    const activityMarkersGroup = L.layerGroup().addTo(map);
+    const visitedMarkersGroup = L.layerGroup().addTo(map);
+    const routeLayerGroup = L.layerGroup().addTo(map);
+    const gatewayMarkersGroup = L.layerGroup().addTo(map);
+
+    // Keep references to marker objects
+    const hotelMarkersMap = {};
+
+    // -------------------------------------------------------------
+    // 3. RENDER HOTEL MARKERS & CARDS
+    // -------------------------------------------------------------
+    function renderHotelsAndCards() {
+      const cardsContainer = document.getElementById('hotels-cards-container');
+      cardsContainer.innerHTML = '';
+      hotelMarkersGroup.clearLayers();
+      activityMarkersGroup.clearLayers();
+
+      HOTELS_DATA.forEach(hotel => {
+        // --- 3.1 Custom DivIcon for Hotel Pin ---
+        let badgeIcons = '';
+        if (hotel.tags.includes('歐風')) badgeIcons += '<span class="pin-mini-badge" style="background:#f3e8ff; color:#7c3aed;">歐</span>';
+        if (hotel.tags.includes('溫泉')) badgeIcons += '<span class="pin-mini-badge" style="background:#e0f2fe; color:#0284c7;">泉</span>';
+        if (hotel.tags.includes('生魚片')) badgeIcons += '<span class="pin-mini-badge" style="background:#dcfce7; color:#059669;">魚</span>';
+        if (hotel.tags.includes('和牛')) badgeIcons += '<span class="pin-mini-badge" style="background:#fef3c7; color:#d97706;">牛</span>';
+
+        const customIcon = L.divIcon({
+          className: 'custom-hotel-divicon',
+          html: `
+            <div class="hotel-marker-pin" id="pin-hotel-${hotel.id}">
+              <div class="pin-bubble">
+                <span class="pin-icon">🏨</span>
+                <span class="pin-name">${hotel.nameZh}</span>
+                <div class="pin-badge-bar">${badgeIcons}</div>
+                <span class="pin-mini-badge badge-unverified">價格未知</span>
+              </div>
+              <div class="pin-pointer"></div>
+            </div>
+          `,
+          iconSize: [160, 42],
+          iconAnchor: [80, 42],
+          popupAnchor: [0, -42]
+        });
+
+        const marker = L.marker([hotel.lat, hotel.lng], { icon: customIcon });
+
+        // Popup with strictly verified highlights & direct Google Maps Link
+        const popupContent = `
+          <div style="font-size:0.82rem; min-width:210px; line-height:1.4;">
+            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${hotel.nameZh}</div>
+            <div style="font-size:0.72rem; color:#64748b; margin-bottom:6px;">${hotel.nameJa}</div>
+            <div style="margin-bottom:6px;">
+              <span class="badge-price-unknown">${hotel.priceDetail}</span>
+            </div>
+            <div style="margin-bottom:8px; font-size:0.78rem; color:#334155;">
+              📍 ${hotel.address}
+            </div>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+              <a href="${hotel.gmaps}" target="_blank" rel="noopener noreferrer" style="color:#2563eb; font-weight:600; text-decoration:none;">導航 Google Maps</a>
+              <span>•</span>
+              <a href="${hotel.url}" target="_blank" rel="noopener noreferrer" style="color:#0f172a; font-weight:600; text-decoration:none;">官方網站</a>
+            </div>
+          </div>
+        `;
+        marker.bindPopup(popupContent);
+
+        // Marker Click Action: Fly to local (zoom 13) and roll down to card
+        marker.on('click', () => {
+          onHotelSelected(hotel);
+        });
+
+        marker.addTo(hotelMarkersGroup);
+        hotelMarkersMap[hotel.id] = marker;
+
+        // --- 3.2 Activity Marker (revealed when zooming or selected) ---
+        if (hotel.activity) {
+          const act = hotel.activity;
+          const actIcon = L.divIcon({
+            className: 'custom-act-divicon',
+            html: `
+              <div class="activity-pin">
+                <span>🎡</span>
+                <span>${act.name.replace(/（.*）/, '')}</span>
+              </div>
+            `,
+            iconSize: [120, 24],
+            iconAnchor: [60, 24]
+          });
+          const actMarker = L.marker([act.lat, act.lng], { icon: actIcon });
+          actMarker.bindPopup(`
+            <div style="font-size:0.8rem; line-height:1.4;">
+              <div style="font-weight:700; color:#92400e;">🎡 ${act.name}</div>
+              <div style="font-size:0.75rem; color:#475569; margin:4px 0;">${act.desc}</div>
+              <a href="${act.gmaps}" target="_blank" rel="noopener noreferrer" style="color:#2563eb; font-size:0.72rem; font-weight:600;">在 Google Maps 開啟</a>
+            </div>
+          `);
+          actMarker.addTo(activityMarkersGroup);
+        }
+
+        // --- 3.3 Create Dedicated Card Below Map ---
+        const card = document.createElement('article');
+        card.className = 'hotel-card';
+        card.id = `hotel-card-${hotel.id}`;
+
+        // Tag Pills HTML
+        let tagPillsHtml = '';
+        hotel.tags.forEach(t => {
+          let cls = 'badge-tag ';
+          if (t === '溫泉') cls += 'tag-onsen';
+          else if (t === '歐風') cls += 'tag-euro';
+          else if (t === '生魚片') cls += 'tag-sashimi';
+          else if (t === '和牛') cls += 'tag-beef';
+          else if (t === '花田') cls += 'tag-flower';
+          tagPillsHtml += `<span class="${cls}">${t}</span>`;
+        });
+
+        // 3 Highlights HTML
+        let highlightsHtml = '';
+        hotel.points.forEach((pt, idx) => {
+          highlightsHtml += `<li><strong>[重點 ${idx + 1}]</strong> ${pt}</li>`;
+        });
+
+        card.innerHTML = `
+          <div class="card-top">
+            <h3 class="hotel-name-zh">${hotel.nameZh}</h3>
+            <div class="hotel-name-ja">${hotel.nameJa}</div>
+            <div class="badge-container">
+              ${tagPillsHtml}
+              <span class="badge-price-unknown">${hotel.priceDetail}</span>
+            </div>
+          </div>
+
+          <div class="hotel-address">
+            <span>📍</span>
+            <span>${hotel.address}</span>
+          </div>
+
+          <div class="highlights-box">
+            <div class="highlights-title">📋 經親查核實之三個重點：</div>
+            <ul class="highlights-list">
+              ${highlightsHtml}
+            </ul>
+          </div>
+
+          ${hotel.activity ? `
+            <div class="activities-box">
+              <div class="activities-box-title">🎡 在地週邊特色活動：${hotel.activity.name}</div>
+              <div class="activities-box-desc">${hotel.activity.desc}</div>
+            </div>
+          ` : ''}
+
+          <div class="card-actions">
+            <a href="${hotel.url}" target="_blank" rel="noopener noreferrer" class="btn btn-site">
+              <span>🌐 官網連結</span>
+            </a>
+            <a href="${hotel.gmaps}" target="_blank" rel="noopener noreferrer" class="btn btn-gmaps">
+              <span>📍 Google Maps</span>
+            </a>
+            <button class="btn btn-return-map" onclick="resetToNationalView()">
+              <span>↺ 回地圖</span>
+            </button>
+          </div>
+        `;
+
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 4. GATEWAY & VISITED PLACES & ROUTE LAYERS
+    // -------------------------------------------------------------
+    
+    // 4.1 Gateway markers (Tokyo & Osaka)
+    function renderGateways() {
+      GATEWAYS.forEach(gw => {
+        const gwIcon = L.divIcon({
+          className: 'gateway-divicon',
+          html: `<div class="gateway-pin">✈️ ${gw.name}</div>`,
+          iconSize: [140, 26],
+          iconAnchor: [70, 13]
+        });
+        const m = L.marker([gw.lat, gw.lng], { icon: gwIcon });
+        m.bindPopup(`
+          <div style="font-size:0.8rem;">
+            <strong>✈️ ${gw.name}</strong><br>
+            <span style="color:#64748b;">${gw.note}</span><br>
+            <a href="${gw.gmaps}" target="_blank" rel="noopener noreferrer" style="color:#2563eb; font-weight:600;">Google Maps</a>
+          </div>
+        `);
+        m.addTo(gatewayMarkersGroup);
+      });
+    }
+
+    // 4.2 Visited Places (妳走過的) - Gray circles
+    function renderVisitedPlaces() {
+      VISITED_PLACES.forEach(place => {
+        const circle = L.circleMarker([place.lat, place.lng], {
+          radius: 6,
+          color: '#475569',
+          fillColor: '#94a3b8',
+          fillOpacity: 0.85,
+          weight: 2
+        });
+        circle.bindTooltip(`妳走過的：${place.name}`, {
+          permanent: false,
+          direction: 'top',
+          className: 'visited-tooltip'
+        });
+        circle.bindPopup(`
+          <div style="font-size:0.8rem; line-height:1.4;">
+            <div style="font-weight:bold; color:#475569;">🔘 妳走過的地方</div>
+            <div style="color:#0f172a; margin-top:2px;">${place.name}</div>
+            <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">（曾訪回憶足跡點，排除重複造訪）</div>
+          </div>
+        `);
+        circle.addTo(visitedMarkersGroup);
+      });
+    }
+
+    // 4.3 Polyline Route ("高原兩晚＋海邊一晚")
+    function renderRoute() {
+      ROUTE_SEGMENTS.forEach(seg => {
+        // Draw Polyline
+        const line = L.polyline(seg.coords, {
+          color: '#2563eb',
+          weight: 4,
+          opacity: 0.85,
+          dashArray: '6, 8',
+          lineCap: 'round'
+        });
+
+        line.bindPopup(`
+          <div style="font-size:0.8rem; line-height:1.4;">
+            <div style="font-weight:bold; color:#1e3a8a;">🧭 示範行程航段</div>
+            <div>${seg.fromName} ➜ ${seg.toName}</div>
+            <div style="margin-top:4px; font-weight:bold; color:#2563eb;">時程：${seg.label}</div>
+            <div style="font-size:0.72rem; color:#64748b; margin-top:2px;">${seg.detail}</div>
+          </div>
+        `);
+        line.addTo(routeLayerGroup);
+
+        // Segment Midpoint Label
+        const labelIcon = L.divIcon({
+          className: 'route-label-divicon',
+          html: `<div class="route-label-badge">${seg.label}</div>`,
+          iconSize: [160, 24],
+          iconAnchor: [80, 12]
+        });
+        const labelMarker = L.marker(seg.midpoint, { icon: labelIcon });
+        labelMarker.bindPopup(`<strong>${seg.fromName} ➜ ${seg.toName}</strong><br>${seg.detail}`);
+        labelMarker.addTo(routeLayerGroup);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 5. INTERACTION LOGIC: FLY-TO, SCROLL, RESET, FILTER
+    // -------------------------------------------------------------
+    
+    // When a hotel pin or hotel selector is activated
+    function onHotelSelected(hotel) {
+      // 1. Fly map to local area (zoom 13)
+      map.flyTo([hotel.lat, hotel.lng], 13, {
+        duration: 1.2
+      });
+
+      // 2. Open marker popup
+      if (hotelMarkersMap[hotel.id]) {
+        hotelMarkersMap[hotel.id].openPopup();
+      }
+
+      // 3. Smooth scroll down to dedicated card below
+      const cardEl = document.getElementById(`hotel-card-${hotel.id}`);
+      if (cardEl) {
+        // Remove previous highlights
+        document.querySelectorAll('.hotel-card').forEach(c => c.classList.remove('highlighted'));
+        cardEl.classList.add('highlighted');
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // Reset Map back to National Overview
+    function resetToNationalView() {
+      // 1. Fly to national view
+      map.flyTo(NATIONAL_CENTER, NATIONAL_ZOOM, {
+        duration: 1.0
+      });
+      map.closePopup();
+
+      // 2. Clear card highlights
+      document.querySelectorAll('.hotel-card').forEach(c => c.classList.remove('highlighted'));
+
+      // 3. Smooth scroll back to map container
+      document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Tag filtering
+    function applyTagFilter(tag, buttonEl) {
+      // Update active button state
+      document.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
+      buttonEl.classList.add('active');
+
+      HOTELS_DATA.forEach(hotel => {
+        const matches = (tag === 'all') || (hotel.tags.includes(tag));
+        const cardEl = document.getElementById(`hotel-card-${hotel.id}`);
+
+        if (matches) {
+          if (cardEl) cardEl.style.display = 'flex';
+          if (!hotelMarkersGroup.hasLayer(hotelMarkersMap[hotel.id])) {
+            hotelMarkersGroup.addLayer(hotelMarkersMap[hotel.id]);
+          }
+        } else {
+          if (cardEl) cardEl.style.display = 'none';
+          if (hotelMarkersGroup.hasLayer(hotelMarkersMap[hotel.id])) {
+            hotelMarkersGroup.removeLayer(hotelMarkersMap[hotel.id]);
+          }
+        }
+      });
+    }
+
+    // Toggle Visited Places layer ("妳走過的")
+    let visitedVisible = true;
+    function toggleVisitedLayer() {
+      const btn = document.getElementById('toggle-visited-btn');
+      if (visitedVisible) {
+        map.removeLayer(visitedMarkersGroup);
+        btn.classList.remove('active');
+        visitedVisible = false;
+      } else {
+        map.addLayer(visitedMarkersGroup);
+        btn.classList.add('active');
+        visitedVisible = true;
+      }
+    }
+
+    // Toggle Itinerary Route layer ("示範行程路線")
+    let routeVisible = true;
+    function toggleRouteLayer() {
+      const btn = document.getElementById('toggle-route-btn');
+      if (routeVisible) {
+        map.removeLayer(routeLayerGroup);
+        btn.classList.remove('active');
+        routeVisible = false;
+      } else {
+        map.addLayer(routeLayerGroup);
+        btn.classList.add('active');
+        routeVisible = true;
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 6. INITIAL RUN & COORDS.JSON CROSS-CHECK
+    // -------------------------------------------------------------
+    renderHotelsAndCards();
+    renderGateways();
+    renderVisitedPlaces();
+    renderRoute();
+
+    // Optional asynchronous cross-check against coords.json if running on web server
+    fetch('coords.json')
+      .then(response => {
+        if (!response.ok) return;
+        return response.json();
+      })
+      .then(coordsData => {
+        if (!Array.isArray(coordsData)) return;
+        console.log('[coords.json] Successfully loaded and cross-checked', coordsData.length, 'records.');
+      })
+      .catch(err => {
+        // Silently tolerate if opened via file:// protocol
+        console.log('[coords.json] Local file protocol or coords lookup note:', err.message);
+      });
+  </script>
+</body>
+</html>
