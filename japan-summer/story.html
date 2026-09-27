@@ -123,8 +123,8 @@ var COORDS = {"tangram":{"lat":36.853764,"lng":138.262899,"verified":true},"riso
 function hasCoord(id){var c=COORDS[id];return !!(c&&c.verified&&c.lat!=null);}
 
 var map = L.map('map',{scrollWheelZoom:true});
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-  attribution:'© OpenStreetMap contributors © CARTO',
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{
+  attribution:'© OpenStreetMap contributors © Esri',
   maxZoom:18
 }).addTo(map);
 
