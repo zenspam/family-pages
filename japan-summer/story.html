@@ -178,13 +178,16 @@ function drawRuler(){
   var z = map.getZoom();
   var lat = map.getCenter().lat;
   var mpp = 156543.03392 * Math.cos(lat*Math.PI/180) / Math.pow(2,z);
-  var px = rulerKm*1000/mpp;
-  var w = Math.min(px, document.getElementById('map').clientWidth - 40);
-  var scale = w/px;
-  var labelKm = Math.round(rulerKm*scale);
-  rulerDiv.innerHTML = '<div style="font-size:11px;opacity:.8">'+FACTS.ruler.label+'</div>'+
-    '<svg width="'+Math.round(w)+'" height="12"><line x1="0" y1="6" x2="'+Math.round(w)+'" y2="6" stroke="#c0392b" stroke-width="2"/><line x1="0" y1="1" x2="0" y2="11" stroke="#c0392b" stroke-width="2"/><line x1="'+Math.round(w)+'" y1="1" x2="'+Math.round(w)+'" y2="11" stroke="#c0392b" stroke-width="2"/></svg>'+
-    '<div style="font-size:11px">約 '+labelKm+' 公里</div>';
+  var maxW = document.getElementById('map').clientWidth - 40;
+  var px = rulerKm*1000/mpp, w, label;
+  if (px <= maxW) { w = px; label = FACTS.ruler.label + '<br>約 ' + Math.round(rulerKm) + ' 公里'; }
+  else {
+    var steps = [1,2,5,10,20,50,100,200], d = 1;
+    for (var i = 0; i < steps.length; i++) { if (steps[i]*1000/mpp <= maxW*0.6) d = steps[i]; }
+    w = d*1000/mpp; label = d + ' 公里';
+  }
+  rulerDiv.innerHTML = '<div style="font-size:11px">'+label+'</div>'+
+    '<svg width="'+Math.round(w)+'" height="12"><line x1="0" y1="6" x2="'+Math.round(w)+'" y2="6" stroke="#c0392b" stroke-width="2"/><line x1="0" y1="1" x2="0" y2="11" stroke="#c0392b" stroke-width="2"/><line x1="'+Math.round(w)+'" y1="1" x2="'+Math.round(w)+'" y2="11" stroke="#c0392b" stroke-width="2"/></svg>';
 }
 map.on('move zoom', drawRuler);
 drawRuler();
