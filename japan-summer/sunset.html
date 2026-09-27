@@ -1,16 +1,12 @@
-<!-- produced-by: gemini1:sunset-builder -->
+<!-- produced-by: subagent:claude-sunset2-builder -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>海辺の夕日 — Japanese Summer Sunset</title>
+  <title>海辺の夕日 v2 — Japanese Summer Sunset</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: #111317;
       display: flex;
@@ -34,22 +30,12 @@
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
     }
     @media (min-aspect-ratio: 16/9) {
-      .viewport {
-        width: calc(100vh * 16 / 9);
-        height: 100vh;
-      }
+      .viewport { width: calc(100vh * 16 / 9); height: 100vh; }
     }
     @media (max-aspect-ratio: 16/9) {
-      .viewport {
-        width: 100vw;
-        height: calc(100vw * 9 / 16);
-      }
+      .viewport { width: 100vw; height: calc(100vw * 9 / 16); }
     }
-    canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+    canvas { width: 100%; height: 100%; display: block; }
     .hud {
       position: absolute;
       bottom: 14px;
@@ -78,9 +64,7 @@
       font-size: 12px;
       transition: background 0.2s;
     }
-    .hud button:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
+    .hud button:hover { background: rgba(255, 255, 255, 0.3); }
   </style>
 </head>
 <body>
@@ -95,7 +79,7 @@
 
   <script>
     // =========================================================================
-    // 確定性隨機數生成器與雜湊 (Strictly Deterministic / No Math.random)
+    // 確定性隨機（Strictly Deterministic）：mulberry32 固定種子，不使用內建亂數
     // =========================================================================
     function createMulberry32(seed) {
       let a = seed >>> 0;
@@ -107,1034 +91,931 @@
       };
     }
 
-    function hashCoord(x, y, seed = 101) {
+    function hashCoord(x, y, seed) {
+      seed = seed || 101;
       const n = Math.sin(x * 12.9898 + y * 78.233 + seed * 37.719) * 43758.5453;
       return n - Math.floor(n);
     }
 
     // =========================================================================
-    // 構圖幾何與常數 (基準解析度 1280 x 720)
+    // 短筆觸引擎：所有筆觸位置/角度/長度皆由固定種子決定
+    // =========================================================================
+    function drawStrokes(ctx, cfg) {
+      const rng = createMulberry32(cfg.seed);
+      ctx.save();
+      ctx.lineCap = 'round';
+      if (cfg.clip) {
+        ctx.beginPath();
+        cfg.clip(ctx);
+        ctx.clip();
+      }
+      for (let i = 0; i < cfg.count; i++) {
+        const x = cfg.x0 + rng() * (cfg.x1 - cfg.x0);
+        const y = cfg.y0 + rng() * (cfg.y1 - cfg.y0);
+        const ang = cfg.angle + (rng() - 0.5) * cfg.angleSpread;
+        const len = cfg.len0 + rng() * (cfg.len1 - cfg.len0);
+        const col = cfg.colors[(rng() * cfg.colors.length) | 0];
+        ctx.globalAlpha = cfg.alpha * (0.55 + rng() * 0.45);
+        ctx.strokeStyle = col;
+        ctx.lineWidth = cfg.w0 + rng() * (cfg.w1 - cfg.w0);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // 構圖幾何常數（基準 1280 x 720，16:9）
     // =========================================================================
     const BASE_W = 1280;
     const BASE_H = 720;
     const HORIZON_Y = 412;
 
-    // 遠山幾何路徑 (3 層層次分明山脈)
+    // 遠山（每座都向下閉合到地平線，鋪滿分管寬度）
     const MOUNTAINS = [
-      { // 遠山 1 (最遠淡紫灰)
-        color: '#656082',
-        shadeColor: '#534e6e',
-        pts: [
-          [440, 412], [520, 365], [600, 340], [670, 310], [730, 280],
-          [790, 305], [860, 345], [940, 380], [1020, 412]
-        ],
-        facets: [
-          [[730, 280], [790, 305], [860, 345], [830, 412], [730, 412]],
-          [[600, 340], [670, 310], [730, 280], [730, 412], [610, 412]]
-        ]
+      {
+        color: '#5d5a80', shade: '#4b4768',
+        strokes: ['#6a6790', '#504c72', '#716d96'],
+        pts: [[430, 412], [520, 368], [600, 340], [670, 310], [730, 278],
+              [790, 304], [860, 344], [950, 382], [1040, 412]],
+        facets: [[[730, 278], [790, 304], [860, 344], [830, 412], [730, 412]],
+                 [[600, 340], [670, 310], [730, 278], [730, 412], [610, 412]]]
       },
-      { // 遠山 2 (中層青藍紫脊)
-        color: '#42456c',
-        shadeColor: '#323554',
-        pts: [
-          [720, 412], [800, 360], [870, 325], [950, 295], [1030, 330],
-          [1120, 375], [1200, 395], [1280, 412]
-        ],
-        facets: [
-          [[950, 295], [1030, 330], [1120, 375], [1060, 412], [950, 412]]
-        ]
+      {
+        color: '#3e4268', shade: '#2f3250',
+        strokes: ['#4a4e78', '#353864', '#545888'],
+        pts: [[700, 412], [800, 358], [870, 322], [950, 292], [1030, 328],
+              [1120, 372], [1210, 396], [1280, 408], [1280, 412]],
+        facets: [[[950, 292], [1030, 328], [1120, 372], [1060, 412], [950, 412]]]
       },
-      { // 遠山 3 (近景右側海岬山岬)
-        color: '#24323d',
-        shadeColor: '#1a242c',
-        pts: [
-          [860, 412], [910, 395], [970, 380], [1040, 370], [1140, 380],
-          [1280, 400], [1280, 420], [860, 420]
-        ],
+      {
+        color: '#22303c', shade: '#182229',
+        strokes: ['#2c3c4a', '#1b2731', '#334554'],
+        pts: [[860, 412], [910, 394], [970, 378], [1040, 368], [1140, 378],
+              [1280, 398], [1280, 412]],
         facets: []
       }
     ];
 
-    // 迎風斜松骨幹幾何與針葉團塊
-    const PINE_TRUNK_PATH = [
-      [1040, 640], [1010, 580], [965, 525], [910, 475],
-      [840, 425], [770, 385], [710, 355], [650, 335], [590, 330]
+    // 沙岸弧線（貝塞斯式折線，向右下延伸至右下角）
+    const SHORELINE = [[0, 528], [180, 544], [360, 564], [540, 590],
+                       [720, 620], [900, 654], [1060, 688], [1160, 720]];
+
+    // 前景草坡（右下）
+    const GRASS_HILL = [[800, 720], [860, 672], [930, 622], [1010, 580],
+                        [1110, 545], [1210, 522], [1280, 508], [1280, 720]];
+
+    // 天空筆觸用色（依高度選色）
+    const SKY_STROKE_COLORS = ['#3a4070', '#565a8c', '#7a5f92', '#a86a8a',
+                               '#d06f7c', '#ef8566', '#ffa668', '#ffc27a'];
+
+    // 雲群（橙粉雲，每團一個固定種子）
+    const CLOUDS = [
+      { x: 230,  y: 118, w: 280, h: 36, seed: 11, colors: ['#8c5e88', '#a06a92'], edge: '#c99ab0' },
+      { x: 680,  y: 142, w: 330, h: 38, seed: 22, colors: ['#9f648b', '#b4708f'], edge: '#d8a3b0' },
+      { x: 960,  y: 110, w: 260, h: 30, seed: 99, colors: ['#7c5684', '#946290'], edge: '#bd92ac' },
+      { x: 310,  y: 212, w: 350, h: 42, seed: 33, colors: ['#d66770', '#e77b6e'], edge: '#f5b08e' },
+      { x: 840,  y: 226, w: 350, h: 44, seed: 44, colors: ['#df6e72', '#ef8a70'], edge: '#f7b48e' },
+      { x: 310,  y: 292, w: 340, h: 40, seed: 55, colors: ['#f08562', '#fba564'], edge: '#ffd09a' },
+      { x: 770,  y: 305, w: 330, h: 38, seed: 66, colors: ['#e97e68', '#fdbd73'], edge: '#ffd6a0' },
+      { x: 250,  y: 336, w: 230, h: 26, seed: 77, colors: ['#fed485', '#ffe3a4'], edge: '#fff0c8' },
+      { x: 700,  y: 342, w: 250, h: 24, seed: 88, colors: ['#fdbd73', '#ffd68e'], edge: '#ffe8b8' }
     ];
 
-    const PINE_BRANCHES = [
-      [[770, 385], [730, 410], [680, 430], [620, 440]],
-      [[710, 355], [680, 310], [630, 280], [580, 270]],
-      [[650, 335], [610, 320], [540, 325], [490, 335]],
-      [[840, 425], [890, 390], [940, 370], [990, 365]]
+    // 海面色帶（每條皆滿幅 0..BASE_W，邊緣做波動）
+    const SEA_BANDS = [
+      { y0: 412, y1: 438, c: '#1c3a58' },
+      { y0: 436, y1: 466, c: '#1e4667' },
+      { y0: 464, y1: 500, c: '#215478' },
+      { y0: 498, y1: 540, c: '#24688a' },
+      { y0: 538, y1: 590, c: '#277a97' },
+      { y0: 588, y1: 720, c: '#2b8aa2' }
     ];
 
-    // 松針雲片狀針葉團 (Tiered Matsu Pads)
-    const PINE_PADS = [
-      { x: 490, y: 335, rx: 50, ry: 28, rot: -0.15 },
-      { x: 550, y: 315, rx: 55, ry: 30, rot: -0.10 },
-      { x: 575, y: 265, rx: 48, ry: 26, rot: -0.22 },
-      { x: 635, y: 275, rx: 54, ry: 30, rot: -0.05 },
-      { x: 685, y: 305, rx: 58, ry: 32, rot: 0.10 },
-      { x: 615, y: 440, rx: 52, ry: 28, rot: 0.16 },
-      { x: 680, y: 425, rx: 50, ry: 28, rot: 0.12 },
-      { x: 740, y: 380, rx: 60, ry: 34, rot: 0.05 },
-      { x: 800, y: 350, rx: 54, ry: 30, rot: -0.10 },
-      { x: 920, y: 365, rx: 50, ry: 28, rot: 0.18 },
-      { x: 990, y: 360, rx: 46, ry: 26, rot: 0.15 }
+    // -------------------------------------------------------------------------
+    // 迎風斜松：扁平層狀扇形枝層（上短下長，層層疊疊，向海面側傾斜）
+    // dir: -1 向左(海面側) / 1 向右(背風側)
+    // -------------------------------------------------------------------------
+    const PINE_TRUNK = [
+      [1050, 706], [985, 640], [948, 576], [880, 522], [816, 472],
+      [756, 428], [700, 388], [648, 352], [598, 322], [566, 296]
     ];
 
-    // 前景草坡路徑
-    const GRASS_HILL_PATH = [
-      [820, 720], [860, 680], [920, 630], [990, 585],
-      [1080, 550], [1180, 525], [1280, 510], [1280, 720]
+    const PINE_TIERS = [
+      { bx: 598, by: 322, len: 56,  droop: 8,  fan: 11, dir: -1, seed: 301 },
+      { bx: 648, by: 352, len: 88,  droop: 11, fan: 13, dir: -1, seed: 302 },
+      { bx: 700, by: 388, len: 112, droop: 13, fan: 15, dir: -1, seed: 303 },
+      { bx: 652, by: 346, len: 40,  droop: 5,  fan: 9,  dir: 1,  seed: 309 },
+      { bx: 756, by: 428, len: 134, droop: 15, fan: 16, dir: -1, seed: 304 },
+      { bx: 816, by: 472, len: 152, droop: 16, fan: 17, dir: -1, seed: 305 },
+      { bx: 880, by: 522, len: 166, droop: 17, fan: 18, dir: -1, seed: 306 },
+      { bx: 948, by: 576, len: 178, droop: 18, fan: 19, dir: -1, seed: 307 }
     ];
 
-    // 確定性草葉資料
-    const GRASS_BLADES = [];
-    {
-      const rng = createMulberry32(8899);
-      for (let i = 0; i < 90; i++) {
-        const u = i / 89;
-        const x = 835 + u * 440 + (rng() - 0.5) * 16;
-        const hillY = 690 - u * 175 + (rng() - 0.5) * 10;
-        const length = 28 + rng() * 40;
-        const baseAngle = -Math.PI / 2 + (rng() - 0.5) * 0.7 - 0.25;
-        const swayFreq = 2.5 + rng() * 1.6;
-        const swayPhase = rng() * Math.PI * 2;
-        const width = 1.8 + rng() * 1.6;
-        GRASS_BLADES.push({ x, y: hillY, length, baseAngle, swayFreq, swayPhase, width });
-      }
+    function pineSwayAt(t, k) {
+      if (t < 4.0) return 0;
+      return Math.sin(t * 1.5 + k * 0.4) * 3.2 * k;
     }
 
-    // 沙灘海岸弧線 (Sweep shoreline)
-    const BEACH_SHORELINE = [
-      [0, 530], [180, 545], [360, 565], [540, 590],
-      [720, 620], [900, 655], [1060, 690], [1160, 720]
-    ];
+    function tierGeom(tier, sway) {
+      const dir = tier.dir;
+      const bx = tier.bx, by = tier.by;
+      const tx = bx + dir * tier.len + sway;
+      const ty = by + tier.droop;
+      return { bx, by, tx, ty, h: tier.fan, len: tier.len, dir };
+    }
 
-    // 天空色塊帶
-    const SKY_BANDS = [
-      { y0: 0,   y1: 65,  c: '#2b3154' },
-      { y0: 60,  y1: 125, c: '#393d6b' },
-      { y0: 120, y1: 185, c: '#524b7a' },
-      { y0: 180, y1: 240, c: '#79537f' },
-      { y0: 235, y1: 295, c: '#a85b7e' },
-      { y0: 290, y1: 345, c: '#d46571' },
-      { y0: 340, y1: 385, c: '#ee7d5e' },
-      { y0: 380, y1: 413, c: '#fa9d52' }
-    ];
+    function tierFanPath(g) {
+      // 頂緣微拱、底緣下垂收回到樹幹的扇形路徑（fill 與 clip 共用）
+      return function(ctx) {
+        ctx.moveTo(g.bx - 4, g.by - g.h * 0.4);
+        ctx.quadraticCurveTo((g.bx + g.tx) / 2, Math.min(g.by, g.ty) - g.h * 1.6, g.tx, g.ty - 3);
+        ctx.quadraticCurveTo(g.tx + g.dir * 10, g.ty + g.h * 0.5, g.bx + g.dir * 8, g.by + g.h * 0.8);
+        ctx.closePath();
+      };
+    }
 
-    // 橙粉雲彩色塊
-    const CLOUD_BLOCKS = [
-      { poly: [[80, 110], [280, 105], [420, 115], [380, 132], [220, 135], [70, 125]], color: '#8c5e88' },
-      { poly: [[480, 140], [740, 130], [890, 142], [820, 158], [630, 160], [470, 152]], color: '#9f648b' },
-      { poly: [[40, 205], [260, 195], [460, 208], [420, 230], [210, 232], [30, 222]], color: '#d66770' },
-      { poly: [[250, 218], [430, 212], [540, 222], [500, 238], [340, 240], [240, 230]], color: '#e77b6e' },
-      { poly: [[580, 220], [860, 205], [1080, 225], [1010, 248], [790, 252], [560, 240]], color: '#df6e72' },
-      { poly: [[90, 280], [330, 270], [520, 285], [470, 310], [260, 312], [80, 298]], color: '#f08562' },
-      { poly: [[140, 298], [320, 292], [420, 302], [390, 318], [240, 320], [130, 310]], color: '#fba564' },
-      { poly: [[540, 295], [820, 285], [980, 300], [930, 325], [730, 328], [520, 315]], color: '#e97e68' },
-      { poly: [[160, 312], [300, 308], [380, 316], [360, 326], [220, 328], [150, 322]], color: '#fed485' },
-      { poly: [[600, 320], [780, 312], [880, 322], [850, 332], [710, 335], [580, 328]], color: '#fdbd73' }
-    ];
-
-    // 海洋色塊層 (完全鋪滿水面無空隙)
-    const SEA_BANDS = [
-      { y0: 412, y1: 435, c: '#162d47' },
-      { y0: 432, y1: 462, c: '#193959' },
-      { y0: 458, y1: 495, c: '#1b4b6f' },
-      { y0: 490, y1: 535, c: '#1e5f7e' },
-      { y0: 530, y1: 585, c: '#237890' },
-      { y0: 580, y1: 720, c: '#28889c' }
-    ];
-
-    // =========================================================================
-    // 鉛筆手繪線條函式
-    // =========================================================================
-    function drawPencilPolyline(ctx, pts, progress, seed, opt = {}) {
-      if (progress <= 0 || pts.length < 2) return;
-      
-      const totalSegments = pts.length - 1;
-      const targetSegments = totalSegments * progress;
-      const fullSegs = Math.floor(targetSegments);
-      const fracSeg = targetSegments - fullSegs;
-
+    function drawPineTier(ctx, tier, sway) {
+      const g = tierGeom(tier, sway);
+      const fanPath = tierFanPath(g);
       ctx.save();
       ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
 
-      const passes = [
-        { alpha: 0.35, width: (opt.width || 1.8) * 1.3, offset: 0.6, color: 'rgba(55, 50, 46, ' },
-        { alpha: 0.85, width: opt.width || 1.6, offset: 0.2, color: 'rgba(38, 34, 30, ' }
-      ];
+      // 枝幹
+      ctx.strokeStyle = '#2a1a12';
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.moveTo(g.bx, g.by);
+      ctx.quadraticCurveTo((g.bx + g.tx) / 2, g.by + tier.droop * 0.35, g.tx, g.ty);
+      ctx.stroke();
 
-      for (const pass of passes) {
+      // 扇形葉層基底
+      ctx.beginPath();
+      fanPath(ctx);
+      ctx.fillStyle = '#122a1c';
+      ctx.fill();
+
+      // 葉層內部筆觸（暗綠/濃綠/透光綠）
+      ctx.save();
+      ctx.beginPath();
+      fanPath(ctx);
+      ctx.clip();
+      const minX = Math.min(g.bx, g.tx) - 6, maxX = Math.max(g.bx, g.tx) + 6;
+      drawStrokes(ctx, {
+        seed: tier.seed, count: 26,
+        x0: minX, y0: g.by - g.h * 1.8, x1: maxX, y1: g.by + g.h * 1.2,
+        angle: 0.12 * g.dir, angleSpread: 0.6, len0: 8, len1: 24,
+        w0: 2.2, w1: 5, alpha: 0.85,
+        colors: ['#0e2016', '#1c422c', '#2d6842', '#3f7d4d']
+      });
+      // 頂面受光
+      ctx.globalAlpha = 0.55;
+      ctx.fillStyle = '#579e5f';
+      ctx.beginPath();
+      ctx.ellipse((g.bx + g.tx) / 2, Math.min(g.by, g.ty) - g.h * 0.55,
+                  Math.abs(g.tx - g.bx) * 0.44, g.h * 0.55, 0.05 * g.dir, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 葉團邊緣短針葉筆觸點綴
+      ctx.strokeStyle = '#0c1c12';
+      ctx.lineWidth = 1.5;
+      const n = Math.max(6, Math.floor(tier.len / 7));
+      for (let k = 0; k <= n; k++) {
+        const u = k / n;
+        const ex = g.bx + (g.tx - g.bx) * u;
+        const eyTop = (g.by - g.h * 0.4) + (g.ty - 3 - (g.by - g.h * 0.4)) * u
+                      - Math.sin(u * Math.PI) * g.h * 0.85;
+        const jl = 4 + hashCoord(k, tier.seed) * 6;
         ctx.beginPath();
-        let started = false;
-
-        for (let i = 0; i <= fullSegs && i < pts.length; i++) {
-          let px = pts[i][0];
-          let py = pts[i][1];
-          const jx = (hashCoord(px, py, seed + pass.offset) - 0.5) * 1.4;
-          const jy = (hashCoord(py, px, seed + pass.offset + 7) - 0.5) * 1.4;
-          px += jx;
-          py += jy;
-
-          if (!started) {
-            ctx.moveTo(px, py);
-            started = true;
-          } else {
-            ctx.lineTo(px, py);
-          }
-        }
-
-        if (fracSeg > 0 && fullSegs < totalSegments) {
-          const p0 = pts[fullSegs];
-          const p1 = pts[fullSegs + 1];
-          let px = p0[0] + (p1[0] - p0[0]) * fracSeg;
-          let py = p0[1] + (p1[1] - p0[1]) * fracSeg;
-          const jx = (hashCoord(px, py, seed + 13) - 0.5) * 1.4;
-          const jy = (hashCoord(py, px, seed + 27) - 0.5) * 1.4;
-          ctx.lineTo(px + jx, py + jy);
-        }
-
-        ctx.strokeStyle = pass.color + pass.alpha + ')';
-        ctx.lineWidth = pass.width;
+        ctx.moveTo(ex, eyTop);
+        ctx.lineTo(ex + (hashCoord(k, tier.seed + 3) - 0.5) * 4, eyTop + jl);
         ctx.stroke();
       }
-
+      // 少數亮綠針葉
+      ctx.strokeStyle = '#6fb56b';
+      ctx.lineWidth = 1.2;
+      for (let k = 0; k <= n; k += 3) {
+        const u = k / n;
+        const ex = g.bx + (g.tx - g.bx) * u;
+        const eyTop = (g.by - g.h * 0.4) + (g.ty - 3 - (g.by - g.h * 0.4)) * u
+                      - Math.sin(u * Math.PI) * g.h * 0.85;
+        ctx.beginPath();
+        ctx.moveTo(ex, eyTop + 1);
+        ctx.lineTo(ex + 2, eyTop + 5 + hashCoord(k, tier.seed + 9) * 3);
+        ctx.stroke();
+      }
       ctx.restore();
     }
 
-    function drawPencilHatching(ctx, x0, y0, w, h, angle, spacing, progress, seed) {
+    function drawPine(ctx, t, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const N = PINE_TRUNK.length;
+      const swayAt = (i) => pineSwayAt(t, i / N);
+
+      // 樹幹：暗輪廓 -> 赭紅主色 -> 夕陽高光
+      const trunkPasses = [
+        { w: 22, c: '#20140e', dx: 0 },
+        { w: 15, c: '#4e2d1d', dx: -1.5 },
+        { w: 6,  c: '#8a5432', dx: -3.5 }
+      ];
+      for (const p of trunkPasses) {
+        ctx.strokeStyle = p.c;
+        ctx.lineWidth = p.w;
+        ctx.beginPath();
+        for (let i = 0; i < N; i++) {
+          const px = PINE_TRUNK[i][0] + p.dx + swayAt(i);
+          const py = PINE_TRUNK[i][1];
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+
+      // 枝層（先畫下層再畫上層會被遮住，這裡依 y 由下到上繪製，視覺層疊）
+      const tiers = PINE_TIERS.slice().sort((a, b) => b.by - a.by);
+      for (const tier of tiers) {
+        const k = (tier.bx - 560) / 500;
+        drawPineTier(ctx, tier, pineSwayAt(t, Math.max(0.15, k)));
+      }
+
+      // 樹梢小簇
+      ctx.fillStyle = '#16301f';
+      ctx.beginPath();
+      ctx.ellipse(560 + pineSwayAt(t, 1), 294, 22, 10, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#2d6842';
+      ctx.beginPath();
+      ctx.ellipse(556 + pineSwayAt(t, 1), 291, 14, 6, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawPineSketch(ctx, progress, t) {
+      if (progress <= 0) return;
+      const sub = (s0, s1) => progress <= s0 ? 0 : progress >= s1 ? 1 : (progress - s0) / (s1 - s0);
+
+      const pTrunk = sub(0.0, 0.55);
+      if (pTrunk > 0) {
+        pencilPolyline(ctx, PINE_TRUNK, pTrunk, 404, 2.4);
+        const off = PINE_TRUNK.map(pt => [pt[0] - 5, pt[1]]);
+        pencilPolyline(ctx, off, pTrunk, 405, 1.1);
+      }
+
+      const pTier = sub(0.35, 0.9);
+      if (pTier > 0) {
+        for (let i = 0; i < PINE_TIERS.length; i++) {
+          const tier = PINE_TIERS[i];
+          const g = tierGeom(tier, 0);
+          const line = [[g.bx, g.by], [(g.bx + g.tx) / 2, g.by + tier.droop * 0.35], [g.tx, g.ty]];
+          pencilPolyline(ctx, line, pTier, 450 + i * 17, 1.4);
+        }
+      }
+
+      const pFan = sub(0.6, 1.0);
+      if (pFan > 0) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(40, 36, 32, 0.75)';
+        ctx.lineWidth = 1.2;
+        const count = Math.floor(PINE_TIERS.length * pFan);
+        for (let i = 0; i < count; i++) {
+          const g = tierGeom(PINE_TIERS[i], 0);
+          const fanPath = tierFanPath(g);
+          ctx.beginPath();
+          fanPath(ctx);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    // =========================================================================
+    // 鉛筆線稿工具
+    // =========================================================================
+    function pencilPolyline(ctx, pts, progress, seed, width) {
+      if (progress <= 0 || pts.length < 2) return;
+      const total = pts.length - 1;
+      const target = total * progress;
+      const full = Math.floor(target);
+      const frac = target - full;
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      const passes = [
+        { a: 0.32, w: width * 1.4, s: 0.6 },
+        { a: 0.85, w: width, s: 0.2 }
+      ];
+      for (const p of passes) {
+        ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= full && i < pts.length; i++) {
+          let px = pts[i][0] + (hashCoord(pts[i][0], pts[i][1], seed + p.s) - 0.5) * 1.6;
+          let py = pts[i][1] + (hashCoord(pts[i][1], pts[i][0], seed + p.s + 7) - 0.5) * 1.6;
+          if (!started) { ctx.moveTo(px, py); started = true; } else { ctx.lineTo(px, py); }
+        }
+        if (frac > 0 && full < total) {
+          const p0 = pts[full], p1 = pts[full + 1];
+          ctx.lineTo(p0[0] + (p1[0] - p0[0]) * frac, p0[1] + (p1[1] - p0[1]) * frac);
+        }
+        ctx.strokeStyle = 'rgba(48, 42, 38, ' + p.a + ')';
+        ctx.lineWidth = p.w;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function pencilHatching(ctx, x0, y0, w, h, angle, spacing, progress, seed) {
       if (progress <= 0) return;
       ctx.save();
       ctx.beginPath();
       ctx.rect(x0, y0, w, h);
       ctx.clip();
-
-      const numLines = Math.floor((w + h) / spacing);
-      const drawCount = Math.floor(numLines * progress);
-
-      ctx.strokeStyle = 'rgba(45, 40, 36, 0.45)';
+      const num = Math.floor((w + h) / spacing);
+      const drawCount = Math.floor(num * progress);
+      ctx.strokeStyle = 'rgba(45, 40, 36, 0.4)';
       ctx.lineWidth = 1.1;
-
-      const cosA = Math.cos(angle);
-      const sinA = Math.sin(angle);
-
+      const cosA = Math.cos(angle), sinA = Math.sin(angle);
       for (let i = 0; i < drawCount; i++) {
-        const offset = i * spacing;
-        const lx0 = x0 - h * cosA + offset * sinA;
-        const ly0 = y0 + offset * cosA;
-        const lx1 = lx0 + (w + h) * cosA;
-        const ly1 = ly0 + (w + h) * sinA;
-
+        const off = i * spacing;
+        const lx0 = x0 - h * cosA + off * sinA + (hashCoord(i, seed) - 0.5) * 2;
+        const ly0 = y0 + off * cosA;
         ctx.beginPath();
-        const j = (hashCoord(i, seed) - 0.5) * 2;
-        ctx.moveTo(lx0 + j, ly0);
-        ctx.lineTo(lx1 + j, ly1);
+        ctx.moveTo(lx0, ly0);
+        ctx.lineTo(lx0 + (w + h) * cosA, ly0 + (w + h) * sinA);
         ctx.stroke();
       }
+      ctx.restore();
+    }
 
+    function drawSketch(ctx, s) {
+      if (s <= 0) return;
+      const sub = (a, b) => s <= a ? 0 : s >= b ? 1 : (s - a) / (b - a);
+
+      pencilPolyline(ctx, [[0, HORIZON_Y], [860, HORIZON_Y]], sub(0.0, 0.2), 101, 1.8);
+
+      for (let m = 0; m < MOUNTAINS.length; m++) {
+        pencilPolyline(ctx, MOUNTAINS[m].pts, sub(0.12 + m * 0.1, 0.32 + m * 0.12), 202 + m * 50, 1.7);
+      }
+
+      drawPineSketch(ctx, sub(0.28, 0.75), 0);
+
+      const pBeach = sub(0.7, 0.92);
+      if (pBeach > 0) {
+        pencilPolyline(ctx, SHORELINE, pBeach, 601, 1.8);
+        pencilPolyline(ctx, SHORELINE.map(p => [p[0], p[1] - 42]), pBeach, 602, 1.3);
+        pencilPolyline(ctx, SHORELINE.map(p => [p[0], p[1] - 84]), pBeach, 603, 1.1);
+      }
+
+      const pGrass = sub(0.82, 1.0);
+      if (pGrass > 0) {
+        pencilPolyline(ctx, GRASS_HILL, pGrass, 701, 2.0);
+        pencilHatching(ctx, 900, 560, 380, 160, -0.75, 8, pGrass, 702);
+      }
+    }
+
+    function drawCloud(ctx, cl, alpha) {
+      if (alpha <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, alpha * 1.25);
+      ctx.fillStyle = cl.colors[0];
+      ctx.beginPath();
+      ctx.ellipse(cl.x, cl.y, cl.w / 2, cl.h / 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      drawStrokes(ctx, {
+        seed: cl.seed, count: 46,
+        x0: cl.x - cl.w / 2, y0: cl.y - cl.h / 2, x1: cl.x + cl.w / 2, y1: cl.y + cl.h / 2,
+        angle: 0.04, angleSpread: 0.5, len0: 12, len1: 36, w0: 2.5, w1: 6,
+        alpha: 0.8, colors: cl.colors
+      });
+      ctx.globalAlpha = Math.min(1, alpha * 1.25) * 0.55;
+      ctx.strokeStyle = cl.edge;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(cl.x, cl.y + cl.h * 0.26, cl.w * 0.42, cl.h * 0.22, 0, 0.2, Math.PI - 0.2);
+      ctx.stroke();
       ctx.restore();
     }
 
     // =========================================================================
-    // 繪製松樹鉛筆素描線 (供底稿或未上色階段調用)
-    // =========================================================================
-    function drawPineSketch(ctx, progress) {
-      if (progress <= 0) return;
-
-      function getSub(s0, s1) {
-        if (progress <= s0) return 0;
-        if (progress >= s1) return 1;
-        return (progress - s0) / (s1 - s0);
-      }
-
-      const pTrunk = getSub(0.0, 0.55);
-      if (pTrunk > 0) {
-        drawPencilPolyline(ctx, PINE_TRUNK_PATH, pTrunk, 404, { width: 2.4 });
-        const off1 = PINE_TRUNK_PATH.map(pt => [pt[0] - 5, pt[1]]);
-        const off2 = PINE_TRUNK_PATH.map(pt => [pt[0] + 5, pt[1]]);
-        drawPencilPolyline(ctx, off1, pTrunk, 405, { width: 1.2 });
-        drawPencilPolyline(ctx, off2, pTrunk, 406, { width: 1.2 });
-      }
-
-      const pBranches = getSub(0.35, 0.75);
-      if (pBranches > 0) {
-        for (let bIdx = 0; bIdx < PINE_BRANCHES.length; bIdx++) {
-          drawPencilPolyline(ctx, PINE_BRANCHES[bIdx], pBranches, 450 + bIdx * 20, { width: 1.6 });
-        }
-      }
-
-      const pPads = getSub(0.55, 1.0);
-      if (pPads > 0) {
-        ctx.save();
-        ctx.strokeStyle = 'rgba(42, 38, 34, 0.78)';
-        ctx.lineWidth = 1.3;
-        const drawCount = Math.floor(PINE_PADS.length * pPads);
-        for (let c = 0; c < drawCount; c++) {
-          const pad = PINE_PADS[c];
-          ctx.beginPath();
-          const steps = 18;
-          for (let st = 0; st <= steps; st++) {
-            const ang = (st / steps) * Math.PI * 2;
-            const rJitter = (hashCoord(c, st) - 0.5) * 6;
-            const px = pad.x + Math.cos(ang) * (pad.rx + rJitter);
-            const py = pad.y + Math.sin(ang) * (pad.ry + rJitter * 0.6);
-            if (st === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-          }
-          ctx.stroke();
-
-          const needles = 10;
-          for (let n = 0; n < needles; n++) {
-            const ang = (n / needles) * Math.PI * 2;
-            ctx.beginPath();
-            ctx.moveTo(pad.x + Math.cos(ang) * (pad.rx * 0.4), pad.y + Math.sin(ang) * (pad.ry * 0.4));
-            ctx.lineTo(pad.x + Math.cos(ang) * (pad.rx * 0.95), pad.y + Math.sin(ang) * (pad.ry * 0.95));
-            ctx.stroke();
-          }
-        }
-        ctx.restore();
-      }
-    }
-
-    // =========================================================================
-    // 繪製素描底稿 (t = 0 ~ 1.5s 逐漸勾勒)
-    // =========================================================================
-    function drawSketchUnderdrawing(ctx, sProgress) {
-      if (sProgress <= 0) return;
-
-      function getSubProgress(sStart, sEnd) {
-        if (sProgress <= sStart) return 0;
-        if (sProgress >= sEnd) return 1;
-        return (sProgress - sStart) / (sEnd - sStart);
-      }
-
-      // 1. 地平線素描 (s: 0.0 ~ 0.20 -> t=0.5s 即 s=0.33 時已 100% 完成)
-      const pHorizon = getSubProgress(0.0, 0.20);
-      if (pHorizon > 0) {
-        drawPencilPolyline(ctx, [[0, HORIZON_Y], [860, HORIZON_Y]], pHorizon, 101, { width: 1.8 });
-      }
-
-      // 2. 遠山素描 (s: 0.12 ~ 0.48 -> t=0.5s 時遠山正被勾勒出來)
-      for (let mIdx = 0; mIdx < MOUNTAINS.length; mIdx++) {
-        const m = MOUNTAINS[mIdx];
-        const pM = getSubProgress(0.12 + mIdx * 0.10, 0.32 + mIdx * 0.12);
-        if (pM > 0) {
-          drawPencilPolyline(ctx, m.pts, pM, 202 + mIdx * 50, { width: 1.7 });
-          if (mIdx === 0 && pM > 0.4) {
-            drawPencilHatching(ctx, 670, 310, 160, 95, -0.65, 7, pM, 333);
-          }
-        }
-      }
-
-      // 3. 迎風斜松樹幹與松針 (s: 0.28 ~ 0.75 -> t=0.5s 時主幹正被勾勒出來)
-      const pPine = getSubProgress(0.28, 0.75);
-      if (pPine > 0) {
-        drawPineSketch(ctx, pPine);
-      }
-
-      // 4. 沙岸弧線與浪線 (s: 0.70 ~ 0.92 -> t=0.5s 時未繪出)
-      const pBeach = getSubProgress(0.70, 0.92);
-      if (pBeach > 0) {
-        drawPencilPolyline(ctx, BEACH_SHORELINE, pBeach, 601, { width: 1.8 });
-        const wave1 = BEACH_SHORELINE.map(pt => [pt[0], pt[1] - 40]);
-        const wave2 = BEACH_SHORELINE.map(pt => [pt[0], pt[1] - 80]);
-        drawPencilPolyline(ctx, wave1, pBeach, 602, { width: 1.4 });
-        drawPencilPolyline(ctx, wave2, pBeach, 603, { width: 1.2 });
-      }
-
-      // 5. 前景草坡 (s: 0.82 ~ 1.00 -> t=0.5s 時未繪出)
-      const pGrass = getSubProgress(0.82, 1.00);
-      if (pGrass > 0) {
-        drawPencilPolyline(ctx, GRASS_HILL_PATH, pGrass, 701, { width: 2.0 });
-        drawPencilHatching(ctx, 920, 580, 360, 140, -0.75, 8, pGrass, 702);
-      }
-    }
-
-    // =========================================================================
-    // 核心繪製函式：renderScene(ctx, width, height, t)
+    // 核心渲染：renderScene(ctx, width, height, t) — 每一幀只由 t 決定
     // =========================================================================
     function renderScene(ctx, width, height, t) {
       t = Math.max(0, t);
-
       ctx.save();
       ctx.clearRect(0, 0, width, height);
       ctx.scale(width / BASE_W, height / BASE_H);
 
-      // 1. 米白紙底 (Cream / Off-white paper base)
+      // 1. 米白紙底（整幅）
       ctx.fillStyle = '#f7f3e8';
       ctx.fillRect(0, 0, BASE_W, BASE_H);
-
-      // 紙面細微纖維點
       ctx.fillStyle = 'rgba(70, 60, 50, 0.035)';
       for (let i = 0; i < 180; i++) {
-        const px = hashCoord(i, 11) * BASE_W;
-        const py = hashCoord(i, 23) * BASE_H;
-        ctx.fillRect(px, py, 1.6, 1.2);
+        ctx.fillRect(hashCoord(i, 11) * BASE_W, hashCoord(i, 23) * BASE_H, 1.6, 1.2);
       }
 
-      // 2. 繪製鉛筆素描底稿 (在 t=0~1.5s 時勾勒；在 t>1.5s 底稿已全成)
-      const sketchT = Math.min(1.5, t);
-      const sProgress = sketchT / 1.5;
-      drawSketchUnderdrawing(ctx, sProgress);
+      // 2. 鉛筆線稿階段（0 ~ 1.5s）
+      drawSketch(ctx, Math.min(1.5, t) / 1.5);
 
-      // =======================================================================
-      // 分層塊面色彩繪製 (Color Phase: t = 1.5s ~ 4.0s 進行上色)
-      // =======================================================================
-      const colorP = Math.max(0, Math.min(1.0, (t - 1.5) / 2.5));
+      const colorP = Math.max(0, Math.min(1, (t - 1.5) / 2.5));
+      if (colorP <= 0) { ctx.restore(); return; }
+      const fill = (a, b) => colorP <= a ? 0 : colorP >= b ? 1 : (colorP - a) / (b - a);
 
-      // 若尚未開始上色 (t <= 1.5s)，純素描展示完畢直接返回
-      if (colorP <= 0) {
-        ctx.restore();
-        return;
-      }
+      // 動態參數
+      const sunX = 240;
+      const sunY = 384 + (t >= 4 ? Math.min(1, (t - 4) / 9) * 16 : 0);
+      const wavePhase = (((t - 6.0) % 8.0) + 8.0) % 8.0 / 8.0;
+      const shoreSurge = 0.5 + 0.5 * Math.sin(wavePhase * Math.PI * 2);
 
-      // 輔助函式：計算各層上色率
-      function getLayerFill(pStart, pEnd) {
-        if (colorP <= pStart) return 0;
-        if (colorP >= pEnd) return 1;
-        return (colorP - pStart) / (pEnd - pStart);
-      }
-
-      // 動態參數 (t >= 4.0 秒後持續運作)
-      const sunSink = (t >= 4.0) ? Math.min(1.0, (t - 4.0) / 9.0) * 18 : 0;
-      const sunCenterX = 240;
-      const sunCenterY = 388 + sunSink;
-
-      // 潮浪週期 (8 秒完整大循環)
-      // t = 8.0s: cyclePhase = 0.25 -> shoreSurge = 1.0 (浪推上灘頭最頂端，白沫大量散開)
-      // t = 12.0s: cyclePhase = 0.75 -> shoreSurge = 0.0 (浪完全退到底，沙灘退潮露出濕沙)
-      const waveCyclePhase = ((t - 6.0) % 8.0 + 8.0) % 8.0 / 8.0;
-      const shoreSurge = 0.5 + 0.5 * Math.sin(waveCyclePhase * Math.PI * 2);
-
-      // -----------------------------------------------------------------------
-      // 圖層 A: 天空色塊 (Layer: Sky Block Planes)
-      // -----------------------------------------------------------------------
-      const skyFill = getLayerFill(0.0, 0.35);
-      if (skyFill > 0) {
+      // ------------------------------------------------------------------
+      // 圖層 A：天空 — 先整幅漸層鋪底，再疊筆觸（全部鋪滿 0..BASE_W）
+      // ------------------------------------------------------------------
+      const skyA = Math.min(1, fill(0.0, 0.35) * 1.4);
+      if (skyA > 0) {
         ctx.save();
-        const wipeW = BASE_W * Math.min(1.0, skyFill * 1.25);
-        ctx.beginPath();
-        ctx.rect(0, 0, wipeW, HORIZON_Y);
-        ctx.clip();
-        ctx.globalAlpha = Math.min(1.0, skyFill * 1.3);
+        ctx.globalAlpha = skyA;
+        const grad = ctx.createLinearGradient(0, 0, 0, HORIZON_Y);
+        grad.addColorStop(0.00, '#2b3154');
+        grad.addColorStop(0.20, '#474a7c');
+        grad.addColorStop(0.40, '#7c5a88');
+        grad.addColorStop(0.60, '#bd6a7e');
+        grad.addColorStop(0.80, '#ef8562');
+        grad.addColorStop(1.00, '#ffb066');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, BASE_W, HORIZON_Y);
+        ctx.restore();
+        // 天空筆觸層（水平短筆觸，依高度選色）
+        drawStrokes(ctx, {
+          seed: 1001, count: 240,
+          x0: 0, y0: 0, x1: BASE_W, y1: HORIZON_Y,
+          angle: 0.02, angleSpread: 0.4, len0: 14, len1: 44, w0: 2, w1: 5,
+          alpha: 0.5 * skyA,
+          colors: SKY_STROKE_COLORS,
+          clip: (c) => c.rect(0, 0, BASE_W, HORIZON_Y)
+        });
+      }
 
-        for (let i = 0; i < SKY_BANDS.length; i++) {
-          const b = SKY_BANDS[i];
+      // ------------------------------------------------------------------
+      // 圖層 B：橙粉雲（筆觸塊面）
+      // ------------------------------------------------------------------
+      const cloudA = fill(0.08, 0.4);
+      if (cloudA > 0) {
+        for (const cl of CLOUDS) drawCloud(ctx, cl, cloudA);
+      }
+
+      // ------------------------------------------------------------------
+      // 圖層 C：夕陽光暈與太陽本體
+      // ------------------------------------------------------------------
+      const sunA = Math.min(1, fill(0.16, 0.46) * 1.4);
+      if (sunA > 0) {
+        ctx.save();
+        ctx.globalAlpha = sunA;
+        const halo = ctx.createRadialGradient(sunX, sunY, 12, sunX, sunY, 170);
+        halo.addColorStop(0, 'rgba(255, 226, 140, 0.95)');
+        halo.addColorStop(0.35, 'rgba(252, 158, 84, 0.55)');
+        halo.addColorStop(1, 'rgba(250, 140, 75, 0)');
+        ctx.fillStyle = halo;
+        ctx.fillRect(sunX - 180, sunY - 180, 360, 360);
+        ctx.fillStyle = '#fff8e2';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 27, 0, Math.PI * 2);
+        ctx.fill();
+        // 太陽水平霧光筆觸
+        drawStrokes(ctx, {
+          seed: 1501, count: 22,
+          x0: sunX - 90, y0: sunY - 26, x1: sunX + 90, y1: sunY + 26,
+          angle: 0, angleSpread: 0.15, len0: 20, len1: 60, w0: 2, w1: 4,
+          alpha: 0.5, colors: ['#ffe9b0', '#ffc27a', '#fff6da']
+        });
+        ctx.restore();
+      }
+
+      // ------------------------------------------------------------------
+      // 圖層 D：遠山（色塊 + facet + 筆觸，向下閉合到地平線、鋪滿寬度）
+      // ------------------------------------------------------------------
+      const mtnA = Math.min(1, fill(0.24, 0.54) * 1.3);
+      if (mtnA > 0) {
+        for (let m = 0; m < MOUNTAINS.length; m++) {
+          const M = MOUNTAINS[m];
+          const pathOf = (c) => {
+            c.moveTo(M.pts[0][0], M.pts[0][1]);
+            for (let k = 1; k < M.pts.length; k++) c.lineTo(M.pts[k][0], M.pts[k][1]);
+            c.lineTo(M.pts[M.pts.length - 1][0], HORIZON_Y);
+            c.lineTo(M.pts[0][0], HORIZON_Y);
+            c.closePath();
+          };
+          ctx.save();
+          ctx.globalAlpha = mtnA;
+          ctx.beginPath();
+          pathOf(ctx);
+          ctx.fillStyle = M.color;
+          ctx.fill();
+          ctx.beginPath();
+          pathOf(ctx);
+          ctx.clip();
+          ctx.fillStyle = M.shade;
+          for (const f of M.facets) {
+            ctx.beginPath();
+            ctx.moveTo(f[0][0], f[0][1]);
+            for (let k = 1; k < f.length; k++) ctx.lineTo(f[k][0], f[k][1]);
+            ctx.closePath();
+            ctx.fill();
+          }
+          drawStrokes(ctx, {
+            seed: 2001 + m * 37, count: 56,
+            x0: 420, y0: 270, x1: BASE_W, y1: HORIZON_Y,
+            angle: -0.5, angleSpread: 0.5, len0: 10, len1: 30, w0: 2, w1: 4.5,
+            alpha: 0.5 * mtnA, colors: M.strokes
+          });
+          ctx.restore();
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // 圖層 E：海洋 — 整幅鋪底（0..BASE_W 全寬、地平線到底），再疊色帶與筆觸
+      // ------------------------------------------------------------------
+      const seaA = Math.min(1, fill(0.36, 0.66) * 1.3);
+      if (seaA > 0) {
+        ctx.save();
+        ctx.globalAlpha = seaA;
+
+        // 基礎漸層（整幅鋪滿，杜絕白邊）
+        const seaGrad = ctx.createLinearGradient(0, HORIZON_Y, 0, BASE_H);
+        seaGrad.addColorStop(0, '#284a68');
+        seaGrad.addColorStop(0.35, '#23617f');
+        seaGrad.addColorStop(1, '#2b8ba3');
+        ctx.fillStyle = seaGrad;
+        ctx.fillRect(0, HORIZON_Y, BASE_W, BASE_H - HORIZON_Y);
+
+        // 夕陽映照的暖色水柱
+        const warm = ctx.createLinearGradient(0, HORIZON_Y, 0, 610);
+        warm.addColorStop(0, 'rgba(255, 165, 95, 0.6)');
+        warm.addColorStop(1, 'rgba(255, 165, 95, 0)');
+        ctx.fillStyle = warm;
+        ctx.fillRect(sunX - 130, HORIZON_Y, 260, 200);
+
+        // 分層色帶（每條滿幅，邊緣波動）
+        for (let i = 0; i < SEA_BANDS.length; i++) {
+          const b = SEA_BANDS[i];
           ctx.fillStyle = b.c;
           ctx.beginPath();
-          const offset0 = Math.sin(i * 1.5) * 6;
-          const offset1 = Math.cos(i * 1.8) * 6;
-          ctx.moveTo(0, b.y0 + offset0);
-          ctx.lineTo(BASE_W, b.y0 + offset1);
-          ctx.lineTo(BASE_W, b.y1 + offset1 + 2);
-          ctx.lineTo(0, b.y1 + offset0 + 2);
-          ctx.closePath();
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-
-      // -----------------------------------------------------------------------
-      // 圖層 B: 橙粉色雲彩塊面 (Layer: Cloud Blocks)
-      // -----------------------------------------------------------------------
-      const cloudFill = getLayerFill(0.10, 0.42);
-      if (cloudFill > 0) {
-        ctx.save();
-        const wipeW = BASE_W * Math.min(1.0, cloudFill * 1.3);
-        ctx.beginPath();
-        ctx.rect(0, 0, wipeW, HORIZON_Y);
-        ctx.clip();
-        ctx.globalAlpha = Math.min(1.0, cloudFill * 1.25);
-
-        for (const cb of CLOUD_BLOCKS) {
-          ctx.fillStyle = cb.color;
-          ctx.beginPath();
-          ctx.moveTo(cb.poly[0][0], cb.poly[0][1]);
-          for (let k = 1; k < cb.poly.length; k++) {
-            ctx.lineTo(cb.poly[k][0], cb.poly[k][1]);
+          ctx.moveTo(0, b.y0);
+          for (let x = 0; x <= BASE_W; x += 80) {
+            ctx.lineTo(x, b.y0 + Math.sin(x * 0.012 + i * 1.7) * 3);
           }
-          ctx.closePath();
-          ctx.fill();
-
-          ctx.strokeStyle = 'rgba(255, 230, 200, 0.28)';
-          ctx.lineWidth = 1.2;
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      // -----------------------------------------------------------------------
-      // 圖層 C: 夕陽光暈與太陽本體 (Layer: Sunset Sun & Golden Aura)
-      // -----------------------------------------------------------------------
-      const sunFill = getLayerFill(0.18, 0.48);
-      if (sunFill > 0) {
-        ctx.save();
-        ctx.globalAlpha = Math.min(1.0, sunFill * 1.4);
-
-        const auraLayers = [
-          { r: 72, c: 'rgba(250, 140, 75, 0.45)', segs: 14 },
-          { r: 52, c: 'rgba(254, 185, 80, 0.65)', segs: 16 },
-          { r: 34, c: 'rgba(255, 222, 120, 0.90)', segs: 18 },
-          { r: 22, c: '#fffbee', segs: 24 }
-        ];
-
-        for (const al of auraLayers) {
-          ctx.fillStyle = al.c;
-          ctx.beginPath();
-          for (let s = 0; s < al.segs; s++) {
-            const angle = (s / al.segs) * Math.PI * 2;
-            const rad = al.r + (hashCoord(s, al.r) - 0.5) * 4;
-            const x = sunCenterX + Math.cos(angle) * rad;
-            const y = sunCenterY + Math.sin(angle) * rad;
-            if (s === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
+          ctx.lineTo(BASE_W, b.y1);
+          ctx.lineTo(0, b.y1);
           ctx.closePath();
           ctx.fill();
         }
-        ctx.restore();
-      }
 
-      // -----------------------------------------------------------------------
-      // 圖層 D: 遠山分層塊面 (Layer: Distant Mountains)
-      // -----------------------------------------------------------------------
-      const mountainFill = getLayerFill(0.25, 0.56);
-      if (mountainFill > 0) {
-        ctx.save();
-        ctx.globalAlpha = Math.min(1.0, mountainFill * 1.3);
-
-        for (let mIdx = 0; mIdx < MOUNTAINS.length; mIdx++) {
-          const m = MOUNTAINS[mIdx];
-          ctx.fillStyle = m.color;
-          ctx.beginPath();
-          ctx.moveTo(m.pts[0][0], m.pts[0][1]);
-          for (let k = 1; k < m.pts.length; k++) {
-            ctx.lineTo(m.pts[k][0], m.pts[k][1]);
-          }
-          ctx.lineTo(m.pts[m.pts.length - 1][0], HORIZON_Y);
-          ctx.lineTo(m.pts[0][0], HORIZON_Y);
-          ctx.closePath();
-          ctx.fill();
-
-          if (m.facets) {
-            ctx.fillStyle = m.shadeColor;
-            for (const f of m.facets) {
-              ctx.beginPath();
-              ctx.moveTo(f[0][0], f[0][1]);
-              for (let k = 1; k < f.length; k++) {
-                ctx.lineTo(f[k][0], f[k][1]);
-              }
-              ctx.closePath();
-              ctx.fill();
-            }
-          }
-        }
-        ctx.restore();
-      }
-
-      // -----------------------------------------------------------------------
-      // 圖層 E: 海洋本體色塊 (Layer: Sea Surface Planes)
-      // -----------------------------------------------------------------------
-      const seaFill = getLayerFill(0.38, 0.68);
-      if (seaFill > 0) {
-        ctx.save();
-        const wipeW = BASE_W * Math.min(1.0, seaFill * 1.3);
-        ctx.beginPath();
-        ctx.rect(0, HORIZON_Y - 2, wipeW, BASE_H - HORIZON_Y + 4);
-        ctx.clip();
-        ctx.globalAlpha = Math.min(1.0, seaFill * 1.25);
-
-        for (let i = 0; i < SEA_BANDS.length; i++) {
-          const sb = SEA_BANDS[i];
-          ctx.fillStyle = sb.c;
-          ctx.beginPath();
-          ctx.moveTo(0, sb.y0);
-          ctx.lineTo(BASE_W, sb.y0 + (i === 0 ? 0 : Math.sin(i) * 4));
-          ctx.lineTo(BASE_W, sb.y1 + Math.cos(i) * 4);
-          ctx.lineTo(0, sb.y1);
-          ctx.closePath();
-          ctx.fill();
-        }
+        // 海面筆觸層（水平短筆觸）
+        drawStrokes(ctx, {
+          seed: 3001, count: 280,
+          x0: 0, y0: HORIZON_Y + 4, x1: BASE_W, y1: BASE_H,
+          angle: 0.03, angleSpread: 0.3, len0: 12, len1: 42, w0: 2, w1: 4.5,
+          alpha: 0.45,
+          colors: ['#1a3a56', '#2a6a8a', '#3a90a8', '#57b0b8', '#7ec8c4', '#2a5a78']
+        });
 
         // 翡翠綠透光水帶
-        ctx.fillStyle = 'rgba(68, 178, 172, 0.38)';
-        ctx.fillRect(0, 475, BASE_W, 12);
-        ctx.fillStyle = 'rgba(85, 205, 195, 0.42)';
-        ctx.fillRect(0, 520, BASE_W, 16);
-
+        ctx.fillStyle = 'rgba(68, 178, 172, 0.35)';
+        ctx.fillRect(0, 476, BASE_W, 11);
+        ctx.fillStyle = 'rgba(85, 205, 195, 0.4)';
+        ctx.fillRect(0, 522, BASE_W, 15);
         ctx.restore();
       }
 
-      // -----------------------------------------------------------------------
-      // 圖層 F: 海面上的垂直長條夕陽反光 (Layer: Vertical Elongated Reflection)
-      // -----------------------------------------------------------------------
-      const reflectFill = getLayerFill(0.42, 0.72);
-      if (reflectFill > 0) {
+      // ------------------------------------------------------------------
+      // 圖層 F：夕陽垂直長條反光
+      // ------------------------------------------------------------------
+      const refA = Math.min(1, fill(0.42, 0.7) * 1.2);
+      if (refA > 0) {
         ctx.save();
-        ctx.globalAlpha = Math.min(1.0, reflectFill * 1.2);
-
-        const refRows = 38;
-        const refStartY = HORIZON_Y + 1;
-        const refEndY = 635;
-
-        for (let r = 0; r < refRows; r++) {
-          const ry = refStartY + (r / refRows) * (refEndY - refStartY);
-          const vFrac = r / refRows;
-          const baseWidth = 24 + vFrac * 95;
-          const shimmer = (t >= 4.0) ? Math.sin(t * 3.6 + r * 0.45) * (4 + vFrac * 8) : 0;
-          const pulse = (t >= 4.0) ? 0.8 + 0.2 * Math.sin(t * 4.8 + r * 0.7) : 1.0;
-          const rx = sunCenterX - (baseWidth / 2) + shimmer;
-
-          ctx.fillStyle = (vFrac < 0.35)
+        ctx.globalAlpha = refA;
+        const rows = 36;
+        for (let r = 0; r < rows; r++) {
+          const ry = HORIZON_Y + 2 + (r / rows) * 220;
+          const vf = r / rows;
+          const wBase = 22 + vf * 92;
+          const shimmer = t >= 4 ? Math.sin(t * 3.4 + r * 0.5) * (3 + vf * 8) : 0;
+          const pulse = t >= 4 ? 0.8 + 0.2 * Math.sin(t * 4.6 + r * 0.7) : 1;
+          const rx = sunX - wBase / 2 + shimmer;
+          ctx.fillStyle = vf < 0.35
             ? 'rgba(255, 250, 220, ' + (0.95 * pulse) + ')'
-            : (vFrac < 0.7)
-              ? 'rgba(254, 218, 110, ' + (0.88 * pulse) + ')'
-              : 'rgba(250, 160, 75, ' + (0.75 * pulse) + ')';
-
-          const strokeH = 3.2 + vFrac * 2.8;
-          ctx.fillRect(rx, ry, baseWidth, strokeH);
-
-          if (vFrac < 0.75) {
-            ctx.fillStyle = 'rgba(255, 255, 255, ' + (0.9 * pulse) + ')';
-            ctx.fillRect(sunCenterX - (baseWidth * 0.28) + shimmer * 0.5, ry + 0.6, baseWidth * 0.56, strokeH * 0.6);
-          }
+            : vf < 0.7
+              ? 'rgba(254, 218, 110, ' + (0.85 * pulse) + ')'
+              : 'rgba(250, 160, 75, ' + (0.7 * pulse) + ')';
+          ctx.fillRect(rx, ry, wBase, 3 + vf * 2.6);
+        }
+        // 斷續波光（只由 t 決定：位置用 hash，明滅用 sin(t)）
+        for (let i = 0; i < 80; i++) {
+          const gx = hashCoord(i, 3) * BASE_W;
+          const gy = 426 + hashCoord(i, 7) * 200;
+          const flick = 0.5 + 0.5 * Math.sin(t * (2 + hashCoord(i, 11) * 3.5) + hashCoord(i, 13) * 6.283);
+          if (flick < 0.42) continue;
+          const gl = 8 + hashCoord(i, 17) * 26;
+          ctx.fillStyle = 'rgba(255, 244, 210, ' + (0.55 * flick) + ')';
+          ctx.fillRect(gx, gy, gl, 2.2);
         }
         ctx.restore();
       }
 
-      // -----------------------------------------------------------------------
-      // 圖層 G: 沙灘弧線與潮間帶 (Layer: Curved Sandy Shore & Wet Sand)
-      // -----------------------------------------------------------------------
-      const beachFill = getLayerFill(0.55, 0.82);
-      if (beachFill > 0) {
+      // ------------------------------------------------------------------
+      // 圖層 G：沙灘（海岸線以下整幅鋪滿至底）+ 沙粒筆觸
+      // ------------------------------------------------------------------
+      const beachA = Math.min(1, fill(0.52, 0.8) * 1.3);
+      if (beachA > 0) {
         ctx.save();
-        ctx.globalAlpha = Math.min(1.0, beachFill * 1.3);
-
-        // 1. 暖黃乾燥沙灘基底 (從海岸線延伸至右下角)
+        ctx.globalAlpha = beachA;
+        const beachPath = (c) => {
+          c.moveTo(SHORELINE[0][0], SHORELINE[0][1]);
+          for (let k = 1; k < SHORELINE.length; k++) c.lineTo(SHORELINE[k][0], SHORELINE[k][1]);
+          c.lineTo(BASE_W, BASE_H);
+          c.lineTo(0, BASE_H);
+          c.closePath();
+        };
+        ctx.beginPath();
+        beachPath(ctx);
         ctx.fillStyle = '#dcad70';
+        ctx.fill();
+
+        // 潮間濕沙（沿弧線向下偏移的色帶）
         ctx.beginPath();
-        ctx.moveTo(BEACH_SHORELINE[0][0], BEACH_SHORELINE[0][1]);
-        for (let i = 1; i < BEACH_SHORELINE.length; i++) {
-          ctx.lineTo(BEACH_SHORELINE[i][0], BEACH_SHORELINE[i][1]);
+        ctx.moveTo(SHORELINE[0][0], SHORELINE[0][1]);
+        for (let k = 1; k < SHORELINE.length; k++) ctx.lineTo(SHORELINE[k][0], SHORELINE[k][1]);
+        for (let k = SHORELINE.length - 1; k >= 0; k--) {
+          ctx.lineTo(SHORELINE[k][0], SHORELINE[k][1] + 42);
         }
-        ctx.lineTo(BASE_W, BASE_H);
-        ctx.lineTo(0, BASE_H);
         ctx.closePath();
-        ctx.fill();
-
-        // 2. 金赭色沙質紋理塊面
-        ctx.fillStyle = '#cf9d5d';
-        ctx.beginPath();
-        ctx.moveTo(120, 610);
-        ctx.lineTo(580, 640);
-        ctx.lineTo(920, 700);
-        ctx.lineTo(1100, 720);
-        ctx.lineTo(120, 720);
-        ctx.closePath();
-        ctx.fill();
-
-        // 3. 潮間帶深色濕沙面 (Wet sand zone)
         ctx.fillStyle = '#9b6c55';
+        ctx.fill();
+
+        // 濕沙映霞水膜
+        ctx.fillStyle = 'rgba(240, 160, 130, 0.35)';
         ctx.beginPath();
-        ctx.moveTo(BEACH_SHORELINE[0][0], BEACH_SHORELINE[0][1]);
-        for (let i = 1; i < BEACH_SHORELINE.length; i++) {
-          ctx.lineTo(BEACH_SHORELINE[i][0], BEACH_SHORELINE[i][1]);
-        }
-        ctx.lineTo(BEACH_SHORELINE[BEACH_SHORELINE.length - 1][0], BEACH_SHORELINE[BEACH_SHORELINE.length - 1][1] + 45);
-        for (let i = BEACH_SHORELINE.length - 2; i >= 0; i--) {
-          ctx.lineTo(BEACH_SHORELINE[i][0], BEACH_SHORELINE[i][1] + 45);
+        ctx.moveTo(SHORELINE[0][0], SHORELINE[0][1] + 4);
+        for (let k = 1; k < SHORELINE.length; k++) ctx.lineTo(SHORELINE[k][0], SHORELINE[k][1] + 4);
+        for (let k = SHORELINE.length - 1; k >= 0; k--) {
+          ctx.lineTo(SHORELINE[k][0], SHORELINE[k][1] + 26);
         }
         ctx.closePath();
         ctx.fill();
 
-        // 4. 濕潤沙面反光水膜 (Reflecting sunset sky)
-        ctx.fillStyle = 'rgba(240, 160, 130, 0.38)';
+        // 沙粒筆觸
         ctx.beginPath();
-        ctx.moveTo(BEACH_SHORELINE[0][0], BEACH_SHORELINE[0][1] + 5);
-        for (let i = 1; i < BEACH_SHORELINE.length; i++) {
-          ctx.lineTo(BEACH_SHORELINE[i][0], BEACH_SHORELINE[i][1] + 5);
-        }
-        ctx.lineTo(BEACH_SHORELINE[BEACH_SHORELINE.length - 1][0], BEACH_SHORELINE[BEACH_SHORELINE.length - 1][1] + 30);
-        for (let i = BEACH_SHORELINE.length - 2; i >= 0; i--) {
-          ctx.lineTo(BEACH_SHORELINE[i][0], BEACH_SHORELINE[i][1] + 30);
-        }
-        ctx.closePath();
-        ctx.fill();
-
+        beachPath(ctx);
+        ctx.clip();
+        drawStrokes(ctx, {
+          seed: 4001, count: 150,
+          x0: 0, y0: 520, x1: BASE_W, y1: BASE_H,
+          angle: 0.12, angleSpread: 0.5, len0: 6, len1: 20, w0: 1.5, w1: 3.5,
+          alpha: 0.4, colors: ['#cf9d5d', '#e8c084', '#b98a52', '#f2d49a']
+        });
         ctx.restore();
       }
 
-      // -----------------------------------------------------------------------
-      // 圖層 H: 層疊碎浪與浪花白沫 (Layer: Cascading Waves & Shore Surge)
-      // 關鍵要求：在 t=8.0 秒與 t=12.0 秒時，浪的位置必須明顯不同！
-      // -----------------------------------------------------------------------
-      const waveFill = getLayerFill(0.65, 0.92);
-      if (waveFill > 0) {
+      // ------------------------------------------------------------------
+      // 圖層 H：層疊碎浪與白沫（無橫跨直線；t=8 與 t=12 浪位明顯不同）
+      // ------------------------------------------------------------------
+      const waveA = Math.min(1, fill(0.62, 0.9) * 1.3);
+      if (waveA > 0) {
         ctx.save();
-        ctx.globalAlpha = Math.min(1.0, waveFill * 1.3);
+        ctx.globalAlpha = waveA;
 
-        // 遠處碎浪條 1 (Distant crest)
-        ctx.fillStyle = 'rgba(245, 252, 255, 0.85)';
-        ctx.beginPath();
-        const distWaveY = 448 + Math.sin(t * 1.2) * 2;
-        ctx.rect(0, distWaveY, 780, 4.5);
-        ctx.fill();
-
-        // 中景翻捲碎浪 2 (Mid-surf breaking curl)
-        const midWavePhase = ((t * 0.32) % 1.0);
-        const midWaveY = 490 + midWavePhase * 32;
+        // 中景翻捲碎浪
+        const midPhase = (t * 0.32) % 1.0;
+        const midY = 488 + midPhase * 30;
         ctx.fillStyle = '#177484';
         ctx.beginPath();
-        ctx.moveTo(0, midWaveY + 10);
-        for (let x = 0; x <= 950; x += 60) {
-          const wy = midWaveY + 10 + Math.sin(x * 0.02 + t * 2.5) * 4;
-          ctx.lineTo(x, wy);
+        ctx.moveTo(0, midY + 10);
+        for (let x = 0; x <= 960; x += 60) {
+          ctx.lineTo(x, midY + 10 + Math.sin(x * 0.02 + t * 2.5) * 4);
         }
-        ctx.lineTo(950, midWaveY + 20);
-        ctx.lineTo(0, midWaveY + 20);
+        ctx.lineTo(960, midY + 22);
+        ctx.lineTo(0, midY + 22);
         ctx.closePath();
         ctx.fill();
-
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.moveTo(0, midWaveY);
-        for (let x = 0; x <= 920; x += 35) {
-          const cy = midWaveY + Math.sin(x * 0.035 + t * 3.2) * 5;
-          ctx.lineTo(x, cy);
+        ctx.moveTo(0, midY);
+        for (let x = 0; x <= 930; x += 35) {
+          ctx.lineTo(x, midY + Math.sin(x * 0.035 + t * 3.2) * 5);
         }
-        ctx.lineTo(920, midWaveY + 8);
-        ctx.lineTo(0, midWaveY + 8);
+        ctx.lineTo(930, midY + 9);
+        ctx.lineTo(0, midY + 9);
         ctx.closePath();
         ctx.fill();
 
-        // ---------------------------------------------------------------------
-        // 灘頭衝擊主浪 (Shoreline Surge Wave)
-        // shoreSurge = 1.0 (t=8.0s: 浪推上灘頭最頂端，白沫大量散開)
-        // shoreSurge = 0.0 (t=12.0s: 浪完全退到底，沙灘退潮露出濕沙)
-        // ---------------------------------------------------------------------
-        // 衝程 115 像素
-        const surgeDistance = shoreSurge * 115;
-
-        // 只有當湧浪推進沙灘時，才繪製覆蓋在沙灘上的半透明海水舌
+        // 灘頭衝浪水舌
+        const surge = shoreSurge * 112;
         if (shoreSurge > 0.05) {
           ctx.fillStyle = 'rgba(42, 148, 160, ' + (0.55 + shoreSurge * 0.25) + ')';
           ctx.beginPath();
-          // 海浪後緣 (海側)
-          ctx.moveTo(0, 520);
-          for (let i = 0; i < BEACH_SHORELINE.length; i++) {
-            ctx.lineTo(BEACH_SHORELINE[i][0], BEACH_SHORELINE[i][1] - 15);
+          ctx.moveTo(0, 518);
+          for (let k = 0; k < SHORELINE.length; k++) {
+            ctx.lineTo(SHORELINE[k][0], SHORELINE[k][1] - 15);
           }
-          // 海浪前緣 (衝上海灘的弧線水舌)
-          for (let i = BEACH_SHORELINE.length - 1; i >= 0; i--) {
-            const pt = BEACH_SHORELINE[i];
-            const u = i / (BEACH_SHORELINE.length - 1);
-            const surgeY = pt[1] + surgeDistance * (1.0 - u * 0.3);
-            ctx.lineTo(pt[0], surgeY);
+          for (let k = SHORELINE.length - 1; k >= 0; k--) {
+            const u = k / (SHORELINE.length - 1);
+            ctx.lineTo(SHORELINE[k][0], SHORELINE[k][1] + surge * (1 - u * 0.3));
           }
           ctx.closePath();
           ctx.fill();
 
-          // 浪頭前緣翻白浪線與齒狀泡沫 (Scalloped White Foam Collar)
+          // 浪頭白沫領圈（齒狀）
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          const foamPts = [];
+          const foam = [];
           for (let x = 0; x <= 1080; x += 20) {
             const u = x / 1080;
-            const baseY = 530 + u * 190;
-            const scallop = Math.sin(x * 0.08 + t * 4) * 6 + Math.cos(x * 0.03) * 4;
-            const fy = baseY + surgeDistance * (1.0 - u * 0.28) + scallop;
-            foamPts.push([x, fy]);
+            const fy = 530 + u * 188 + surge * (1 - u * 0.28)
+                     + Math.sin(x * 0.08 + t * 4) * 6 + Math.cos(x * 0.03) * 4;
+            foam.push([x, fy]);
           }
-
-          ctx.moveTo(foamPts[0][0], foamPts[0][1]);
-          for (let k = 1; k < foamPts.length; k++) {
-            ctx.lineTo(foamPts[k][0], foamPts[k][1]);
-          }
-          const foamThickness = 12 + shoreSurge * 26;
-          for (let k = foamPts.length - 1; k >= 0; k--) {
-            ctx.lineTo(foamPts[k][0], foamPts[k][1] - foamThickness);
+          ctx.moveTo(foam[0][0], foam[0][1]);
+          for (let k = 1; k < foam.length; k++) ctx.lineTo(foam[k][0], foam[k][1]);
+          const foamTh = 12 + shoreSurge * 26;
+          for (let k = foam.length - 1; k >= 0; k--) {
+            ctx.lineTo(foam[k][0], foam[k][1] - foamTh);
           }
           ctx.closePath();
           ctx.fill();
 
-          // 灘頭消退細碎泡沫 (Foam lace & bubbles)
+          // 碎泡沫點
           if (shoreSurge > 0.2) {
-            ctx.fillStyle = 'rgba(255, 255, 255, ' + (0.88 * shoreSurge) + ')';
+            ctx.fillStyle = 'rgba(255,255,255,' + (0.85 * shoreSurge) + ')';
             for (let b = 0; b < 55; b++) {
               const bx = hashCoord(b, 31) * 980;
-              const byBase = 530 + (bx / 1080) * 190 + surgeDistance * 0.88;
-              const by = byBase - hashCoord(b, 47) * (foamThickness + 20);
-              const br = 2.5 + hashCoord(b, 59) * 4.8;
+              const by = 530 + (bx / 1080) * 188 + surge * 0.88
+                       - hashCoord(b, 47) * (foamTh + 20);
               ctx.beginPath();
-              ctx.arc(bx, by, br, 0, Math.PI * 2);
+              ctx.arc(bx, by, 2.5 + hashCoord(b, 59) * 4.8, 0, Math.PI * 2);
               ctx.fill();
             }
           }
         } else {
-          // 當浪退回海中最低點 (如 t=12.0s)：沙灘邊緣只留下一道極細淺淡的退潮殘沫線
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+          ctx.strokeStyle = 'rgba(255,255,255,0.45)';
           ctx.lineWidth = 2.5;
           ctx.beginPath();
-          ctx.moveTo(BEACH_SHORELINE[0][0], BEACH_SHORELINE[0][1] - 8);
-          for (let i = 1; i < BEACH_SHORELINE.length; i++) {
-            ctx.lineTo(BEACH_SHORELINE[i][0], BEACH_SHORELINE[i][1] - 8);
+          ctx.moveTo(SHORELINE[0][0], SHORELINE[0][1] - 8);
+          for (let k = 1; k < SHORELINE.length; k++) {
+            ctx.lineTo(SHORELINE[k][0], SHORELINE[k][1] - 8);
           }
           ctx.stroke();
         }
-
         ctx.restore();
       }
 
-      // -----------------------------------------------------------------------
-      // 圖層 I: 前景草坡塊面 (Layer: Grassy Hill Slope)
-      // -----------------------------------------------------------------------
-      const hillFill = getLayerFill(0.68, 0.90);
-      if (hillFill > 0) {
+      // ------------------------------------------------------------------
+      // 圖層 I：前景草坡（鋪滿右下）+ 草皮筆觸
+      // ------------------------------------------------------------------
+      const hillA = Math.min(1, fill(0.66, 0.88) * 1.3);
+      if (hillA > 0) {
         ctx.save();
-        ctx.globalAlpha = Math.min(1.0, hillFill * 1.3);
-
-        // 1. 土石深褐塊面
-        ctx.fillStyle = '#4a3625';
+        ctx.globalAlpha = hillA;
+        const hillPath = (c) => {
+          c.moveTo(GRASS_HILL[0][0], GRASS_HILL[0][1]);
+          for (let k = 1; k < GRASS_HILL.length; k++) c.lineTo(GRASS_HILL[k][0], GRASS_HILL[k][1]);
+          c.closePath();
+        };
         ctx.beginPath();
-        ctx.moveTo(GRASS_HILL_PATH[0][0], GRASS_HILL_PATH[0][1]);
-        for (let k = 1; k < GRASS_HILL_PATH.length; k++) {
-          ctx.lineTo(GRASS_HILL_PATH[k][0], GRASS_HILL_PATH[k][1]);
-        }
-        ctx.closePath();
+        hillPath(ctx);
+        ctx.fillStyle = '#4a3625';
         ctx.fill();
+        ctx.beginPath();
+        hillPath(ctx);
+        ctx.clip();
 
-        // 2. 墨綠與橄欖草皮層
         ctx.fillStyle = '#395320';
         ctx.beginPath();
-        ctx.moveTo(850, 720);
-        ctx.lineTo(890, 665);
-        ctx.lineTo(960, 610);
-        ctx.lineTo(1050, 565);
-        ctx.lineTo(1160, 535);
-        ctx.lineTo(1280, 520);
+        ctx.moveTo(830, 720);
+        ctx.lineTo(880, 660);
+        ctx.lineTo(960, 606);
+        ctx.lineTo(1060, 560);
+        ctx.lineTo(1170, 530);
+        ctx.lineTo(1280, 512);
         ctx.lineTo(1280, 720);
         ctx.closePath();
         ctx.fill();
 
-        // 3. 翠綠色向陽草坡塊面
         ctx.fillStyle = '#5c852e';
         ctx.beginPath();
-        ctx.moveTo(900, 720);
-        ctx.lineTo(930, 675);
-        ctx.lineTo(1010, 615);
-        ctx.lineTo(1120, 560);
-        ctx.lineTo(1240, 535);
-        ctx.lineTo(1280, 530);
+        ctx.moveTo(890, 720);
+        ctx.lineTo(940, 668);
+        ctx.lineTo(1020, 612);
+        ctx.lineTo(1130, 558);
+        ctx.lineTo(1245, 532);
+        ctx.lineTo(1280, 526);
         ctx.lineTo(1280, 720);
         ctx.closePath();
         ctx.fill();
 
-        // 4. 坡頂金綠色受光塊
         ctx.fillStyle = '#88b53d';
         ctx.beginPath();
         ctx.moveTo(980, 720);
         ctx.lineTo(1050, 645);
         ctx.lineTo(1170, 580);
-        ctx.lineTo(1280, 555);
+        ctx.lineTo(1280, 552);
         ctx.lineTo(1280, 720);
         ctx.closePath();
         ctx.fill();
 
+        // 草皮筆觸（斜上短筆觸）
+        drawStrokes(ctx, {
+          seed: 5001, count: 130,
+          x0: 820, y0: 520, x1: BASE_W, y1: BASE_H,
+          angle: -1.1, angleSpread: 0.5, len0: 6, len1: 18, w0: 1.5, w1: 3,
+          alpha: 0.45, colors: ['#3d611f', '#689e32', '#a2cd48', '#2c4a18']
+        });
         ctx.restore();
       }
 
-      // -----------------------------------------------------------------------
-      // 圖層 J: 迎風斜松樹幹與松針團塊上色 (Layer: Leaning Pine Tree)
-      // -----------------------------------------------------------------------
-      const pineFill = getLayerFill(0.74, 0.98);
-      if (pineFill > 0) {
-        ctx.save();
-        ctx.globalAlpha = Math.min(1.0, pineFill * 1.3);
-
-        const pineWindSway = (t >= 4.0) ? Math.sin(t * 1.6) * 2.2 : 0;
-
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-
-        // 樹幹深色輪廓
-        ctx.strokeStyle = '#221610';
-        ctx.lineWidth = 26;
-        ctx.beginPath();
-        ctx.moveTo(PINE_TRUNK_PATH[0][0], PINE_TRUNK_PATH[0][1]);
-        for (let k = 1; k < PINE_TRUNK_PATH.length; k++) {
-          ctx.lineTo(PINE_TRUNK_PATH[k][0] + pineWindSway * (k / PINE_TRUNK_PATH.length), PINE_TRUNK_PATH[k][1]);
-        }
-        ctx.stroke();
-
-        // 樹幹受光赭紅塊面
-        ctx.strokeStyle = '#4e2d1d';
-        ctx.lineWidth = 18;
-        ctx.beginPath();
-        ctx.moveTo(PINE_TRUNK_PATH[0][0] - 2, PINE_TRUNK_PATH[0][1]);
-        for (let k = 1; k < PINE_TRUNK_PATH.length; k++) {
-          ctx.lineTo(PINE_TRUNK_PATH[k][0] - 2 + pineWindSway * (k / PINE_TRUNK_PATH.length), PINE_TRUNK_PATH[k][1]);
-        }
-        ctx.stroke();
-
-        // 樹幹金色夕陽高光反光
-        ctx.strokeStyle = '#855132';
-        ctx.lineWidth = 8;
-        ctx.beginPath();
-        ctx.moveTo(PINE_TRUNK_PATH[0][0] - 4, PINE_TRUNK_PATH[0][1]);
-        for (let k = 1; k < PINE_TRUNK_PATH.length; k++) {
-          ctx.lineTo(PINE_TRUNK_PATH[k][0] - 4 + pineWindSway * (k / PINE_TRUNK_PATH.length), PINE_TRUNK_PATH[k][1]);
-        }
-        ctx.stroke();
-
-        // 各分枝
-        for (let bIdx = 0; bIdx < PINE_BRANCHES.length; bIdx++) {
-          const br = PINE_BRANCHES[bIdx];
-          ctx.strokeStyle = '#281a13';
-          ctx.lineWidth = 11 - bIdx * 1.5;
-          ctx.beginPath();
-          ctx.moveTo(br[0][0] + pineWindSway * 0.5, br[0][1]);
-          for (let k = 1; k < br.length; k++) {
-            ctx.lineTo(br[k][0] + pineWindSway, br[k][1]);
-          }
-          ctx.stroke();
-        }
-
-        // 2. 松針雲塊 (Tiered Matsu Cloud Clusters)
-        for (let cIdx = 0; cIdx < PINE_PADS.length; cIdx++) {
-          const pad = PINE_PADS[cIdx];
-          const cx = pad.x + pineWindSway * 1.2;
-          const cy = pad.y;
-
-          ctx.save();
-          ctx.translate(cx, cy);
-          ctx.rotate(pad.rot);
-
-          // 第一層：松針暗色基底 (Dark base)
-          ctx.fillStyle = '#0f2418';
-          ctx.beginPath();
-          ctx.ellipse(0, 0, pad.rx, pad.ry, 0, 0, Math.PI * 2);
-          ctx.fill();
-
-          // 第二層：松針濃綠塊面 (Rich evergreen body)
-          ctx.fillStyle = '#1c422c';
-          ctx.beginPath();
-          ctx.ellipse(-3, -2, pad.rx * 0.82, pad.ry * 0.82, 0, 0, Math.PI * 2);
-          ctx.fill();
-
-          // 第三層：夕陽透光翠綠 (Viridian highlight)
-          ctx.fillStyle = '#2d6842';
-          ctx.beginPath();
-          ctx.ellipse(-6, -4, pad.rx * 0.58, pad.ry * 0.60, 0, 0, Math.PI * 2);
-          ctx.fill();
-
-          // 第四層：松針邊緣短針葉筆觸
-          ctx.strokeStyle = '#4e8a5b';
-          ctx.lineWidth = 1.4;
-          const needles = 20;
-          for (let n = 0; n < needles; n++) {
-            const ang = (n / needles) * Math.PI * 2;
-            const r0 = pad.rx * 0.75;
-            const r1 = pad.rx * 1.08;
-            ctx.beginPath();
-            ctx.moveTo(Math.cos(ang) * r0, Math.sin(ang) * (r0 * (pad.ry / pad.rx)));
-            ctx.lineTo(Math.cos(ang) * r1, Math.sin(ang) * (r1 * (pad.ry / pad.rx)));
-            ctx.stroke();
-          }
-
-          ctx.restore();
-        }
-
-        ctx.restore();
+      // ------------------------------------------------------------------
+      // 圖層 J：迎風斜松（扁平層狀扇形枝層）
+      // ------------------------------------------------------------------
+      const pineA = fill(0.72, 0.98);
+      if (pineA > 0) {
+        drawPine(ctx, t, Math.min(1, pineA * 1.3));
       } else {
-        // 若松樹尚未上色 (例如 t=3.0s)，在彩色天空/山海上方重新勾勒出松樹鉛筆素描！
-        // 確保呈現顯著的「部分上色 + 部分素描線條並存」！
+        // 未上色階段：在已上色背景上補完整松樹素描線
         ctx.save();
-        drawPineSketch(ctx, 1.0);
+        drawPineSketch(ctx, 1.0, t);
         ctx.restore();
       }
 
-      // -----------------------------------------------------------------------
-      // 圖層 K: 前景搖曳草葉細節 (Layer: Swaying Grass Blade Details)
-      // -----------------------------------------------------------------------
-      const grassBladeFill = getLayerFill(0.78, 1.0);
-      if (grassBladeFill > 0) {
+      // ------------------------------------------------------------------
+      // 圖層 K：前景搖曳草葉
+      // ------------------------------------------------------------------
+      const bladeA = Math.min(1, fill(0.78, 1.0) * 1.3);
+      if (bladeA > 0) {
         ctx.save();
-        ctx.globalAlpha = Math.min(1.0, grassBladeFill * 1.3);
-
-        for (let i = 0; i < GRASS_BLADES.length; i++) {
-          const gb = GRASS_BLADES[i];
-          const windSway = (t >= 4.0)
-            ? Math.sin(t * gb.swayFreq + gb.swayPhase) * 0.22 + Math.cos(t * 1.4) * 0.08
-            : 0;
-
-          const angle = gb.baseAngle + windSway;
-          const tipX = gb.x + Math.cos(angle) * gb.length;
-          const tipY = gb.y + Math.sin(angle) * gb.length;
-          const cpX = gb.x + Math.cos(angle + 0.2) * (gb.length * 0.55);
-          const cpY = gb.y + Math.sin(angle + 0.2) * (gb.length * 0.55);
-
+        ctx.globalAlpha = bladeA;
+        const rng = createMulberry32(8899);
+        for (let i = 0; i < 90; i++) {
+          const u = i / 89;
+          const gx = 835 + u * 440 + (rng() - 0.5) * 16;
+          const gy = 690 - u * 175 + (rng() - 0.5) * 10;
+          const len = 28 + rng() * 40;
+          const baseAngle = -Math.PI / 2 + (rng() - 0.5) * 0.7 - 0.25;
+          const swayFreq = 2.5 + rng() * 1.6;
+          const swayPhase = rng() * Math.PI * 2;
+          const wind = t >= 4 ? Math.sin(t * swayFreq + swayPhase) * 0.22 + Math.cos(t * 1.4) * 0.08 : 0;
+          const ang = baseAngle + wind;
+          const tipX = gx + Math.cos(ang) * len;
+          const tipY = gy + Math.sin(ang) * len;
           ctx.strokeStyle = (i % 3 === 0) ? '#a2cd48' : (i % 2 === 0) ? '#689e32' : '#3d611f';
-          ctx.lineWidth = gb.width;
+          ctx.lineWidth = 1.8 + rng() * 1.6;
           ctx.beginPath();
-          ctx.moveTo(gb.x, gb.y);
-          ctx.quadraticCurveTo(cpX, cpY, tipX, tipY);
+          ctx.moveTo(gx, gy);
+          ctx.quadraticCurveTo(gx + Math.cos(ang + 0.2) * len * 0.55,
+                               gy + Math.sin(ang + 0.2) * len * 0.55,
+                               tipX, tipY);
           ctx.stroke();
-
           if (i % 4 === 0) {
             ctx.fillStyle = '#fedd82';
             ctx.beginPath();
-            ctx.arc(tipX, tipY, 2.0, 0, Math.PI * 2);
+            ctx.arc(tipX, tipY, 2, 0, Math.PI * 2);
             ctx.fill();
           }
         }
         ctx.restore();
       }
 
-      // -----------------------------------------------------------------------
-      // 木版畫精緻鍵線 (Delicate Woodblock Keylines Overlay)
-      // -----------------------------------------------------------------------
-      if (colorP > 0) {
-        ctx.save();
-        ctx.strokeStyle = 'rgba(30, 26, 24, ' + (0.35 * colorP) + ')';
-        ctx.lineWidth = 1.2;
-
-        // 遠山脊線
-        for (const m of MOUNTAINS) {
-          ctx.beginPath();
-          ctx.moveTo(m.pts[0][0], m.pts[0][1]);
-          for (let k = 1; k < m.pts.length; k++) {
-            ctx.lineTo(m.pts[k][0], m.pts[k][1]);
-          }
-          ctx.stroke();
-        }
-
-        // 沙岸弧線
+      // ------------------------------------------------------------------
+      // 精緻鍵線
+      // ------------------------------------------------------------------
+      ctx.save();
+      ctx.strokeStyle = 'rgba(30, 26, 24, ' + (0.35 * colorP) + ')';
+      ctx.lineWidth = 1.2;
+      for (const M of MOUNTAINS) {
         ctx.beginPath();
-        ctx.moveTo(BEACH_SHORELINE[0][0], BEACH_SHORELINE[0][1]);
-        for (let k = 1; k < BEACH_SHORELINE.length; k++) {
-          ctx.lineTo(BEACH_SHORELINE[k][0], BEACH_SHORELINE[k][1]);
-        }
+        ctx.moveTo(M.pts[0][0], M.pts[0][1]);
+        for (let k = 1; k < M.pts.length; k++) ctx.lineTo(M.pts[k][0], M.pts[k][1]);
         ctx.stroke();
-
-        ctx.restore();
       }
+      ctx.beginPath();
+      ctx.moveTo(SHORELINE[0][0], SHORELINE[0][1]);
+      for (let k = 1; k < SHORELINE.length; k++) ctx.lineTo(SHORELINE[k][0], SHORELINE[k][1]);
+      ctx.stroke();
+      ctx.restore();
 
       ctx.restore();
     }
 
     // =========================================================================
-    // 模組匯出與 window.renderAt 支援 (嚴格符合規範)
+    // window.renderAt(t)：供外部截圖腳本指定時刻重繪
     // =========================================================================
     if (typeof window !== 'undefined') {
-      window.renderAt = function(t, customCtx, customWidth, customHeight) {
-        const canvasEl = document.getElementById('sunsetCanvas');
-        const c = customCtx || (canvasEl ? canvasEl.getContext('2d') : null);
-        const w = customWidth || (canvasEl ? canvasEl.width : BASE_W);
-        const h = customHeight || (canvasEl ? canvasEl.height : BASE_H);
+      window.renderAt = function(t, customCtx, customW, customH) {
+        const el = document.getElementById('sunsetCanvas');
+        const c = customCtx || (el ? el.getContext('2d') : null);
+        const w = customW || (el ? el.width : BASE_W);
+        const h = customH || (el ? el.height : BASE_H);
         if (c) renderScene(c, w, h, t);
       };
     }
@@ -1143,7 +1024,7 @@
     }
 
     // =========================================================================
-    // 瀏覽器自動播放邏輯 (requestAnimationFrame 循環與 HUD 更新)
+    // 瀏覽器自動播放（13 秒循環：上色完成後浪與草木持續動）
     // =========================================================================
     if (typeof window !== 'undefined' && document.getElementById('sunsetCanvas')) {
       const canvas = document.getElementById('sunsetCanvas');
@@ -1151,10 +1032,7 @@
       const timeDisplay = document.getElementById('timeDisplay');
       const phaseDisplay = document.getElementById('phaseDisplay');
       const replayBtn = document.getElementById('replayBtn');
-
       let startTime = null;
-      let isPlaying = true;
-      let currentT = 0;
 
       function updateHUD(t) {
         if (!timeDisplay || !phaseDisplay) return;
@@ -1163,7 +1041,7 @@
           phaseDisplay.textContent = '鉛筆素描線稿勾勒';
           phaseDisplay.style.color = '#c9c5ba';
         } else if (t < 4.0) {
-          phaseDisplay.textContent = '塊面筆觸分層上色中';
+          phaseDisplay.textContent = '筆觸塊面分層上色中';
           phaseDisplay.style.color = '#f7a865';
         } else {
           phaseDisplay.textContent = '上色完成 / 潮浪草木持續動態';
@@ -1171,25 +1049,17 @@
         }
       }
 
-      function loop(timestamp) {
-        if (!startTime) startTime = timestamp;
-        if (isPlaying) {
-          const elapsed = (timestamp - startTime) / 1000;
-          currentT = elapsed % 13.0;
-          renderScene(ctx, canvas.width, canvas.height, currentT);
-          updateHUD(currentT);
-        }
+      function loop(ts) {
+        if (startTime === null) startTime = ts;
+        const t = ((ts - startTime) / 1000) % 13.0;
+        renderScene(ctx, canvas.width, canvas.height, t);
+        updateHUD(t);
         requestAnimationFrame(loop);
       }
 
       if (replayBtn) {
-        replayBtn.addEventListener('click', () => {
-          startTime = performance.now();
-          currentT = 0;
-          isPlaying = true;
-        });
+        replayBtn.addEventListener('click', () => { startTime = performance.now(); });
       }
-
       requestAnimationFrame(loop);
     }
   </script>
