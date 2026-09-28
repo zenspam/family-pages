@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2027 暑假日本三天兩夜四種玩法（家人挑選版）</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: #222;
+  background: #f6f3ee;
+  margin: 0;
+  padding: 14px 14px 40px;
+}
+h1 { font-size: 22px; margin: 8px 0 6px; color: #222; }
+h2 { font-size: 19px; margin: 4px 0 8px; color: #222; }
+h3 { font-size: 16px; margin: 12px 0 4px; color: #666; }
+p { margin: 8px 0; }
+.intro {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 10px 0 18px;
+}
+.combo {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 0 0 20px;
+  border-top: 5px solid #666;
+}
+.combo.c1 { border-top-color: #c0392b; }
+.combo.c2 { border-top-color: #2c5f2e; }
+.combo.c3 { border-top-color: #e67e22; }
+.combo.c4 { border-top-color: #2980b9; }
+.tag {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 10px;
+  margin-bottom: 6px;
+}
+.tag.t1 { background: #c0392b; }
+.tag.t2 { background: #2c5f2e; }
+.tag.t3 { background: #e67e22; }
+.tag.t4 { background: #2980b9; }
+.summary {
+  background: #f6f3ee;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 8px 0 12px;
+  font-size: 15px;
+}
+.day {
+  margin: 12px 0;
+}
+.day-title {
+  font-weight: bold;
+  font-size: 16px;
+  border-left: 5px solid #888;
+  padding-left: 8px;
+  margin-bottom: 6px;
+}
+.slot {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 6px 0;
+  font-size: 15px;
+}
+.slot b { color: #222; }
+.note-block {
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 15px;
+}
+.note-good { background: #eaf3ea; }
+.note-warn { background: #fdf1e7; }
+.note-block .h { font-weight: bold; margin-bottom: 2px; }
+.map {
+  height: 260px;
+  border-radius: 10px;
+  margin: 10px 0 4px;
+  border: 1px solid #ccc;
+}
+.map-hint { font-size: 15px; color: #666; margin: 2px 0 0; }
+footer {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 6px;
+}
+footer h2 { font-size: 19px; }
+footer li { font-size: 15px; margin: 6px 0; }
+.leaflet-popup-content { font-size: 15px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<h1>2027 暑假日本三天兩夜：四種玩法給家人挑</h1>
+
+<div class="intro">
+<p>這一頁整理 2027 年暑假（七月底或八月底出發）四種日本三天兩夜行程，給我們家兩大兩小出遊挑選用。每組都有：一句話摘要、每天上午下午晚上怎麼移動怎麼玩怎麼吃、兩個優點、兩個要注意的地方，還有一張路線地圖。看不懂日文也沒關係，飯店名用日本原名，訂房或導航直接照抄就可以。</p>
+</div>
+
+<section class="combo c1">
+<span class="tag t1">組合一：東北（福島＋宮城）</span>
+<h2>裏磐梯高原ホテル ＋ 松島</h2>
+<div id="body1">
+<div class="summary">一句話：想看大山大水＋日本三景的家庭選這組。高原湖沼配色超特別的五彩湖，加上松島海灣奇岩，風景控會很滿足。</div>
+<div class="summary">📝 妳說松島吸引力不大：第二晚會改成「靠海、生魚片好、房間有質感」的一晚，飯店我另外挑好再補上。下面先留原本的走法給妳參考。</div>
+
+<div class="day">
+<div class="day-title">第一天：飛仙台，直奔裏磐梯高原</div>
+<div class="slot"><b>上午</b>：台灣直飛仙台空港（台北出發約 3 小時 50 分，高雄也有直飛）。之後二選一——自駕到飯店（車程未核，出發前用 <a href="https://www.google.com/maps/dir/?api=1&origin=%E4%BB%99%E5%8F%B0%E7%A9%BA%E6%B8%AF&destination=%E8%A3%8F%E7%A3%90%E6%A2%AF%E9%AB%98%E5%8E%9F%E3%83%9B%E3%83%86%E3%83%AB&travelmode=driving" target="_blank" rel="noopener">Google 地圖導航</a>看），或搭鐵路到猪苗代駅轉飯店免費接駁巴士（接駁要前一天預約）。</div>
+<div class="slot"><b>下午</b>：玩飯店旁的<b>五色沼</b>——好幾個綠色、紅色、藍色的湖沼串起來，步道約 4 公里、慢慢走約 1 小時半。夏天涼爽好走，但要帶熊鈴（當地有熊出沒的顧慮）。</div>
+<div class="slot"><b>晚上</b>：住<b>裏磐梯高原ホテル</b>（裏磐梯高原飯店），晚餐在飯店吃會津鄉土會席或法式套餐，用的是福島、会津當地食材。如果七月底出發，往年 7 月 21 日前後有「裏磐梯火の山祭」煙火大露店（2027 日期以官方公告為準）。</div>
+</div>
+
+<div class="day">
+<div class="day-title">第二天：裏磐梯 → 松島（這天車程最長）</div>
+<div class="slot"><b>上午</b>：移動到松島。自駕（車程未核，出發前用 <a href="https://www.google.com/maps/dir/?api=1&origin=%E8%A3%8F%E7%A3%90%E6%A2%AF%E9%AB%98%E5%8E%9F%E3%83%9B%E3%83%86%E3%83%AB&destination=%E6%9D%BE%E5%B3%B6%E6%B5%B7%E5%B2%B8%E9%A7%85&travelmode=driving" target="_blank" rel="noopener">Google 地圖導航</a>看），鐵路約 4 小時要換 3 次車，建議這天自駕、中途不要亂繞。</div>
+<div class="slot"><b>下午</b>：到<b>松島</b>（日本三景之一）。先搭遊覽船繞海灣看奇岩小島，再看國寶<b>瑞巌寺</b>（早上 8:30 開門），走透空橋到海邊的<b>五大堂</b>（400 年歷史古建築，免費參觀）。</div>
+<div class="slot"><b>晚上</b>：松島一帶住一晚，飯店自選。晚餐推薦松島さかな市場烤牡蠣吃到飽。若 8 月 15、16 日前後在當地，晚上有「松島流灯会 海の盆」燈籠夏祭（2027 日期以官方公告為準）。</div>
+</div>
+
+<div class="day">
+<div class="day-title">第三天：松島吃海鮮，回仙台搭飛機</div>
+<div class="slot"><b>上午</b>：在海鮮市場慢慢吃，產地直送的海鮮、牡蠣漢堡都行。</div>
+<div class="slot"><b>下午</b>：搭仙石線回仙台（約 40 分）再轉機場線（26 分）到仙台空港，連候車約 1 小時多。</div>
+<div class="slot"><b>晚上</b>：搭機回台灣。</div>
+</div>
+
+<div class="note-block note-good">
+<div class="h">這組的優點</div>
+<div>1. 兩站都是日本代表級風景：高原彩色湖沼＋日本三景松島，照片會很漂亮。</div>
+<div>2. 裏磐梯是高原，夏天涼爽，正好躲台灣的酷暑。</div>
+</div>
+<div class="note-block note-warn">
+<div class="h">要注意</div>
+<div>1. 第二天車程全程最長（約 2 小時半～3 小時起跳），帶小孩要準備零食和休息停。</div>
+<div>2. 夏天不是松島牡蠣最肥的季節（牡蠣季是 10 月到 3 月），烤牡蠣仍有但別用秋冬標準期待。另外八月出發可留意仙台七夕祭（往年 8/6–8/8，2027 日期以官方公告為準）。</div>
+</div>
+</div>
+<div class="map" id="map1"></div>
+<p class="map-hint">紅色線是這組三天的移動路線，點圖釘可以看地名、開 Google Maps 導航。</p>
+</section>
+
+<section class="combo c2">
+<span class="tag t2">組合二：新潟</span>
+<h2>華鳳（月岡温泉）＋ あてま高原リゾート ベルナティオ</h2>
+<div id="body2">
+<div class="summary">一句話：四組裡坐車最短、最輕鬆的一組。溫泉、海鮮、藝術祭一次滿足，適合不想讓小孩坐太久車的家庭。</div>
+
+<div class="day">
+<div class="day-title">第一天：飛新潟，吃海鮮、泡月岡温泉</div>
+<div class="slot"><b>上午</b>：台灣直飛新潟空港，機場巴士約 25–33 分進市區（新潟駅）。</div>
+<div class="slot"><b>下午</b>：先去車站旁的<b>みなとのマルシェ ピアBandai</b>（萬代島海鮮市場）——日本海側數一數二大的海鮮市場，吃海鮮丼、現烤魚貝、迴轉壽司，當午餐或下午茶都行。傍晚再往月岡温泉。</div>
+<div class="slot"><b>晚上</b>：住<b>華鳳</b>（妳住過的，月岡温泉的溫泉旅館）。泡自家源泉「白玉の湯」——翡翠綠的硫磺泉，很有名。晚餐吃館內新潟懷石：海鮮和新潟和牛可以自己動手炸天婦羅，還有越光米土鍋飯。吃飽可在溫泉街泡免費足湯「あしゆ湯足美」，晚上還有和傘燈光。</div>
+</div>
+
+<div class="day">
+<div class="day-title">第二天：月岡温泉 → あてま高原（藝術祭區域）</div>
+<div class="slot"><b>上午</b>：移動到<b>あてま高原リゾート ベルナティオ</b>（妳住過的）。自駕約 1 小時半；不開車就搭新幹線到越後湯沢駅轉飯店免費接駁巴士（約 40 分，前一天 17:00 前預約）。</div>
+<div class="slot"><b>下午</b>：飯店本身就在「大地の芸術祭」（越後妻有大地藝術祭）展區裡，2027/7/17 開幕、一直辦到 11 月（2027 檔期以官方公告為準），七月下旬出發正好趕上開幕期。小孩可玩飯店夏季活動：冒險設施、夏日夜遊、手打蕎麥體驗。</div>
+<div class="slot"><b>晚上</b>：住ベルナティオ。晚餐吃館內自助餐或戶外 BBQ（BBQ 是夏季限定）。這裡的早餐也得過全國冠軍，第三天早上別睡過頭。</div>
+</div>
+
+<div class="day">
+<div class="day-title">第三天：慢慢回新潟空港</div>
+<div class="slot"><b>上午</b>：飯店泡最後一輪溫泉、吃早餐，附近看看藝術作品。</div>
+<div class="slot"><b>下午</b>：自駕或接駁回新潟空港（車程未核，出發前用 <a href="https://www.google.com/maps/dir/?api=1&origin=%E3%81%82%E3%81%A6%E3%81%BE%E9%AB%98%E5%8E%9F%E3%83%AA%E3%82%BE%E3%83%BC%E3%83%88%20%E3%83%99%E3%83%AB%E3%83%8A%E3%83%86%E3%82%A3%E3%82%AA&destination=%E6%96%B0%E6%BD%9F%E7%A9%BA%E6%B8%AF&travelmode=driving" target="_blank" rel="noopener">Google 地圖導航</a>看），沒車就搭巴士回十日町駅或越後湯沢駅轉車。</div>
+<div class="slot"><b>晚上</b>：搭機回台灣。</div>
+</div>
+
+<div class="note-block note-good">
+<div class="h">這組的優點</div>
+<div>1. 單日車程四組最短，移動壓力低，小孩最不容易坐不住。</div>
+<div>2. 兩晚都是溫泉旅館，大人泡湯、小孩玩飯店活動，誰都不無聊。</div>
+</div>
+<div class="note-block note-warn">
+<div class="h">要注意</div>
+<div>1. 藝術祭展區散布在鄉間，不開車的話要靠接駁巴士，記得提前預約。</div>
+<div>2. 第二晚住山裡，晚餐基本只能在飯店解決；想吃市區海鮮要安排在第一天的下午。</div>
+</div>
+</div>
+<div class="map" id="map2"></div>
+<p class="map-hint">綠色線是這組三天的移動路線，點圖釘可以看地名、開 Google Maps 導航。</p>
+</section>
+
+<section class="combo c3">
+<span class="tag t3">組合三：關西（淡路島＋神戶）</span>
+<h2>淡路島 ＋ 神戶（兩晚飯店自選）</h2>
+<div id="body3">
+<div class="summary">一句話：最自由的一組。兩晚飯店自選、不被飯店綁住，淡路島玩田園和海景，神戶吃和牛逛城市，適合想自己掌控節奏的家庭。</div>
+
+<div class="day">
+<div class="day-title">第一天：飛關西空港，進淡路島</div>
+<div class="slot"><b>上午</b>：台灣直飛關西國際空港（這裡台灣航線最多），轉巴士或自駕進淡路島，約 1 小時 30 分。</div>
+<div class="slot"><b>下午</b>：玩<b>淡路ファームパーク イングランドの丘</b>（淡路島英式丘陵農場）——7、8 月可採茄子、小番茄等夏季蔬菜，還有無尾熊等動物互動。或去淡路島公園裡的<b>ニジゲンノモリ</b>動漫主題樂園，夏天有期間限定活動，小孩會開心。</div>
+<div class="slot"><b>晚上</b>：淡路島住一晚，飯店自選。晚餐吃淡路島名物「生しらす丼」（生小沙丁魚丼）——4 月底到 11 月下旬正是季節，七月八月吃最對時。</div>
+</div>
+
+<div class="day">
+<div class="day-title">第二天：淡路島南部 → 過明石海峽大橋到神戶</div>
+<div class="slot"><b>上午</b>：淡路島南部洲本一帶逛逛、看海或玩水，島上景點分散，島內車程未核，出發前用 Google 地圖導航看。</div>
+<div class="slot"><b>下午</b>：經<b>明石海峽大橋</b>移動到神戶（全長近 4 公里的世界級大吊橋，開過去很壯觀）。高速巴士約 1 小時 26 分、不用預約；自駕車程未核，出發前用 <a href="https://www.google.com/maps/dir/?api=1&origin=%E6%B4%B2%E6%9C%AC%E5%B8%82&destination=%E4%B8%89%E5%AE%AE%E9%A7%85&travelmode=driving" target="_blank" rel="noopener">Google 地圖導航</a>看。</div>
+<div class="slot"><b>晚上</b>：神戶住一晚，飯店自選（建議住三宮站附近，走路就能吃神戶牛）。</div>
+</div>
+
+<div class="day">
+<div class="day-title">第三天：神戶市區，回關西空港</div>
+<div class="slot"><b>上午</b>：二選一——去<b>有馬温泉</b>泡「金泉、銀泉」（日本三大古泉之一，一日遊可泡公共浴場）；或在市區逛<b>神戸ビーフ館</b>（神戶牛官方展示館，免費入場，適合帶小孩認識和牛），中午吃神戶牛。</div>
+<div class="slot"><b>下午</b>：<b>北野異人館街</b>看洋館、喝咖啡（三宮站步行約 10 分），再去<b>ハーバーランド</b>看神戶港、坐摩天輪。傍晚搭機場巴士或自駕回關西空港（車程未核，出發前用 <a href="https://www.google.com/maps/dir/?api=1&origin=%E5%8C%97%E9%87%8E%E7%95%B0%E4%BA%BA%E9%A4%A8&destination=%E9%96%A2%E8%A5%BF%E5%9B%BD%E9%9A%9B%E7%A9%BA%E6%B8%AF&travelmode=driving" target="_blank" rel="noopener">Google 地圖導航</a>看）。</div>
+<div class="slot"><b>晚上</b>：搭機回台灣。</div>
+</div>
+
+<div class="note-block note-good">
+<div class="h">這組的優點</div>
+<div>1. 採蔬菜、動物、海景、城市一次玩到，行程最豐富，小孩不容易膩。</div>
+<div>2. 兩晚飯店自選，可完全配合預算和口味訂房。</div>
+</div>
+<div class="note-block note-warn">
+<div class="h">要注意</div>
+<div>1. 淡路島景點分散、大眾運輸班次少，這組強烈建議自駕。</div>
+<div>2. 淡路島到神戶是這組最長一段移動，建議上午玩淡路、下午再過橋，不要趕。另外淡路島、神戶夏天的大型祭典日期這次沒查到官方資料，出發前再確認。</div>
+</div>
+</div>
+<div class="map" id="map3"></div>
+<p class="map-hint">橘色線是這組三天的移動路線，點圖釘可以看地名、開 Google Maps 導航。</p>
+</section>
+
+<section class="combo c4">
+<span class="tag t4">組合四：伊豆</span>
+<h2>浜の湯（稲取温泉）＋ 伊豆今井浜東急ホテル（河津町）</h2>
+<div id="body4">
+<div class="summary">一句話：最像「海邊度假」的一組。兩晚都住溫泉旅館，第二晚飯店過馬路就是沙灘，適合想玩水、放鬆、不想趕行程的家庭。</div>
+
+<div class="day">
+<div class="day-title">第一天：飛羽田，搭特急到稲取温泉</div>
+<div class="slot"><b>上午</b>：台灣直飛東京羽田機場，轉車到東京駅搭特急「踊り子號」約 2 小時 30 分到伊豆稲取駅，再搭飯店接送約 5 分（門到館全程約 3 小時 20 分起跳，建議搭早班機）。</div>
+<div class="slot"><b>下午</b>：稲取一帶看海。稲取漁港有漁協直賣所，想看壯觀海岸可開車去城ケ崎海岸、石廊崎（車程以實際路況為準）。</div>
+<div class="slot"><b>晚上</b>：住<b>浜の湯</b>（妳住過的，稲取温泉的溫泉旅館，泡湯望出去就是伊豆大島海景）。晚餐吃這裡的招牌「金目鯛姿煮」——紅金目鯛整尾滷煮，是稲取的鄉土菜。七月底或八月底出發，晚上可能有稲取温泉花火（往年 7 月下旬與 8 月下旬各一週、每晚約 500 發，2027 日期以官方公告為準）。</div>
+</div>
+
+<div class="day">
+<div class="day-title">第二天：稲取 → 今井浜（只要 5 分鐘）</div>
+<div class="slot"><b>上午</b>：移動到<b>伊豆今井浜東急ホテル</b>（妳住過的，記得訂妳喜歡的樓中樓房型）。搭伊豆急行只要 5 分鐘、直達，自駕車程未核，出發前用 <a href="https://www.google.com/maps/dir/?api=1&origin=%E9%A3%9F%E3%81%B9%E3%82%8B%E3%81%8A%E5%AE%BF%20%E6%B5%9C%E3%81%AE%E6%B9%AF&destination=%E4%BC%8A%E8%B1%86%E4%BB%8A%E4%BA%95%E6%B5%9C%E6%9D%B1%E6%80%A5%E3%83%9B%E3%83%86%E3%83%AB&travelmode=driving" target="_blank" rel="noopener">Google 地圖導航</a>看——兩館其實在同一條海岸線上。</div>
+<div class="slot"><b>下午</b>：玩<b>今井浜海水浴場</b>。沙灘平緩、水淺，很適合小孩玩水；飯店過馬路就是海灘，玩累直接回房。（2027 年海開き日期以官方公告為準，往年約 7 月底～8 月底。）</div>
+<div class="slot"><b>晚上</b>：住東急飯店。晚餐吃館內鐵板燒或日本料理會席，夏天限定有沙灘第一排的 BBQ，很有度假感。</div>
+</div>
+
+<div class="day">
+<div class="day-title">第三天：早上再玩一次水，回羽田</div>
+<div class="slot"><b>上午</b>：飯店對面就是海，早上再踏浪一次；或搭免費接駁巴士去河津駅附近走走（夏天沒有櫻花，但河津川可以戲水）。</div>
+<div class="slot"><b>下午</b>：搭伊豆急行到河津駅（今井浜海岸駅沒有特急停靠，要回河津搭）轉特急「踊り子號」回東京約 2 小時 30 分，再轉車去羽田機場。</div>
+<div class="slot"><b>晚上</b>：搭機回台灣。</div>
+</div>
+
+<div class="note-block note-good">
+<div class="h">這組的優點</div>
+<div>1. 第二天移動只要 5 分鐘，三天等於玩一條海岸線，最不累。</div>
+<div>2. 兩館都是溫泉旅館，晚餐有特色（金目鯛、夏季海邊 BBQ），大人小孩都顧到。</div>
+</div>
+<div class="note-block note-warn">
+<div class="h">要注意</div>
+<div>1. 第一天門到館約 3 小時 20 分起跳，小孩體力要抓一下，早班機＋車上補眠是關鍵。</div>
+<div>2. 第三天要回河津駅搭特急，時間要抓鬆；海水浴場開放日期每年公布，出發前確認 2027 海開き公告。</div>
+</div>
+</div>
+<div class="map" id="map4"></div>
+<p class="map-hint">藍色線是這組三天的移動路線，點圖釘可以看地名、開 Google Maps 導航。</p>
+</section>
+
+<footer>
+<h2>沒查到的（如實說，出發前要自己再確認）</h2>
+<ul id="unknowns">
+<li>2027 年的祭典日期大多還沒公布：仙台七夕、裏磐梯火の山祭、松島海の盆、稲取温泉花火、今井浜海水浴場開放，頁面上寫的都是往年時間，出發前一定要再看官方公告。</li>
+<li>好幾段自駕車程查不到官方資料，頁上不寫數字；出發前用 Google 地圖導航看，並多留一點時間。</li>
+<li>福島、会津一帶的採果園（採桃、採梨）查不到官方農園資訊，只有確認福島是產桃大縣，真想去只能出發前再查。</li>
+<li>淡路島、神戶夏天的大型祭典（例如神戶港祭）2026、2027 年的官方日期都沒查到。</li>
+<li>伊豆夏天採水果（像藍莓）的官方農園頁也沒查到。</li>
+<li>部分飯店餐廳的夏季對外營業時段查不到：裏磐梯高原ホテル只查到舊資料，浜の湯餐廳以住宿客人為主，訂房時要直接向飯店確認。</li>
+<li>有些官方網站有擋機器人查詢，部分內容是透過歷史存檔查到的，出發前建議再打開官網確認一次最新資訊。</li>
+</ul>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+var mapsData = {
+  map1: {
+    color: "#c0392b",
+    pts: [
+      ["仙台空港", 38.13806712, 140.92692811],
+      ["裏磐梯高原ホテル", 37.6568727577774, 140.078838474105],
+      ["猪苗代駅", 37.557777, 140.104736],
+      ["五色沼（磐梯朝日国立公園）", 37.6492742939351, 140.076917043155],
+      ["松島（松島海岸）", 38.366158, 141.053864],
+      ["国宝瑞巌寺", 38.3722322222222, 141.057684277778],
+      ["五大堂", 38.380192, 141.067368]
+    ],
+    route: [
+      [38.13806712, 140.92692811],
+      [37.557777, 140.104736],
+      [37.6568727577774, 140.078838474105],
+      [37.6492742939351, 140.076917043155],
+      [38.366158, 141.053864],
+      [38.3722322222222, 141.057684277778],
+      [38.380192, 141.067368],
+      [38.13806712, 140.92692811]
+    ]
+  },
+  map2: {
+    color: "#2c5f2e",
+    pts: [
+      ["新潟空港", 37.95249278, 139.11127382],
+      ["華鳳（月岡温泉）", 37.8805968, 139.3142746],
+      ["あてま高原リゾート ベルナティオ", 37.04881, 138.738116],
+      ["越後湯沢駅（上越新幹線）", 36.9358575402778, 138.8094992575],
+      ["十日町市（大地の芸術祭会場）", 37.127499, 138.755569]
+    ],
+    route: [
+      [37.95249278, 139.11127382],
+      [37.8805968, 139.3142746],
+      [36.9358575402778, 138.8094992575],
+      [37.04881, 138.738116],
+      [37.127499, 138.755569],
+      [37.95249278, 139.11127382]
+    ]
+  },
+  map3: {
+    color: "#e67e22",
+    pts: [
+      ["関西国際空港", 34.446941, 135.241028],
+      ["淡路ファームパーク イングランドの丘", 34.3117337163889, 134.794732278056],
+      ["ニジゲンノモリ（淡路島公園）", 34.57545485, 135.0070926],
+      ["洲本市（淡路島南部）", 34.34285, 134.895447],
+      ["明石海峡大橋（神戸側）", 34.630554, 135.056946],
+      ["三宮（神戸市中心）", 34.689701, 135.194855],
+      ["北野異人館街", 34.701942, 135.192871],
+      ["有馬温泉", 34.796742, 135.250569],
+      ["神戸ハーバーランド", 34.679077, 135.181961]
+    ],
+    route: [
+      [34.446941, 135.241028],
+      [34.57545485, 135.0070926],
+      [34.3117337163889, 134.794732278056],
+      [34.34285, 134.895447],
+      [34.630554, 135.056946],
+      [34.689701, 135.194855],
+      [34.701942, 135.192871],
+      [34.796742, 135.250569],
+      [34.679077, 135.181961],
+      [34.446941, 135.241028]
+    ]
+  },
+  map4: {
+    color: "#2980b9",
+    pts: [
+      ["羽田空港（東京国際空港）", 35.554813, 139.756943],
+      ["伊豆稲取駅（伊豆急行）", 34.7771717913889, 139.037282443333],
+      ["浜の湯（稲取温泉）", 34.7697682, 139.0481099],
+      ["伊豆今井浜東急ホテル（今井浜海岸）", 34.757221, 138.987503],
+      ["河津駅（伊豆急行）", 34.7475358663889, 138.993628208611],
+      ["城ケ崎海岸", 34.8931140736125, 139.139702879648],
+      ["石廊崎", 34.61636, 138.84082]
+    ],
+    route: [
+      [35.554813, 139.756943],
+      [34.7771717913889, 139.037282443333],
+      [34.7697682, 139.0481099],
+      [34.757221, 138.987503],
+      [34.7475358663889, 138.993628208611],
+      [35.554813, 139.756943]
+    ]
+  }
+};
+
+Object.keys(mapsData).forEach(function (id) {
+  var d = mapsData[id];
+  var map = L.map(id);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    attribution: "Tiles © Esri",
+    maxZoom: 18
+  }).addTo(map);
+  var bounds = [];
+  d.pts.forEach(function (p) {
+    var mk = L.circleMarker([p[1], p[2]], {
+      radius: 7,
+      color: d.color,
+      weight: 2,
+      fillColor: d.color,
+      fillOpacity: 0.85
+    }).addTo(map);
+    mk.bindPopup("<b>" + p[0] + "</b><br><a href='https://www.google.com/maps?q=" + p[1] + "," + p[2] + "' target='_blank' rel='noopener'>在 Google Maps 開啟</a>");
+    bounds.push([p[1], p[2]]);
+  });
+  L.polyline(d.route, { color: d.color, weight: 4, opacity: 0.8 }).addTo(map);
+  map.fitBounds(bounds, { padding: [24, 24] });
+});
+</script>
+</body>
+</html>
