@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belnatio 的新潟替代 — 同一晚比價</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root { --ink:#222; --sub:#8a8a8a; --line:#e3e3e3; --green:#1a7f37; --red:#c0392b; --yellow:#fff7d6; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; padding:0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans CJK TC", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    color: var(--ink); background:#fafafa; line-height:1.6;
+  }
+  .wrap { max-width:390px; margin:0 auto; padding:16px 12px 40px; }
+  h1 { font-size:1.15rem; margin:0 0 4px; }
+  .lead { font-size:.95rem; margin:0 0 2px; }
+  .lead-sub { font-size:.8rem; color:var(--sub); margin:0 0 18px; }
+  h2 { font-size:1rem; margin:26px 0 8px; padding-left:8px; border-left:4px solid #555; }
+  /* 比價表 */
+  .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  table.price { border-collapse:collapse; font-size:.78rem; white-space:nowrap; }
+  table.price th, table.price td { padding:8px 10px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.price thead th { background:#f0f0f0; position:sticky; top:0; }
+  table.price td:first-child, table.price th:first-child {
+    position:sticky; left:0; background:#fff; z-index:2;
+    box-shadow:2px 0 0 var(--line); font-weight:600; max-width:150px; white-space:normal;
+  }
+  table.price thead th:first-child { background:#f0f0f0; z-index:3; }
+  table.price tr.baseline td { background:var(--yellow); }
+  table.price tr.baseline td:first-child { background:var(--yellow); }
+  table.price tr:last-child td { border-bottom:none; }
+  td.num { font-variant-numeric:tabular-nums; }
+  .cheaper { color:var(--green); font-weight:700; }
+  .pricier { color:var(--red); font-weight:700; }
+  .base-tag { display:inline-block; font-size:.68rem; background:#f5c518; border-radius:4px; padding:0 5px; margin-left:4px; font-weight:700; }
+  .cell-sub { display:block; font-size:.68rem; color:var(--sub); font-weight:400; }
+  .table-notes { font-size:.72rem; color:var(--sub); margin:8px 2px 0; padding-left:1em; text-indent:-1em; }
+  .table-notes p { margin:2px 0; }
+  /* 地圖 */
+  #map { height:340px; border-radius:8px; border:1px solid var(--line); }
+  .heart-pin { text-align:center; line-height:26px; }
+  /* 卡片 */
+  .cards { display:flex; flex-direction:column; gap:12px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .card.baseline { background:var(--yellow); border-color:#ead98a; }
+  .card h3 { font-size:.95rem; margin:0 0 4px; }
+  .card .price-line { font-size:1.05rem; font-weight:800; margin:0 0 4px; }
+  .card .meta { font-size:.78rem; color:#555; margin:2px 0; }
+  .card .note { font-size:.72rem; color:var(--sub); margin:4px 0 0; }
+  .btns { display:flex; gap:8px; margin-top:10px; }
+  .btns a {
+    flex:1; text-align:center; text-decoration:none; font-size:.82rem; font-weight:600;
+    padding:9px 0; border-radius:8px; border:1px solid #444; color:#222; background:#fff;
+  }
+  .btns a.primary { background:#222; color:#fff; border-color:#222; }
+  footer { margin-top:30px; font-size:.75rem; color:var(--sub); text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>新潟溫泉旅館比價</h1>
+  <p class="lead">Belnatio 的新潟替代：用 2026 年 10 月 17 日（週六）同一晚、四位大人、含早晚兩餐比價。</p>
+  <p class="lead-sub">這不是夏季價，夏天會更貴；各家 2027 夏季都還沒開賣。</p>
+  <h2>比價表（同一晚・四人・早晚兩餐）</h2>
+  <div class="table-scroll">
+    <table class="price">
+      <thead>
+        <tr><th>飯店</th><th>總價（日圓）</th><th>比 Belnatio</th><th>房間大小</th><th>房型</th><th>含稅</th><th>查價通路</th></tr>
+      </thead>
+      <tbody>
+        <tr class="baseline">
+          <td>あてま高原リゾート ベルナティオ<span class="base-tag">基準</span></td>
+          <td class="num">156,200</td>
+          <td>基準</td>
+          <td class="num">54㎡</td>
+          <td>別館ファミリールーム（一番人気／2食）</td>
+          <td>含稅</td>
+          <td>楽天トラベル</td>
+        </tr>
+        <tr>
+          <td>エンゼルグランディア越後中里</td>
+          <td class="num">64,240</td>
+          <td class="cheaper">便宜 59%</td>
+          <td class="num">94㎡</td>
+          <td>和洋室ツイン（7名定員）</td>
+          <td>含稅</td>
+          <td>楽天トラベル</td>
+        </tr>
+        <tr>
+          <td>苗場プリンスホテル</td>
+          <td class="num">84,068</td>
+          <td class="cheaper">便宜 46%</td>
+          <td class="num">37.8㎡</td>
+          <td>6号館遊ROOM（秋のスペシャルオファー）</td>
+          <td>含稅</td>
+          <td>楽天トラベル</td>
+        </tr>
+        <tr>
+          <td>うぶすなの家（茅葺き古民家一棟）<span class="cell-sub">公告是 2024 年季度，今年價未確認</span><span class="cell-sub">未指定日（頁面公告 2024/4/26–11/10 季）</span></td>
+          <td class="num">100,000</td>
+          <td>—</td>
+          <td>—</td>
+          <td>一棟貸切</td>
+          <td>頁面未標示</td>
+          <td>にいがた観光ナビ</td>
+        </tr>
+        <tr>
+          <td>ロッテアライリゾート</td>
+          <td class="num">102,020</td>
+          <td class="cheaper">便宜 35%</td>
+          <td class="num">54.6㎡</td>
+          <td>デラックスクアドラプル（ベーシックプラン2食・一般料金）</td>
+          <td>待確認</td>
+          <td>官網</td>
+        </tr>
+        <tr>
+          <td>NASPAニューオータニ</td>
+          <td class="num">123,200</td>
+          <td class="cheaper">便宜 21%</td>
+          <td class="num">74㎡</td>
+          <td>和室20帖（南魚沼・魚沼フェア）</td>
+          <td>含稅</td>
+          <td>楽天トラベル</td>
+        </tr>
+        <tr>
+          <td>醸す森［kamosu mori］（古民家）</td>
+          <td class="num">151,200</td>
+          <td class="cheaper">便宜 3%</td>
+          <td>—</td>
+          <td>スタンダードプラン（あがの姫牛・妻有ポークしゃぶしゃぶ，夕食飲み放題）</td>
+          <td>官網未標示（每人 37,800円〜×4）</td>
+          <td>官網</td>
+        </tr>
+        <tr>
+          <td>ryugon（古民家旅館）</td>
+          <td class="num">166,580</td>
+          <td class="pricier">貴 7%</td>
+          <td>—</td>
+          <td>雪国ガストロノミーフルコース（房型頁未標）</td>
+          <td>含稅</td>
+          <td>楽天トラベル</td>
+        </tr>
+        <tr>
+          <td>赤倉観光ホテル<span class="cell-sub">11/14，10/17 四人沒有空房</span></td>
+          <td class="num">234,000</td>
+          <td class="pricier">貴 72%</td>
+          <td>—</td>
+          <td>夕朝食付きスタンダードプラン（最低房型）</td>
+          <td>含服務費與消費稅、入湯稅150円/人另計</td>
+          <td>官網</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="table-notes">
+    <p>※ うぶすなの家為 2024 年公告價、日期未指定，「比 Belnatio」不計百分比。</p>
+    <p>※ 赤倉觀光ホテル是 11/14 的價錢，「比 Belnatio」用同晚基準 136,400 計算；其含稅為含服務費與消費稅，入湯稅150円/人另計。</p>
+    <p>※ ロッテアライ是官網價，含不含稅要到結帳頁確認，可能還要加稅。</p>
+    <p>※ 醸す森官網未標示含稅（每人 37,800円〜×4），可能還要加稅。</p>
+    <p>※ うぶすなの家頁面未標示含稅，可能還要加稅。</p>
+  </div>
+  <h2>地圖</h2>
+  <div id="map"></div>
+  <!--CARDS-->
+  <!--FOOTER-->
+</div>
+<script>
+(function(){
+  var map = L.map('map');
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Esri', maxZoom: 18
+  }).addTo(map);
+  var pts = [
+    {name:'あてま高原リゾート ベルナティオ', total:'156,200', lat:37.04881, lng:138.738116},
+    {name:'ロッテアライリゾート', total:'102,020', lat:36.990867, lng:138.181602},
+    {name:'苗場プリンスホテル', total:'84,068', lat:36.791715, lng:138.784693},
+    {name:'エンゼルグランディア越後中里', total:'64,240', lat:36.904308, lng:138.848846},
+    {name:'NASPAニューオータニ', total:'123,200', lat:36.931316, lng:138.798965},
+    {name:'ryugon（古民家旅館）', total:'166,580', lat:37.058716, lng:138.882431},
+    {name:'赤倉観光ホテル', total:'234,000', lat:36.886272, lng:138.164072},
+    {name:'醸す森［kamosu mori］', total:'151,200', lat:37.093727, lng:138.576523, approx:true}
+  ];
+  var bounds = [];
+  pts.forEach(function(p){
+    bounds.push([p.lat, p.lng]);
+    var html = '<b>' + p.name + '</b><br>總價 ' + p.total + ' 日圓' + (p.approx ? '<br>（大約位置）' : '');
+    if (p.approx) {
+      L.circleMarker([p.lat, p.lng], {radius:9, color:'#333', weight:2, dashArray:'4 4', fillColor:'#333', fillOpacity:0.15})
+        .addTo(map).bindPopup(html);
+    } else {
+      L.marker([p.lat, p.lng]).addTo(map).bindPopup(html);
+    }
+  });
+  var heart = L.divIcon({
+    className:'', html:'<div class="heart-pin" style="font-size:22px;color:#e0245e;">&#10084;</div>',
+    iconSize:[26,26], iconAnchor:[13,13], popupAnchor:[0,-12]
+  });
+  L.marker([37.880597, 139.314275], {icon:heart}).addTo(map)
+    .bindPopup('<b>白玉の湯 華鳳</b><br>妳同一趟想住的華鳳');
+  bounds.push([37.880597, 139.314275]);
+  map.fitBounds(bounds, {paddingBottomRight:[0,60], paddingTopLeft:[20,20]});
+})();
+</script>
+</body>
+</html>
