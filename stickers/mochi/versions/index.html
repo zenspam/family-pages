@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>貼圖版本總覽</title>
+<style>
+:root{--bg:#fbf8f3;--fg:#2b2622;--mute:#7a6f66;--card:#fff;--line:#e8e0d6;--ok:#2f7d4a;--bad:#b0412e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1a17;--fg:#eee7df;--mute:#a99d92;--card:#2a2622;--line:#3a342e;--ok:#7cc495;--bad:#e48a78}}
+body{background:var(--bg);color:var(--fg);font:16px/1.7 "Noto Sans TC",system-ui,sans-serif;margin:0;padding:0 16px}
+main{max-width:1000px;margin:0 auto;padding:24px 0 64px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:20px;margin:36px 0 6px}
+p{margin:6px 0}.mute{color:var(--mute)}
+img{width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff;margin-top:8px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+ul{margin:6px 0;padding-left:20px}
+</style></head><body><main>
+<h1>貼圖版本總覽</h1>
+<p class="mute">10 月 2 日一天之內畫過的每一張，從早上第一批到現在，一張都沒刪。每組下面寫改了什麼、盲猜被讀成什麼、留下還是淘汰。</p>
+<p class="mute">盲猜的做法：把字拿掉、順序打亂、標成 A、B、C，請沒看過答案的讀者猜每張在說哪一句話、對誰說。</p>
+
+<h2>早上・第一批試作</h2>
+<p>先試了幾種角色和畫法：白貓、黑貓、桃子、三花貓、柯基，用程式手寫向量線條。字細、線條死板，沒有一張像是會被買的。</p>
+<img src="r0_svg.jpg" alt="向量試作">
+<img src="r0_original.jpg" alt="原創試作">
+<p>另外試了拿兩張參考圖混合出新角色（熊貓、白糰子）。參考圖不是我們的，這條<b class="bad">不能拿去賣</b>，只留作紀錄。</p>
+<img src="r0_fusion.jpg" alt="混合參考圖試作">
+
+<h2>第一版・麻糬狗</h2>
+<p>奶油色垂耳狗，八句：早安、收到、哈哈哈、謝謝、對不起、等我一下、好喔、晚安。</p>
+<p>和 LINE 台灣原創熱門榜前幾名放在一起比，差在四件事：字沒有態度、線條沒有手感、臉不會變形，而且可愛垂耳狗這個位置已經很擠。把字遮掉以後，八張只看得出兩張。<b class="bad">淘汰。</b></p>
+<img src="r1_mochi.jpg" alt="第一版麻糬">
+
+<h2>第二版・包子上班族</h2>
+<p>換角色：一顆包子，配一杯豆漿同事，鉛筆蠟筆質感。八句改成上班族的話：早安、收到、已讀不回、下班了沒、你看看你、我先閃了、謝主隆恩、躺平。</p>
+<p>盲猜一半看得懂：已讀不回、躺平、收到讀對；你看看你、我先閃了、謝主隆恩、早安讀錯。毛病是字是打字的、在另一條帶子上，八張有六張是同一張苦臉，顏色太淡，縮小就糊成一團白。</p>
+<img src="r2_v2.jpg" alt="第二版">
+
+<h2>第三版・字畫進圖裡、每張換一張臉</h2>
+<p>手寫字、粗深色邊、每張不同表情。上面是正式版，下面是給盲猜用的無字版。</p>
+<p>盲猜約 5 分（滿分 8）：<span class="ok">早安、我先閃了修好</span>；<span class="bad">收到退步</span>（冷汗加歪領帶，被讀成「心好累」），謝主隆恩被讀成「吃飯囉」，你看看你被讀成「我就說吧」。</p>
+<img src="r3_v3.jpg" alt="第三版正式">
+<img src="r3_v3blind.jpg" alt="第三版無字">
+
+<h2>第四版・四張重畫</h2>
+<p>收到改成筆直軍禮加打勾；謝主隆恩加一顆戴眼鏡的大肉包老闆；你看看你改成嫌棄臉；下班了沒抱時鐘。</p>
+<p>盲猜 6.5 分：<span class="ok">收到修好</span>（每個讀者都讀對）。<span class="bad">謝主隆恩全錯</span>（「又要加班吃便當」「便當被拿走」）；你看看你只算半對，被讀成「都你害的」。</p>
+<img src="r4_v4.jpg" alt="第四版">
+<img src="r4_v4blind.jpg" alt="第四版無字">
+<p>下班了沒的時鐘，生圖模型連三次畫錯時間（三點、六點、七點，還自己加數字）。後來改成只叫它畫空白圓鐘，指針用程式畫在五點五十九。</p>
+<img src="r4_v5clock.jpg" alt="時鐘重畫">
+
+<h2>第五輪・每張出兩種構圖讓讀者挑</h2>
+<p>謝主隆恩兩版（跪著高舉接便當／伏地叩謝），你看看你兩版（扶額／捂臉偷看），下班了沒加一個雀躍版。</p>
+<ul>
+<li><span class="ok">下班了沒：留雀躍版</span>，三個讀者都讀成「耶，下班啦」。</li>
+<li><span class="ok">謝主隆恩：留跪接版</span>，兩個讀者直接寫出「謝主隆恩，謝謝老闆」。<span class="bad">伏地版淘汰</span>，被讀成「又被塞工作」。</li>
+<li><span class="bad">你看看你：兩版都沒過</span>。讀者把豆漿杯當成一杯飲料，猜出來的話都在講飲料（「這杯誰的」「超難喝」）。</li>
+</ul>
+<img src="r5_v6.jpg" alt="第五輪兩種構圖">
+<img src="r5_v7.jpg" alt="下班了沒雀躍版">
+<img src="r5_clock.jpg" alt="時鐘程式畫指針成品">
+
+<h2>現在・換本機生圖重畫最後一張</h2>
+<p>八句裡七句已經定案。你看看你改成拿掉豆漿、包子正面朝鏡頭指著收到貼圖的人、扶額嘆氣，用前面的包子當參考圖，讓長相一致。畫好會再盲猜一次。</p>
+<img src="r6_qwen.jpg" alt="本機生圖">
+</main></body></html>
