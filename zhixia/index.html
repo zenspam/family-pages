@@ -530,7 +530,10 @@ function hideKeyModal(){ $("keyModal").classList.add("hidden"); }
 function friendlyApiError(status, fallback){
   if(status === 400) return "金鑰錯誤（400）：請確認 API 金鑰是否複製完整。";
   if(status === 403) return "金鑰無效或沒有權限（403）：請到 aistudio.google.com 重新取得金鑰。";
-  if(status === 429) return "免費額度已用完（429）：請稍後再試，或到 AI Studio 確認配額。";
+  if(status === 429){ var mdl = getSettings().model || "未選"; return mdl === "gemini-2.5-flash" ? "免費版次數暫時用完了（429）。每分鐘、每天都有上限，等一兩分鐘再按「重新送出」；還是不行就是今天的量用完，明天下午三點後會重置。" : "這個模型的免費額度用完了（429，目前用：" + mdl + "）。請到選單→設定把模型換成 gemini-2.5-flash 再按「重新送出」。"; }
+  if(status === "parse") return "AI 這次回覆卡住、內容不完整，請按「重新送出」再試一次。";
+  if(status === 404) return "找不到這個模型（404），請到選單→設定換成 gemini-2.5-flash。";
+  if(status === 500 || status === 503) return "Google 那邊暫時忙線（" + status + "），等一下再按「重新送出」。";
   if(status === 0 || status === "network") return "網路錯誤：請確認網路連線後再試。";
   return fallback || ("發生錯誤（" + status + "），請稍後再試。");
 }
@@ -572,6 +575,7 @@ function pickDefaultModel(list){
       lower.indexOf("lite") < 0 && lower.indexOf("image") < 0 &&
       lower.indexOf("tts") < 0 && lower.indexOf("live") < 0;
   });
+  if(list.indexOf("gemini-2.5-flash") >= 0) return "gemini-2.5-flash";
   return cands.length ? cands[cands.length - 1] : "";
 }
 
@@ -638,7 +642,7 @@ function getResponseSchema(){
     type: "OBJECT",
     properties: {
       focus: { type: "STRING" },
-      chapter: { type: "STRING" },
+      chapter: { type: "STRING", description: "章名，15 字以內，只寫一次" },
       date: { type: "STRING" },
       time: { type: "STRING" },
       place: { type: "STRING" },
@@ -678,7 +682,9 @@ function callGenerateRaw(chat){
     contents: buildContents(chat),
     generationConfig: {
       responseMimeType: "application/json",
-      responseSchema: getResponseSchema()
+      responseSchema: getResponseSchema(),
+      temperature: 1,
+      maxOutputTokens: 8192
     }
   };
   return fetch(url, {
@@ -835,6 +841,7 @@ function sendUserMessage(text){
 }
 
 function requestModelTurn(chat, isOpening){
+  chat.lastError = "";
   showTyping(true);
   var promise = MOCK ? Promise.resolve(mockGenerate()) : generateForChat(chat);
   promise.then(function(result){
@@ -852,15 +859,14 @@ function requestModelTurn(chat, isOpening){
       chat.turns.push({ role: "model", text: typeof result === "string" ? result : JSON.stringify(result), raw: true });
       chat.suggestions = [];
     }
+    chat.lastError = "";
     saveChat(chat);
     renderAll();
   }).catch(function(err){
     var status = err && err.status;
-    if(status === "parse"){
-      showToast("模型回傳格式無法解析，已顯示原文");
-    }else{
-      showToast(friendlyApiError(status));
-    }
+    chat.lastError = friendlyApiError(status);
+    saveChat(chat);
+    renderAll();
     if(chat.turns.length && chat.turns[chat.turns.length-1].role === "user" && isOpening){
       /* 開場失敗保留回合，讓使用者可重試 */
     }
@@ -869,8 +875,10 @@ function requestModelTurn(chat, isOpening){
   });
 }
 
+function cleanChapter(t){ t = String(t || "").replace(/\s+/g, " ").trim(); if(t.length > 24){ var m = t.match(/^(第\s*\S+?\s*章\s*\S+?)(?=\s|第|$)/); t = m ? m[1].slice(0, 24) : t.slice(0, 24); } return t; }
+
 function applyModelJson(chat, json){
-  chat.chapter = json.chapter || chat.chapter;
+  chat.chapter = cleanChapter(json.chapter) || chat.chapter;
   chat.date = json.date || chat.date;
   chat.time = json.time || chat.time;
   chat.place = json.place || chat.place;
@@ -982,7 +990,7 @@ function renderChat(){
     }else{
       if(idx === lastModelIndex && json.chapter){
         var ch = document.createElement("div");
-        ch.className = "msg-sys"; ch.textContent = "—— " + json.chapter + " ——";
+        ch.className = "msg-sys"; ch.textContent = "—— " + cleanChapter(json.chapter) + " ——";
         box.appendChild(ch);
       }
       json.segments.forEach(function(seg){
@@ -991,7 +999,19 @@ function renderChat(){
     }
   });
 
-  if(lastModelIndex >= 0){
+  var lastTurn = chat.turns[chat.turns.length - 1];
+  if(lastTurn && lastTurn.role === "user"){
+    if(chat.lastError){
+      var er = document.createElement("div");
+      er.className = "msg-sys"; er.style.color = "var(--danger)"; er.style.fontSize = "14px";
+      er.textContent = chat.lastError;
+      box.appendChild(er);
+    }
+    var rs = document.createElement("button");
+    rs.id = "reRoll"; rs.textContent = "重新送出";
+    rs.addEventListener("click", function(){ chat.lastError = ""; saveChat(chat); renderAll(); requestModelTurn(chat, false); });
+    box.appendChild(rs);
+  }else if(lastModelIndex >= 0){
     var btn = document.createElement("button");
     btn.id = "reRoll"; btn.textContent = "換一個版本";
     btn.addEventListener("click", regenerateLast);
