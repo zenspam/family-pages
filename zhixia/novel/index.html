@@ -344,6 +344,7 @@ function hideKeyModal(){ $("keyModal").classList.add("hidden"); }
 function friendlyApiError(status, fallback){
   if(status === 400) return "金鑰錯誤（400）：請確認 API 金鑰是否複製完整。";
   if(status === 403) return "金鑰無效或沒有權限（403）：請到 aistudio.google.com 重新取得金鑰。";
+  if(status === "looped") return "AI 這次寫到一半卡住重複了，請再按一次。";
   if(status === 429) return "免費額度已用完（429）：請稍後再試，或到 AI Studio 確認配額。";
   if(status === 0 || status === "network") return "網路錯誤：請確認網路連線後再試。";
   return fallback || ("發生錯誤（" + status + "），請稍後再試。");
@@ -429,10 +430,11 @@ function getChapterSchema(){
   return {
     type: "OBJECT",
     properties: {
-      title: { type: "STRING" },
-      text: { type: "STRING" },
+      title: { type: "STRING", description: "章名本身，15 字以內，只寫一次，不要加「第N章」" },
+      text: { type: "STRING", description: "正文，約 1000 字，不要再寫章名" },
       summary: {
         type: "OBJECT",
+        description: "本章摘要四欄，每欄 200 字以內",
         properties: {
           plot: { type: "STRING" },
           newThings: { type: "STRING" },
@@ -465,6 +467,8 @@ function callGenerateJsonRaw(userText, useSchema){
     systemInstruction: { parts: [{ text: buildNovelSystem() }] },
     contents: [{ role: "user", parts: [{ text: userText }] }],
     generationConfig: {
+      temperature: 1,
+      maxOutputTokens: 8192,
       responseMimeType: "application/json",
       responseSchema: useSchema ? getChapterSchema() : null
     }
@@ -504,7 +508,32 @@ function generateChapterJson(userText){
   return callGenerateJson(userText, true).then(function(text){
     try{ return parseModelJson(text); }
     catch(e){ return callGenerateJson(userText, true).then(parseModelJson); }
+  }).then(function(json){
+    if(looksLooped(json.text || "")) throw { status: "looped" };
+    json.title = cleanTitle(json.title);
+    return json;
   });
+}
+
+/* 模型偶爾會卡在同一句重複，章名或正文變成一長串 */
+function cleanTitle(t){
+  t = String(t || "").replace(/\s+/g, " ").trim();
+  t = t.replace(/^第\s*[0-9０-９一二三四五六七八九十百零]+\s*章\s*/, "");
+  if(t.length > 20){
+    var first = t.split(" ")[0];
+    t = (first && first.length <= 20) ? first : t.slice(0, 20);
+  }
+  return t;
+}
+function looksLooped(s){
+  s = String(s || "").replace(/\s+/g, "");
+  if(s.length < 200) return s.length === 0;
+  var seen = {}, total = 0, uniq = 0;
+  for(var i = 0; i + 6 <= s.length; i += 3){
+    var g = s.substr(i, 6); total++;
+    if(!seen[g]){ seen[g] = 1; uniq++; }
+  }
+  return uniq / total < 0.5;
 }
 
 /* ===================== 寫下一章（spec 5） ===================== */
@@ -524,7 +553,7 @@ function buildNextChapterPrompt(n, direction){
   var prev = chapters[chapters.length - 1];
   if(prev) parts.push("【上一章結尾原文（最後 800 字）】\n" + prev.text.slice(-800));
   if(direction) parts.push("【本章想要的方向】\n" + direction);
-  parts.push("請寫第 " + n + " 章，開頭標章名。");
+  parts.push("請寫第 " + n + " 章。title 只放章名（15 字以內、只寫一次），text 只放正文，不要重複章名。");
   return parts.join("\n\n");
 }
 
@@ -669,7 +698,7 @@ function deleteLastChapter(){
   var chapters = getChapters();
   if(!chapters.length){ showToast("沒有可刪除的章節"); return; }
   var last = chapters[chapters.length - 1];
-  if(!confirm("確定刪除第 " + last.n + " 章《" + (last.title || "") + "》？此操作無法復原。")) return;
+  if(!confirm("確定刪除第 " + last.n + " 章《" + cleanTitle(last.title) + "》？此操作無法復原。")) return;
   chapters.pop();
   saveChapters(chapters);
   showToast("已刪除最後一章");
@@ -870,7 +899,7 @@ function renderMain(){
   var last = chapters[chapters.length - 1];
   if(last){
     $("latestBox").classList.remove("hidden");
-    $("latestTitle").textContent = "第 " + last.n + " 章 " + (last.title || "");
+    $("latestTitle").textContent = "第 " + last.n + " 章 " + cleanTitle(last.title);
     renderReadArea($("latestText"), last.text);
   }else{
     $("latestBox").classList.add("hidden");
@@ -902,7 +931,7 @@ function renderChapterList(){
       head.className = "ch-head";
       var t = document.createElement("div");
       t.className = "ch-title";
-      t.textContent = "第 " + ch.n + " 章 " + (ch.title || "");
+      t.textContent = "第 " + ch.n + " 章 " + cleanTitle(ch.title);
       var tog = document.createElement("button");
       tog.className = "ch-toggle";
       tog.textContent = "展開";
