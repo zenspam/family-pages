@@ -1,0 +1,29 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>海濱騎車圖集</title><style>
+:root{--bg:#faf7f2;--fg:#2b2b2b;--mut:#777;--card:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1b19;--fg:#eee;--mut:#aaa;--card:#2a2926}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,"PingFang TC","Noto Sans TC",sans-serif}
+main{max-width:1100px;margin:auto;padding:16px}h1{font-size:1.5em;margin:.3em 0}p.lead{color:var(--mut);margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+figure{margin:0;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px #0002}
+img{width:100%;display:block;cursor:zoom-in}figcaption{padding:8px 12px 12px;font-size:14px;color:var(--mut)}figcaption b{display:block;color:var(--fg);font-size:15px}
+#lb{position:fixed;inset:0;background:#000d;display:none;align-items:center;justify-content:center}#lb img{max-width:96vw;max-height:94vh;width:auto;cursor:zoom-out}
+</style></head><body><main><h1>海濱騎車圖集</h1>
+<p class="lead">白色新機車、海邊、陽光。從第一張草稿到現在，照出圖順序排列。點圖可放大。</p>
+<div class="grid"><figure><img src="m01.jpg" loading="lazy" alt="起手草稿"><figcaption><b>1. 起手草稿</b>平塗、夕陽色，騎姿從這張定下來。</figcaption></figure>
+<figure><img src="m02.jpg" loading="lazy" alt="第一輪 A"><figcaption><b>2. 第一輪 A</b>平塗，畫面上下留了白邊。</figcaption></figure>
+<figure><img src="m03.jpg" loading="lazy" alt="第一輪 B"><figcaption><b>3. 第一輪 B</b>線稿加局部上色。</figcaption></figure>
+<figure><img src="m04.jpg" loading="lazy" alt="第二輪 A"><figcaption><b>4. 第二輪 A</b>改成細緻動畫上色，車是薄荷綠。</figcaption></figure>
+<figure><img src="m05.jpg" loading="lazy" alt="第二輪 B"><figcaption><b>5. 第二輪 B</b>後面所有比賽圖共用的起點。</figcaption></figure>
+<figure><img src="m06.jpg" loading="lazy" alt="第二輪 C"><figcaption><b>6. 第二輪 C</b>同一輪的另一個版本。</figcaption></figure>
+<figure><img src="m07.jpg" loading="lazy" alt="第三輪"><figcaption><b>7. 第三輪</b>只把車身改回珍珠白，其他不動。</figcaption></figure>
+<figure><img src="m08.jpg" loading="lazy" alt="第四輪"><figcaption><b>8. 第四輪</b>換一套工具改白車；安全帽和車殼多了小字。</figcaption></figure>
+<figure><img src="m09.jpg" loading="lazy" alt="比賽 1"><figcaption><b>9. 比賽 1</b>照起點重畫。</figcaption></figure>
+<figure><img src="m10.jpg" loading="lazy" alt="比賽 2"><figcaption><b>10. 比賽 2</b>色調最淡、最有水彩感的一張，但背景換成岩岸。</figcaption></figure>
+<figure><img src="m11.jpg" loading="lazy" alt="比賽 3"><figcaption><b>11. 比賽 3</b>照起點重畫。</figcaption></figure>
+<figure><img src="m12.jpg" loading="lazy" alt="比賽 4"><figcaption><b>12. 比賽 4</b>車殼加了幻彩反光。</figcaption></figure>
+<figure><img src="m13.jpg" loading="lazy" alt="比賽 5"><figcaption><b>13. 比賽 5</b>同時參考起點、車子原照和繪本筆法。</figcaption></figure>
+<figure><img src="m14.jpg" loading="lazy" alt="比賽 6"><figcaption><b>14. 比賽 6</b>同上，換一次重畫；天空和路面看得到刷痕。</figcaption></figure>
+<figure><img src="m15.jpg" loading="lazy" alt="比賽 7"><figcaption><b>15. 比賽 7</b>加了繪本筆法參考，結果反而更飽和。</figcaption></figure>
+<figure><img src="m16.jpg" loading="lazy" alt="對照（不參賽）"><figcaption><b>16. 對照（不參賽）</b>不給起點、只給車頭照和騎姿：畫風最像繪本，但車子變成另一款。</figcaption></figure></div></main><div id="lb" onclick="this.style.display='none'"><img alt=""></div>
+<script>document.querySelectorAll('.grid img').forEach(i=>i.onclick=()=>{const l=document.getElementById('lb');l.querySelector('img').src=i.src;l.style.display='flex'})</script></body></html>
