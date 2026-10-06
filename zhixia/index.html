@@ -206,6 +206,7 @@ h3{font-size:16px;margin:16px 0 8px;color:var(--gold2);}
     <button class="menu-item" data-panel="chats">聊天管理<span>多段聊天・分支</span></button>
     <button class="menu-item" data-panel="quote">名言卡<span>把台詞做成圖卡</span></button>
     <button class="menu-item" id="cardMsgMenuBtn">訊息卡片<span>選訊息做圖卡分享</span></button>
+    <button class="menu-item" data-panel="backup">備份／還原<span>進度存檔・換機轉移</span></button>
   </div>
 
   <div class="panel hidden" id="panel-memory">
@@ -286,9 +287,18 @@ h3{font-size:16px;margin:16px 0 8px;color:var(--gold2);}
     <p class="hint">在聊天中「長按或點選」任何一句角色台詞，即可把它做成直式名言卡，可分享或下載 PNG。</p>
     <button class="btn btn-ghost" id="quoteTryBtn">檢視目前可選台詞</button>
   </div>
+
+  <div class="panel hidden" id="panel-backup">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>備份／還原</h2>
+    <p class="hint">進度只存在這支手機的這個瀏覽器。換手機或清除 Safari 資料前，先按備份存成檔案。</p>
+    <button class="btn" id="backupBtn">備份</button>
+    <button class="btn btn-ghost" id="restoreBtn">還原</button>
+  </div>
 </aside>
 
 <input type="file" id="filePicker" accept="image/*" class="hidden">
+<input type="file" id="restorePicker" accept=".json,application/json" class="hidden">
 <div id="toast"></div>
 <div id="quotePop" class="hidden">做成名言卡</div>
 <canvas id="quoteCanvas" class="hidden"></canvas>
@@ -657,7 +667,9 @@ function buildContents(chat){
   });
 }
 
-function callGenerate(chat){
+function ensureModel(){ var s = getSettings(); return s.model ? Promise.resolve() : loadModels(getApiKey()); }
+function callGenerate(chat){ return ensureModel().then(function(){ return callGenerateRaw(chat); }); }
+function callGenerateRaw(chat){
   var key = getApiKey();
   var settings = getSettings();
   var url = API_BASE + "/v1beta/models/" + encodeURIComponent(settings.model) + ":generateContent?key=" + encodeURIComponent(key);
@@ -708,7 +720,8 @@ function generateForChat(chat){
 }
 
 /* ===================== 記憶本「幫我整理」 ===================== */
-function callMemoryDraft(chat){
+function callMemoryDraft(chat){ if(MOCK) return Promise.resolve(mockMemoryDraft()); return ensureModel().then(function(){ return callMemoryDraftRaw(chat); }); }
+function callMemoryDraftRaw(chat){
   if(MOCK) return Promise.resolve(mockMemoryDraft());
   var key = getApiKey();
   var settings = getSettings();
@@ -1711,6 +1724,144 @@ function init(){
   if(!chat || !chat.turns.length) createNewChat(true);
   else renderAll();
 }
+
+/* ===================== 備份／還原 ===================== */
+function idbGetAll(){
+  return idbOpen().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction("images", "readonly");
+      var store = tx.objectStore("images");
+      var keysReq = store.getAllKeys();
+      var valsReq = store.getAll();
+      tx.oncomplete = function(){
+        var keys = keysReq.result || [], vals = valsReq.result || [];
+        var out = [];
+        for(var i=0; i<keys.length; i++) out.push({ key: keys[i], blob: vals[i] || null });
+        resolve(out);
+      };
+      tx.onerror = function(){ reject(tx.error); };
+    });
+  }).catch(function(){ return []; });
+}
+function blobToDataURL(blob){
+  return new Promise(function(resolve, reject){
+    var reader = new FileReader();
+    reader.onload = function(){ resolve(reader.result); };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+function dataURLtoBlob(dataURL){
+  var s = String(dataURL || "");
+  var parts = s.split(",");
+  var mime = "image/jpeg";
+  var m = parts[0] && parts[0].match(/^data:([^;,]*)/);
+  if(m && m[1]) mime = m[1];
+  var bin = atob(parts[1] || "");
+  var arr = new Uint8Array(bin.length);
+  for(var i=0; i<bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+function backupFileName(){
+  var d = new Date();
+  function p(n){ return (n < 10 ? "0" : "") + n; }
+  return "故事備份-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) +
+    "-" + p(d.getHours()) + p(d.getMinutes()) + ".json";
+}
+function collectBackupData(){
+  var local = {};
+  try{
+    for(var i=0; i<localStorage.length; i++){
+      var k = localStorage.key(i);
+      if(k && k.indexOf("fs_") === 0 && k !== "fs_key"){
+        local[k] = lsGet(k, null);
+      }
+    }
+  }catch(e){}
+  return idbGetAll().then(function(items){
+    var jobs = items.map(function(it){
+      if(!it.blob) return Promise.resolve(null);
+      return blobToDataURL(it.blob).then(function(url){ return { key: it.key, url: url }; });
+    });
+    return Promise.all(jobs);
+  }).then(function(list){
+    var images = {};
+    list.forEach(function(it){ if(it) images[it.key] = it.url; });
+    return {
+      app: "zhixia-story",
+      version: 1,
+      savedAt: new Date().toISOString(),
+      local: local,
+      images: images
+    };
+  });
+}
+function runBackup(){
+  showToast("備份中…");
+  collectBackupData().then(function(data){
+    var blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+    var file = new File([blob], backupFileName(), { type: "application/json" });
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      navigator.share({ files: [file], title: "故事備份" }).then(function(){
+        showToast("已分享備份檔");
+      }).catch(function(err){
+        if(err && err.name === "AbortError") return; /* 使用者取消，不算錯誤 */
+        showToast("分享失敗，請再試一次");
+      });
+      return;
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = file.name;
+    a.click();
+    showToast("已下載備份檔");
+  }).catch(function(){
+    showToast("備份失敗");
+  });
+}
+function runRestoreWithData(data){
+  var local = data.local || {};
+  Object.keys(local).forEach(function(k){
+    if(k === "fs_key") return; /* 金鑰絕對不動，保留手機上原本的 */
+    lsSet(k, local[k]);
+  });
+  var images = data.images || {};
+  var jobs = Object.keys(images).map(function(k){
+    return idbPut(k, dataURLtoBlob(images[k]));
+  });
+  return Promise.all(jobs).then(function(){
+    location.reload();
+  });
+}
+function handleRestoreFile(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    var data = null;
+    try{ data = JSON.parse(reader.result); }catch(e){ data = null; }
+    if(!data || data.app !== "zhixia-story"){
+      showToast("這不是故事備份檔");
+      return;
+    }
+    if(!confirm("會覆蓋目前手機上的進度，確定嗎？")) return;
+    showToast("還原中…");
+    runRestoreWithData(data).catch(function(){
+      showToast("還原失敗");
+    });
+  };
+  reader.onerror = function(){ showToast("讀取檔案失敗"); };
+  reader.readAsText(file);
+}
+document.addEventListener("DOMContentLoaded", function(){
+  $("backupBtn").addEventListener("click", runBackup);
+  $("restoreBtn").addEventListener("click", function(){
+    $("restorePicker").value = "";
+    $("restorePicker").click();
+  });
+  $("restorePicker").addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    if(f) handleRestoreFile(f);
+  });
+});
 
 document.addEventListener("DOMContentLoaded", init);
 </script>
