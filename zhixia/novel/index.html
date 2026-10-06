@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>這爽缺我賴定了・連載工作台</title>
+<style>
+:root{
+  --bg:#0b1020;
+  --bg2:#101731;
+  --panel:#141c38;
+  --panel2:#1a2447;
+  --gold:#d8b36a;
+  --gold2:#f0d9a8;
+  --text:#e8e6df;
+  --muted:#9aa3bd;
+  --line:#2a3560;
+  --danger:#e07070;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  font-size:16px;overflow-x:hidden;}
+body{padding:0 16px calc(96px + env(safe-area-inset-bottom));}
+button{font-family:inherit;cursor:pointer;}
+input,textarea,select{font-family:inherit;font-size:16px;color:var(--text);
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;}
+textarea{resize:vertical;min-height:120px;line-height:1.6;}
+h2{font-size:18px;color:var(--gold);margin:0 0 10px;}
+h3{font-size:16px;margin:16px 0 8px;color:var(--gold2);}
+.hidden{display:none !important;}
+
+/* 頂部列 */
+#topbar{position:sticky;top:0;z-index:20;margin:0 -16px;padding:10px 16px;
+  background:linear-gradient(180deg,#0b1020 70%,rgba(11,16,32,0));
+  display:flex;align-items:center;gap:8px;}
+#bookName{font-size:15px;font-weight:700;color:var(--gold);flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#statusLine{font-size:11px;color:var(--muted);flex:none;max-width:44vw;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;}
+#menuBtn{background:var(--panel2);border:1px solid var(--line);color:var(--gold);
+  border-radius:10px;width:38px;height:38px;font-size:18px;flex:none;}
+
+/* 主畫面 */
+#bookCard{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:16px;margin-top:8px;}
+#bookCard .book-title{font-size:20px;font-weight:700;color:var(--gold2);margin-bottom:6px;}
+#bookCard .book-meta{font-size:12px;color:var(--muted);margin-bottom:4px;}
+#recapPeek{font-size:13px;color:var(--muted);line-height:1.7;background:var(--bg2);
+  border-left:3px solid var(--gold);border-radius:8px;padding:8px 10px;margin-top:10px;
+  white-space:pre-wrap;}
+#writingBox{margin-top:12px;background:var(--panel);border:1px solid var(--gold);
+  border-radius:16px;padding:16px;}
+#writingBox .wb-title{font-size:16px;font-weight:700;color:var(--gold);margin-bottom:8px;}
+#writingText{font-size:15px;line-height:1.9;white-space:pre-wrap;}
+#writingText p{margin:0 0 1em;}
+.read-area{font-size:17px;line-height:1.9;}
+.read-area.font-small{font-size:15px;}
+.read-area.font-mid{font-size:17px;}
+.read-area.font-big{font-size:19px;}
+.read-area p{margin:0 0 1.2em;}
+.read-title{font-size:18px;font-weight:700;color:var(--gold);margin-bottom:12px;}
+#busyBar{margin-top:12px;background:var(--panel);border:1px dashed var(--gold);
+  border-radius:16px;padding:16px;text-align:center;color:var(--gold2);font-size:14px;}
+
+/* 底部固定寫作列 */
+#writeBar{position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:linear-gradient(0deg,#0b1020 78%,rgba(11,16,32,0));
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:flex-end;}
+#dirInput{flex:1;min-height:44px;max-height:96px;}
+#writeBtn{background:var(--gold);color:#1a1408;border:none;border-radius:12px;
+  padding:12px 18px;font-weight:700;font-size:15px;flex:none;white-space:nowrap;}
+#writeBtn:disabled{opacity:.45;}
+
+/* Modal */
+.modal-mask{position:fixed;inset:0;z-index:60;background:rgba(4,6,14,.8);
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-card{background:var(--panel);border:1px solid var(--gold);border-radius:16px;
+  padding:20px;width:100%;max-width:420px;max-height:86vh;overflow-y:auto;}
+.modal-card p{font-size:14px;line-height:1.8;color:var(--text);margin:8px 0;}
+.hint{color:var(--muted);font-size:13px !important;line-height:1.7 !important;}
+.btn{background:var(--gold);color:#1a1408;border:none;border-radius:12px;
+  padding:11px 16px;font-weight:700;font-size:15px;width:100%;margin-top:10px;}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--muted);}
+.btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger);}
+.err-text{color:var(--danger);font-size:13px !important;}
+
+/* 選單 drawer */
+#drawerMask{position:fixed;inset:0;z-index:50;background:rgba(4,6,14,.6);}
+#drawer{position:fixed;top:0;right:0;bottom:0;z-index:55;width:min(92vw,420px);
+  background:var(--panel);border-left:1px solid var(--line);
+  padding:16px;overflow-y:auto;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+.drawer-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.drawer-top h2{flex:1;}
+#drawerClose{background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  border-radius:10px;width:34px;height:34px;font-size:16px;}
+.menu-list{display:flex;flex-direction:column;gap:8px;}
+.menu-item{background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  border-radius:12px;padding:13px 14px;font-size:15px;text-align:left;
+  display:flex;justify-content:space-between;align-items:center;}
+.menu-item span{color:var(--gold);font-size:12px;}
+.panel-back{background:none;border:none;color:var(--muted);font-size:14px;padding:0 0 10px;}
+.panel label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px;}
+.panel .small-btn{background:var(--panel2);border:1px solid var(--line);color:var(--gold2);
+  border-radius:10px;padding:8px 12px;font-size:13px;width:auto;margin-top:6px;}
+.count{font-size:12px;color:var(--muted);text-align:right;margin-top:4px;}
+.warn-text{color:var(--danger);font-size:12px !important;margin-top:4px !important;}
+.radio-row{display:flex;gap:14px;align-items:center;margin:6px 0;}
+.radio-row label{display:flex;gap:6px;align-items:center;margin:0;font-size:14px;color:var(--text);}
+.radio-row input{width:auto;}
+
+/* 章節列表 */
+.ch-item{background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+  padding:10px 12px;margin-bottom:10px;}
+.ch-head{display:flex;align-items:center;gap:8px;}
+.ch-title{flex:1;font-size:14px;font-weight:700;color:var(--gold2);min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ch-toggle{background:var(--panel2);border:1px solid var(--line);color:var(--gold);
+  border-radius:8px;padding:4px 10px;font-size:12px;flex:none;}
+.ch-body{margin-top:10px;border-top:1px solid var(--line);padding-top:10px;}
+.ch-actions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.ch-actions .small-btn{margin-top:0;}
+.sum-block{background:var(--panel);border-left:3px solid var(--gold);border-radius:8px;
+  padding:8px 10px;margin-bottom:8px;font-size:13px;line-height:1.7;white-space:pre-wrap;}
+.sum-block b{color:var(--gold);display:block;margin-bottom:2px;font-size:12px;}
+.ch-dir{margin-bottom:8px;}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);
+  background:#20294d;border:1px solid var(--gold);color:var(--gold2);
+  border-radius:24px;padding:10px 20px;font-size:14px;z-index:99;
+  opacity:0;transition:opacity .3s;pointer-events:none;max-width:86vw;text-align:center;}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div id="bookName">這爽缺我賴定了</div>
+  <div id="statusLine"></div>
+  <button id="menuBtn" aria-label="選單">☰</button>
+</div>
+
+<div id="mainView">
+  <div id="bookCard">
+    <div class="book-title">《這爽缺我賴定了》</div>
+    <div class="book-meta" id="bookMeta">長篇連載工作台・尚無章節</div>
+    <div id="recapPeek" class="hidden"></div>
+  </div>
+  <div id="latestBox" class="hidden">
+    <div class="read-title" id="latestTitle"></div>
+    <div id="latestText" class="read-area font-mid"></div>
+  </div>
+  <div id="busyBar" class="hidden">寫作中…（約需 30–60 秒）</div>
+</div>
+
+<div id="writeBar">
+  <textarea id="dirInput" rows="1" placeholder="這章想要的方向（可不填）"></textarea>
+  <button id="writeBtn">寫第 1 章</button>
+</div>
+
+<!-- 金鑰設定卡 -->
+<div id="keyModal" class="modal-mask hidden">
+  <div class="modal-card">
+    <h2>設定 API 金鑰</h2>
+    <p>本頁直接由瀏覽器呼叫 Google 生成式 API，不需中介伺服器。</p>
+    <p class="hint">到 aistudio.google.com 按 Get API key，複製貼上。</p>
+    <label style="font-size:13px;color:var(--muted);display:block;margin:10px 0 5px;">API 金鑰</label>
+    <input id="keyInput" type="password" placeholder="貼上金鑰" autocomplete="off">
+    <p id="keyErr" class="err-text hidden"></p>
+    <button class="btn" id="keySaveBtn">儲存並連線</button>
+  </div>
+</div>
+
+<!-- 選單 -->
+<div id="drawerMask" class="hidden"></div>
+<aside id="drawer" class="hidden">
+  <div class="drawer-top">
+    <h2 id="drawerTitle">選單</h2>
+    <button id="drawerClose">✕</button>
+  </div>
+  <div class="menu-list" id="menuList">
+    <button class="menu-item" data-panel="chapters">章節列表<span>閱讀・摘要・改寫</span></button>
+    <button class="menu-item" data-panel="recap">前情提要<span>總整理・長篇記憶</span></button>
+    <button class="menu-item" data-panel="settings">設定<span>故事設定・字級・匯出</span></button>
+    <button class="menu-item" data-panel="backup">備份／還原<span>全書存檔・換機轉移</span></button>
+  </div>
+
+  <div class="panel hidden" id="panel-chapters">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>章節列表</h2>
+    <div id="chList"></div>
+  </div>
+
+  <div class="panel hidden" id="panel-recap">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>前情提要</h2>
+    <p class="hint">寫新章時會把前情提要全文附上，超過 20、30 章也不怕忘記前文。按「總整理」請模型把所有章節摘要濃縮成 500 字以內的草稿，確認後按「儲存」才生效。</p>
+    <textarea id="recapText" placeholder="（空白）還沒有前情提要，可按下方「總整理」產生草稿。"></textarea>
+    <div class="count" id="recapCount">0 字</div>
+    <button class="btn" id="recapDraftBtn">總整理（呼叫模型產生草稿）</button>
+    <button class="btn btn-ghost" id="recapSaveBtn">儲存</button>
+  </div>
+
+  <div class="panel hidden" id="panel-settings">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>設定</h2>
+    <label>故事設定集</label>
+    <textarea id="settingText" style="min-height:220px"></textarea>
+    <button class="btn btn-ghost" id="settingSaveBtn">儲存設定集</button>
+    <label>寫作要求</label>
+    <textarea id="requireText" style="min-height:110px"></textarea>
+    <button class="btn btn-ghost" id="requireSaveBtn">儲存寫作要求</button>
+    <label>閱讀字級</label>
+    <div class="radio-row">
+      <label><input type="radio" name="fontSize" value="small"> 小</label>
+      <label><input type="radio" name="fontSize" value="mid"> 中</label>
+      <label><input type="radio" name="fontSize" value="big"> 大</label>
+    </div>
+    <label>模型</label>
+    <select id="modelSelect"></select>
+    <button class="btn btn-ghost" id="changeKeyBtn">更換金鑰</button>
+    <h3>摘要狀態</h3>
+    <div class="count" id="sumTotal" style="text-align:left;">目前摘要總字數 0 字</div>
+    <p id="sumWarn" class="warn-text hidden">摘要已超過 4000 字，建議按總整理。</p>
+    <button class="btn" id="exportBtn">匯出全書（.txt）</button>
+  </div>
+
+  <div class="panel hidden" id="panel-backup">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>備份／還原</h2>
+    <p class="hint">全書只存在這支手機的這個瀏覽器。備份檔不含 API 金鑰。換手機或清除 Safari 資料前，先按備份存成檔案。</p>
+    <button class="btn" id="backupBtn">備份</button>
+    <button class="btn btn-ghost" id="restoreBtn">還原</button>
+  </div>
+</aside>
+
+<input type="file" id="restorePicker" accept=".json,application/json" class="hidden">
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ===================== 常數與預設資料 ===================== */
+var API_BASE = "https://generativelanguage.googleapis.com";
+var BOOK_TITLE = "這爽缺我賴定了";
+var LS = { key: "fs_key", models: "fs_models" };
+var NV = {
+  settings: "nv_settings", setting: "nv_setting",
+  requirements: "nv_requirements", chapters: "nv_chapters",
+  recap: "nv_recap"
+};
+var MOCK = /[?&]mock=1/.test(location.search);
+
+var DEFAULT_SETTING =
+"■ 故事背景\n" +
+"某座豪宅招聘長期居住人員：不用打掃、不用煮飯、不用照顧任何人，三餐有人準備、想做保養可以請美容師到宅、費用全由雇主買單，還有專業保鑣負責安全。唯一的工作：有人未經允許闖入宅邸時，把對方趕出去。不管對方是誰——親戚、熟人、女人、自稱跟主人有特殊關係的人——只要沒得到允許，一律趕出去。\n" +
+"面試當天，面試官顧承硯遲到一小時，女主角第一句就要他先道歉。他愣了一下，認真道歉，也因此決定錄用她：敢說、不怕事、不會因對方身分改變判斷。\n" +
+"她當時還不知道，這份工作比想像中熱鬧。\n\n" +
+"■ 女主角（我）\n" +
+"許知夏，24歲，文學院畢業，會英法西三種語言，在藝術學院唸研究所。五官柔和精緻、眼神清澈、皮膚白；有時專注清冷，有時像隻靈動的小狐狸。\n\n" +
+"■ 角色\n" +
+"1. 韓曜辰｜29歲｜188cm｜韓家現任掌權人、宅邸真正的主人。金灰色頭髮、淡金偏銅色眼睛，高級訂製西裝、深色襯衫、大衣，低調奢華。冷靜、理性、寡言、極度自律，對外人距離感明顯；厭煩帶目的接近他的人，表面淡淡，其實很討厭社交。第一次回家就被女主角毫不留情趕出門（她不認得他）。起初覺得她來幹嘛的、有點被侵犯領地；後來漸漸習慣她在、回到宅邸就能看見她，甚至依賴那份「不需要應付任何人」的安心感。\n" +
+"2. 顧承硯｜32歲｜187cm｜韓曜辰最信任的心腹，處理家族、公司與私人事務。藍灰色頭髮、藍色眼睛，穿著講究、舉止從容，看起來極度嚴謹。實際上非常愛看戲、愛八卦，「既然都這麼有趣了，為什麼不讓它更有趣一點」。找女主角入住是他的主意，故意不說韓曜辰的身分；早就知道會出亂子，卻樂於看韓曜辰一次次被趕出自己的房子。笑點低，常笑到無法正常工作。\n" +
+"3. 姜凜｜27歲｜190cm｜韓家頂級私人保鑣，姜朔的雙胞胎哥哥。黑色短髮、深灰色眼睛、黑色戰術服、配武器。寡言、冷靜、自律、效率極高，只認命令；戒心強，對認定的人極忠誠也護短。起初只把她當工作對象，後來發現她連真正的韓曜辰都敢趕，開始覺得驚訝又好笑，不知不覺把保護她當成自己的責任。別人稱讚他帥他無感，但她誇他時會在意，慢慢意識到自己在意的是她怎麼看他。\n" +
+"4. 姜朔｜27歲｜190cm｜姜凜的雙胞胎弟弟，長得幾乎一模一樣，差在神情：笑起來比哥哥危險，讓人覺得「這人是不是哪裡不太正常」。表面沉穩，其實比哥哥張揚，帶點瘋批與惡趣味，越危險越興奮，但非常清楚自己在做什麼。比哥哥愛說話，很少遇到能好好聊天的人，所以很快就對她有好感；最喜歡她稱讚他帥，會故意在她面前多晃幾次。外表冷峻危險，實際上是愛撒嬌、愛找她聊天的大型危險犬。\n\n" +
+"■ 章節\n" +
+"第一章 開始上班啦 → 第二章 真正的主人回來了 → 第三章 豪宅生活正式失控。";
+
+var DEFAULT_REQUIREMENTS = "第三人稱貼近許知夏視角；繁體中文台灣用語；每章約 1000 字；對話用「」；節奏輕快、幽默與心動並重；人物外型個性前後一致";
+
+var DEFAULT_NV_SETTINGS = { fontSize: "mid", model: "" };
+
+/* ===================== 通用工具 ===================== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+var toastTimer = null;
+function showToast(msg){
+  var t = $("toast"); t.textContent = msg; t.style.opacity = "1";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.opacity = "0"; }, 2800);
+}
+
+/* ===================== localStorage（讀寫包 try/catch，防呆風格） ===================== */
+var storageWarned = false;
+function lsGet(key, fallback){
+  try{
+    var v = localStorage.getItem(key);
+    return v == null ? fallback : JSON.parse(v);
+  }catch(e){
+    if(!storageWarned){ storageWarned = true; showToast("儲存空間讀取失敗，本次變更不會保留"); }
+    return fallback;
+  }
+}
+function lsSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); return true; }
+  catch(e){
+    if(!storageWarned){ storageWarned = true; showToast("儲存空間寫入失敗，本次變更不會保留"); }
+    return false;
+  }
+}
+
+/* ===================== 小說資料存取（一律 nv_ 開頭） ===================== */
+function getNvSettings(){
+  var s = lsGet(NV.settings, null);
+  var out = Object.assign({}, DEFAULT_NV_SETTINGS, s || {});
+  if(out.model) out.model = String(out.model).replace(/^models\//, "");
+  return out;
+}
+function saveNvSettings(s){ lsSet(NV.settings, s); }
+function getSetting(){ return lsGet(NV.setting, "") || DEFAULT_SETTING; }
+function saveSetting(t){ lsSet(NV.setting, t); }
+function getRequirements(){ return lsGet(NV.requirements, "") || DEFAULT_REQUIREMENTS; }
+function saveRequirements(t){ lsSet(NV.requirements, t); }
+function getChapters(){ return lsGet(NV.chapters, []) || []; }
+function saveChapters(list){ lsSet(NV.chapters, list); }
+function getRecap(){
+  var r = lsGet(NV.recap, null);
+  if(typeof r === "string") return { text: r, savedAt: 0 };
+  return r || { text: "", savedAt: 0 };
+}
+function saveRecap(text){
+  lsSet(NV.recap, { text: text || "", savedAt: Date.now() });
+}
+function summaryTotalChars(){
+  var total = 0;
+  getChapters().forEach(function(c){
+    var s = c.summary || {};
+    total += String(s.plot || "").length + String(s.newThings || "").length +
+             String(s.attitudes || "").length + String(s.threads || "").length;
+  });
+  return total;
+}
+
+/* ===================== API：金鑰與模型 ===================== */
+function getApiKey(){ return lsGet(LS.key, "") || ""; }
+function saveApiKey(k){ lsSet(LS.key, k); }
+
+function showKeyModal(){
+  $("keyModal").classList.remove("hidden");
+  $("keyErr").classList.add("hidden");
+}
+function hideKeyModal(){ $("keyModal").classList.add("hidden"); }
+
+function friendlyApiError(status, fallback){
+  if(status === 400) return "金鑰錯誤（400）：請確認 API 金鑰是否複製完整。";
+  if(status === 403) return "金鑰無效或沒有權限（403）：請到 aistudio.google.com 重新取得金鑰。";
+  if(status === 429) return "免費額度已用完（429）：請稍後再試，或到 AI Studio 確認配額。";
+  if(status === 0 || status === "network") return "網路錯誤：請確認網路連線後再試。";
+  return fallback || ("發生錯誤（" + status + "），請稍後再試。");
+}
+
+function fetchModelList(key){
+  return fetch(API_BASE + "/v1beta/models?key=" + encodeURIComponent(key))
+    .then(function(res){
+      if(!res.ok) throw { status: res.status };
+      return res.json();
+    })
+    .then(function(data){
+      var list = (data.models || []).filter(function(m){
+        var methods = m.supportedGenerationMethods || [];
+        return methods.indexOf("generateContent") >= 0;
+      }).map(function(m){ return (m.name || "").replace(/^models\//, ""); });
+      list.sort();
+      return list;
+    });
+}
+
+function pickDefaultModel(list){
+  var cands = list.filter(function(n){
+    var lower = n.toLowerCase();
+    return lower.indexOf("flash") >= 0 &&
+      lower.indexOf("lite") < 0 && lower.indexOf("image") < 0 &&
+      lower.indexOf("tts") < 0 && lower.indexOf("live") < 0;
+  });
+  return cands.length ? cands[cands.length - 1] : "";
+}
+
+var memModels = [];
+function loadModels(key){
+  return fetchModelList(key).then(function(list){
+    /* 模型清單僅記在記憶體（fs_models 只讀，作為姊妹頁留下的預設清單），選擇存 nv_settings */
+    memModels = list || [];
+    var s = getNvSettings();
+    if(!s.model || list.indexOf(s.model) < 0){
+      s.model = pickDefaultModel(list) || (list[0] || "");
+      saveNvSettings(s);
+    }
+    fillModelSelect();
+    return list;
+  });
+}
+
+function fillModelSelect(){
+  var list = (memModels && memModels.length) ? memModels : (lsGet(LS.models, []) || []);
+  var sel = $("modelSelect");
+  sel.innerHTML = "";
+  if(!list.length){
+    var opt = document.createElement("option");
+    opt.textContent = "（尚未連線，請先設定金鑰）";
+    sel.appendChild(opt);
+    return;
+  }
+  list.forEach(function(name){
+    var opt = document.createElement("option");
+    opt.value = name; opt.textContent = name;
+    sel.appendChild(opt);
+  });
+  var s = getNvSettings();
+  sel.value = s.model || list[0];
+}
+
+/* ===================== systemInstruction 組裝 ===================== */
+function buildNovelSystem(){
+  var payload = {
+    role: "你是台灣繁體中文長篇小說作家，正在連載輕快幽默又帶心動感的女性向小說《這爽缺我賴定了》。",
+    storySetting: getSetting(),
+    writingRequirements: getRequirements(),
+    constraints: [
+      "不准與已提供的章節摘要矛盾，不准忘記前情提要提到的任何事。",
+      "人物外型與個性必須前後一致，尤其是四位男角的髮色、眼色、身高與性格基調。",
+      "只輸出指定 JSON，不要多寫任何說明文字。",
+      "summary.plot 請在 200 字以內；summary.attitudes 請為四位男角（韓曜辰、顧承硯、姜凜、姜朔）各寫一句話。"
+    ]
+  };
+  return JSON.stringify(payload);
+}
+
+function getChapterSchema(){
+  return {
+    type: "OBJECT",
+    properties: {
+      title: { type: "STRING" },
+      text: { type: "STRING" },
+      summary: {
+        type: "OBJECT",
+        properties: {
+          plot: { type: "STRING" },
+          newThings: { type: "STRING" },
+          attitudes: { type: "STRING" },
+          threads: { type: "STRING" }
+        }
+      }
+    }
+  };
+}
+
+function summaryLine(c){
+  var s = c.summary || {};
+  return "第 " + c.n + " 章《" + (c.title || "") + "》\n" +
+    "・劇情：" + (s.plot || "") + "\n" +
+    "・新設定：" + (s.newThings || "") + "\n" +
+    "・四男態度：" + (s.attitudes || "") + "\n" +
+    "・伏筆：" + (s.threads || "");
+}
+
+function ensureModel(){ return getNvSettings().model ? Promise.resolve() : loadModels(getApiKey()); }
+function callGenerateJson(userText, useSchema){
+  return ensureModel().then(function(){ return callGenerateJsonRaw(userText, useSchema); });
+}
+function callGenerateJsonRaw(userText, useSchema){
+  var key = getApiKey();
+  var s = getNvSettings();
+  var url = API_BASE + "/v1beta/models/" + encodeURIComponent(s.model) + ":generateContent?key=" + encodeURIComponent(key);
+  var body = {
+    systemInstruction: { parts: [{ text: buildNovelSystem() }] },
+    contents: [{ role: "user", parts: [{ text: userText }] }],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: useSchema ? getChapterSchema() : null
+    }
+  };
+  if(!useSchema) delete body.generationConfig.responseSchema;
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  }).then(function(res){
+    if(!res.ok){
+      return res.json().catch(function(){ return {}; }).then(function(err){
+        var status = (err && err.error && err.error.code) || res.status;
+        throw { status: status };
+      });
+    }
+    return res.json();
+  }).then(function(data){
+    try{
+      var cand = data.candidates && data.candidates[0];
+      return cand.content.parts.map(function(p){ return p.text; }).join("");
+    }catch(e){ throw { status: "parse" }; }
+  });
+}
+
+function parseModelJson(text){
+  try{ return JSON.parse(text); }
+  catch(e){
+    var m = String(text).match(/\{[\s\S]*\}/);
+    if(m){ try{ return JSON.parse(m[0]); }catch(e2){} }
+    throw { status: "parse" };
+  }
+}
+
+/* 解析失敗自動原樣重送一次，再失敗才報錯 */
+function generateChapterJson(userText){
+  return callGenerateJson(userText, true).then(function(text){
+    try{ return parseModelJson(text); }
+    catch(e){ return callGenerateJson(userText, true).then(parseModelJson); }
+  });
+}
+
+/* ===================== 寫下一章（spec 5） ===================== */
+function buildNextChapterPrompt(n, direction){
+  var chapters = getChapters();
+  var recap = getRecap();
+  var parts = [];
+  if(recap.text){
+    parts.push("【前情提要】\n" + recap.text);
+    var after = chapters.filter(function(c){ return c.createdAt > recap.savedAt; });
+    if(after.length){
+      parts.push("【前情提要產生之後各章摘要】\n" + after.map(summaryLine).join("\n\n"));
+    }
+  }else{
+    parts.push("【各章摘要】\n" + chapters.map(summaryLine).join("\n\n"));
+  }
+  var prev = chapters[chapters.length - 1];
+  if(prev) parts.push("【上一章結尾原文（最後 800 字）】\n" + prev.text.slice(-800));
+  if(direction) parts.push("【本章想要的方向】\n" + direction);
+  parts.push("請寫第 " + n + " 章，開頭標章名。");
+  return parts.join("\n\n");
+}
+
+function setWriting(on){
+  $("busyBar").classList.toggle("hidden", !on);
+  $("writeBtn").disabled = on;
+  if(on) window.scrollTo(0, document.body.scrollHeight);
+}
+
+function writeNextChapter(){
+  var chapters = getChapters();
+  var n = chapters.length + 1;
+  var direction = $("dirInput").value.trim();
+  setWriting(true);
+  var go = MOCK ? Promise.resolve(mockChapter(n, direction)) : generateChapterJson(buildNextChapterPrompt(n, direction));
+  go.then(function(json){
+    chapters.push({
+      n: n,
+      title: json.title || ("第 " + n + " 章"),
+      text: json.text || "",
+      summary: {
+        plot: (json.summary && json.summary.plot) || "",
+        newThings: (json.summary && json.summary.newThings) || "",
+        attitudes: (json.summary && json.summary.attitudes) || "",
+        threads: (json.summary && json.summary.threads) || ""
+      },
+      createdAt: Date.now()
+    });
+    saveChapters(chapters);
+    $("dirInput").value = "";
+    showToast("第 " + n + " 章完成");
+    renderAll();
+  }).catch(function(err){
+    showToast(err && err.status === "parse" ? "模型回傳格式無法解析，請再試一次" : friendlyApiError(err && err.status));
+  }).finally(function(){ setWriting(false); });
+}
+
+/* ===================== 章節操作（spec 6） ===================== */
+function rewriteChapter(n){
+  var chapters = getChapters();
+  var idx = -1;
+  for(var i=0;i<chapters.length;i++) if(chapters[i].n === n) idx = i;
+  if(idx < 0) return;
+  var direction = ($("chDir-" + n) ? $("chDir-" + n).value : "").trim();
+  setWriting(true);
+  var go = MOCK ? Promise.resolve(mockChapter(n, direction)) : generateChapterJson(buildNextChapterPrompt(n, direction));
+  go.then(function(json){
+    chapters[idx] = {
+      n: n,
+      title: json.title || chapters[idx].title,
+      text: json.text || "",
+      summary: {
+        plot: (json.summary && json.summary.plot) || "",
+        newThings: (json.summary && json.summary.newThings) || "",
+        attitudes: (json.summary && json.summary.attitudes) || "",
+        threads: (json.summary && json.summary.threads) || ""
+      },
+      createdAt: chapters[idx].createdAt
+    };
+    saveChapters(chapters);
+    showToast("第 " + n + " 章已重寫");
+    renderAll();
+  }).catch(function(err){
+    showToast(err && err.status === "parse" ? "模型回傳格式無法解析，請再試一次" : friendlyApiError(err && err.status));
+  }).finally(function(){ setWriting(false); });
+}
+
+function buildModifyPrompt(ch, opinion){
+  var chapters = getChapters();
+  var before = chapters.filter(function(c){ return c.n < ch.n; });
+  var parts = [];
+  parts.push("【故事設定集】\n" + getSetting());
+  parts.push("【本章摘要】\n" + summaryLine(ch));
+  if(before.length) parts.push("【本章之前各章摘要】\n" + before.map(summaryLine).join("\n\n"));
+  parts.push("【本章全文】\n" + ch.text);
+  parts.push("【修改意見】\n" + opinion);
+  parts.push("請依修改意見改寫本章，回傳新的 title、text、summary，直接取代舊版。");
+  return parts.join("\n\n");
+}
+
+function modifyChapter(n){
+  var chapters = getChapters();
+  var ch = null;
+  chapters.forEach(function(c){ if(c.n === n) ch = c; });
+  if(!ch) return;
+  var opinion = ($("chDir-" + n) ? $("chDir-" + n).value : "").trim();
+  if(!opinion){ showToast("請先輸入修改意見"); return; }
+  setWriting(true);
+  var go = MOCK ? Promise.resolve(mockChapter(n, opinion)) : generateChapterJson(buildModifyPrompt(ch, opinion));
+  go.then(function(json){
+    ch.title = json.title || ch.title;
+    ch.text = json.text || ch.text;
+    ch.summary = {
+      plot: (json.summary && json.summary.plot) || ch.summary.plot,
+      newThings: (json.summary && json.summary.newThings) || ch.summary.newThings,
+      attitudes: (json.summary && json.summary.attitudes) || ch.summary.attitudes,
+      threads: (json.summary && json.summary.threads) || ch.summary.threads
+    };
+    saveChapters(chapters);
+    showToast("第 " + n + " 章已修改");
+    renderAll();
+  }).catch(function(err){
+    showToast(err && err.status === "parse" ? "模型回傳格式無法解析，請再試一次" : friendlyApiError(err && err.status));
+  }).finally(function(){ setWriting(false); });
+}
+
+function toggleManualEdit(n){
+  var box = $("chEdit-" + n);
+  if(!box) return;
+  var hidden = box.classList.toggle("hidden");
+  if(!hidden){
+    var chapters = getChapters();
+    var ch = null;
+    chapters.forEach(function(c){ if(c.n === n) ch = c; });
+    if(!ch) return;
+    $("chText-" + n).value = ch.text;
+    $("chPlot-" + n).value = ch.summary.plot;
+    $("chNew-" + n).value = ch.summary.newThings;
+    $("chAtt-" + n).value = ch.summary.attitudes;
+    $("chThr-" + n).value = ch.summary.threads;
+  }
+}
+
+function saveManualEdit(n){
+  var chapters = getChapters();
+  var ch = null;
+  chapters.forEach(function(c){ if(c.n === n) ch = c; });
+  if(!ch) return;
+  ch.text = $("chText-" + n).value;
+  ch.summary = {
+    plot: $("chPlot-" + n).value,
+    newThings: $("chNew-" + n).value,
+    attitudes: $("chAtt-" + n).value,
+    threads: $("chThr-" + n).value
+  };
+  saveChapters(chapters);
+  showToast("第 " + n + " 章已儲存");
+  renderAll();
+}
+
+function deleteLastChapter(){
+  var chapters = getChapters();
+  if(!chapters.length){ showToast("沒有可刪除的章節"); return; }
+  var last = chapters[chapters.length - 1];
+  if(!confirm("確定刪除第 " + last.n + " 章《" + (last.title || "") + "》？此操作無法復原。")) return;
+  chapters.pop();
+  saveChapters(chapters);
+  showToast("已刪除最後一章");
+  renderAll();
+}
+
+/* ===================== 前情提要・總整理（spec 7） ===================== */
+function buildRecapPrompt(){
+  var chapters = getChapters();
+  return "【各章摘要】\n" + chapters.map(summaryLine).join("\n\n") +
+    "\n\n請把以上所有章節摘要濃縮成 500 字以內的「前情提要」，保留關鍵事件、四人男角對女主角的態度與未解伏筆，用繁體中文條列，純文字，不要 JSON。";
+}
+
+function requestRecapDraft(){
+  var chapters = getChapters();
+  if(!chapters.length){ showToast("請先寫至少一章再總整理"); return; }
+  $("recapDraftBtn").textContent = "總整理中…";
+  $("recapDraftBtn").disabled = true;
+  var go = MOCK ? Promise.resolve(mockRecap()) : callGenerateJson(buildRecapPrompt(), false);
+  go.then(function(text){
+    $("recapText").value = text;
+    $("recapCount").textContent = text.length + " 字";
+    showToast("草稿已放入編輯框，確認後請按「儲存」");
+  }).catch(function(err){
+    showToast(friendlyApiError(err && err.status));
+  }).finally(function(){
+    $("recapDraftBtn").textContent = "總整理（呼叫模型產生草稿）";
+    $("recapDraftBtn").disabled = false;
+  });
+}
+
+function saveRecapFromPanel(){
+  saveRecap($("recapText").value);
+  showToast("前情提要已儲存");
+  renderAll();
+}
+
+/* ===================== 匯出全書（spec 8） ===================== */
+function buildBookText(){
+  var out = ["《" + BOOK_TITLE + "》", ""];
+  getChapters().forEach(function(c){
+    out.push("第 " + c.n + " 章 " + (c.title || ""));
+    out.push("");
+    out.push(c.text);
+    out.push("");
+  });
+  return out.join("\n");
+}
+
+function exportBook(){
+  var chapters = getChapters();
+  if(!chapters.length){ showToast("尚無章節可匯出"); return; }
+  var blob = new Blob(["﻿" + buildBookText()], { type: "text/plain;charset=utf-8" });
+  var file = new File([blob], BOOK_TITLE + "-全書.txt", { type: "text/plain;charset=utf-8" });
+  if(navigator.canShare && navigator.canShare({ files: [file] })){
+    navigator.share({ files: [file], title: BOOK_TITLE }).catch(function(err){
+      if(err && err.name === "AbortError") return;
+      showToast("分享失敗，請再試一次");
+    });
+    return;
+  }
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = file.name;
+  a.click();
+  showToast("已下載全書 txt");
+}
+
+/* ===================== 備份／還原（spec 9，只打包 nv_ 鍵） ===================== */
+function backupFileName(){
+  var d = new Date();
+  function p(n){ return (n < 10 ? "0" : "") + n; }
+  return "小說備份-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) +
+    "-" + p(d.getHours()) + p(d.getMinutes()) + ".json";
+}
+function collectBackupData(){
+  var local = {};
+  try{
+    for(var i=0; i<localStorage.length; i++){
+      var k = localStorage.key(i);
+      if(k && k.indexOf("nv_") === 0) local[k] = lsGet(k, null);
+    }
+  }catch(e){}
+  return {
+    app: "zhixia-novel",
+    version: 1,
+    savedAt: new Date().toISOString(),
+    local: local
+  };
+}
+function runBackup(){
+  showToast("備份中…");
+  try{
+    var data = collectBackupData();
+    var blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+    var file = new File([blob], backupFileName(), { type: "application/json" });
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      navigator.share({ files: [file], title: "小說備份" }).then(function(){
+        showToast("已分享備份檔");
+      }).catch(function(err){
+        if(err && err.name === "AbortError") return;
+        showToast("分享失敗，請再試一次");
+      });
+      return;
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = file.name;
+    a.click();
+    showToast("已下載備份檔");
+  }catch(e){ showToast("備份失敗"); }
+}
+function runRestoreWithData(data){
+  var local = data.local || {};
+  Object.keys(local).forEach(function(k){
+    if(k.indexOf("nv_") !== 0) return; /* 只還原小說資料，金鑰一律不動 */
+    lsSet(k, local[k]);
+  });
+  location.reload();
+}
+function handleRestoreFile(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    var data = null;
+    try{ data = JSON.parse(reader.result); }catch(e){ data = null; }
+    if(!data || data.app !== "zhixia-novel"){
+      showToast("這不是小說備份檔");
+      return;
+    }
+    if(!confirm("會覆蓋目前手機上的全書資料，確定嗎？")) return;
+    showToast("還原中…");
+    try{ runRestoreWithData(data); }
+    catch(e){ showToast("還原失敗"); }
+  };
+  reader.onerror = function(){ showToast("讀取檔案失敗"); };
+  reader.readAsText(file);
+}
+
+/* ===================== mock 模式假資料（spec 11） ===================== */
+var MOCK_STEP = 0;
+function mockChapter(n, direction){
+  MOCK_STEP++;
+  var pick = MOCK_STEP % 3;
+  var title = "第 " + n + " 章 " + (pick === 0 ? "真正的主人回來了" : (pick === 1 ? "豪宅生活正式失控" : "開始上班啦"));
+  var text =
+    "（測試模式假章節，模擬模型回傳）\n\n" +
+    "許知夏搬進宅邸的第三天，終於搞懂了這份工作的全部福利：早餐有人送到房門口，美容師週三準時到宅，連她隨口提過的西語原文小說都出現在書房架上。她換上居家服走進大廳，深吸一口氣，對自己說：「這種日子，誰要辭職誰是笨蛋。」\n\n" +
+    "門鈴響了。監視器裡站著一個金灰色頭髮的男人，西裝筆挺，神情冷淡得像整棟房子都欠他錢。許知夏按下對講機：「不好意思，這裡不開放參觀，請回吧。」\n\n" +
+    "門外的男人沉默了三秒，淡金偏銅色的眼睛微微瞇起：「妳知道妳在跟誰說話嗎？」\n\n" +
+    "「不知道，也不需要知道。」許知夏笑得禮貌又乾脆，「規矩寫得很清楚：沒得到允許的人，一律請出去。先生，門在那邊，慢走不送。」\n\n" +
+    "二樓轉角，顧承硯端著咖啡，肩膀抖得像在地震。他低頭髮了一則訊息給保鑣：「姜凜，快看監視器，你今年的年終有望了。」\n\n" +
+    "姜凜站在監控室裡，一向面無表情的臉上，嘴角極輕微地抽動了一下。他看著畫面裡那個被主人親自趕出自己家門的男人，第一次對這份工作產生了超乎薪資的期待。\n\n" +
+    "而被趕出門的韓曜辰站在台階上，回頭望著緊閉的大門，指尖抵著眉心。他忽然覺得，這棟他住了十年的房子，好像第一次變得有意思起來。\n\n" +
+    "當天傍晚，許知夏泡完澡、敷著面膜窩在沙發上，順手翻開那本新出現的西語小說。她想了想，拿起手機在日記裡打了幾個字：「今日工作成果：趕走闖入者一名。雇主若知道，應該會幫我加薪吧。」\n\n" +
+    "她完全不知道，被她趕走的那個男人此刻正坐在車裡，聽著顧承硯笑得岔氣的語音訊息，眼神深沉地望著宅邸的方向，緩緩說了一句：「明天，我再回去一次。」\n\n" +
+    "（本章方向備註：" + (direction || "無") + "）";
+  return {
+    title: title,
+    text: text,
+    summary: {
+      plot: "許知夏入住第三天享受全套福利，首次執行趕人任務，把不認得的韓曜辰擋在門外；顧承硯看好戲、姜凜在監控室暗中關注，韓曜辰反而對她產生興趣。（測試假資料）",
+      newThings: "確認到宅美容與書房藏書等福利細節；許知夏首次按守則執行趕人。",
+      attitudes: "韓曜辰：被趕出自己家門，錯愕中升起興趣；顧承硯：笑到發抖，樂見其成；姜凜：面無表情但嘴角抽動，開始在意她；姜朔：本章未登場，聽說後躍躍欲試。",
+      threads: "韓曜辰的真實身分何時曝光；姜朔何時登場湊熱鬧。"
+    }
+  };
+}
+function mockRecap(){
+  return "【前情提要・測試假資料】\n一、許知夏因面試當天要求遲到的顧承硯先道歉而被錄用，入住豪宅擔任「趕人專員」，福利極佳。\n二、四位男角：韓曜辰被趕出自己家門後對她產生興趣；顧承硯故意隱瞞韓曜辰身分、愛看戲；姜凜默默把保護她當成責任；姜朔聽聞此事後躍躍欲試。\n三、未解伏筆：韓曜辰身分何時曝光、姜朔何時登場。";
+}
+
+/* ===================== 渲染 ===================== */
+function renderAll(){
+  renderHeader();
+  renderMain();
+  renderChapterList();
+  updateSumInfo();
+}
+
+function renderHeader(){
+  var chapters = getChapters();
+  $("statusLine").textContent = chapters.length ? ("共 " + chapters.length + " 章") : "";
+  $("writeBtn").textContent = "寫第 " + (chapters.length + 1) + " 章";
+}
+
+function renderMain(){
+  var chapters = getChapters();
+  var recap = getRecap();
+  $("bookMeta").textContent = chapters.length
+    ? ("長篇連載工作台・共 " + chapters.length + " 章")
+    : "長篇連載工作台・尚無章節";
+  if(recap.text){
+    $("recapPeek").classList.remove("hidden");
+    $("recapPeek").textContent = "【前情提要】\n" + recap.text;
+  }else{
+    $("recapPeek").classList.add("hidden");
+  }
+  var last = chapters[chapters.length - 1];
+  if(last){
+    $("latestBox").classList.remove("hidden");
+    $("latestTitle").textContent = "第 " + last.n + " 章 " + (last.title || "");
+    renderReadArea($("latestText"), last.text);
+  }else{
+    $("latestBox").classList.add("hidden");
+  }
+}
+
+function renderReadArea(el, text){
+  var s = getNvSettings();
+  el.className = "read-area font-" + (s.fontSize || "mid");
+  var paras = String(text || "").split(/\n\s*\n/);
+  el.innerHTML = paras.map(function(p){ return "<p>" + esc(p) + "</p>"; }).join("");
+}
+
+function renderChapterList(){
+  var box = $("chList");
+  if(!box) return;
+  box.innerHTML = "";
+  var chapters = getChapters();
+  if(!chapters.length){
+    box.innerHTML = '<p class="hint">尚無章節。回到主畫面按下方「寫第 1 章」開始連載。</p>';
+    return;
+  }
+  for(var i = chapters.length - 1; i >= 0; i--){
+    (function(ch){
+      var isLast = ch === chapters[chapters.length - 1];
+      var item = document.createElement("div");
+      item.className = "ch-item";
+      var head = document.createElement("div");
+      head.className = "ch-head";
+      var t = document.createElement("div");
+      t.className = "ch-title";
+      t.textContent = "第 " + ch.n + " 章 " + (ch.title || "");
+      var tog = document.createElement("button");
+      tog.className = "ch-toggle";
+      tog.textContent = "展開";
+      tog.addEventListener("click", function(){
+        var body = $("chBody-" + ch.n);
+        var open = body.classList.toggle("hidden");
+        tog.textContent = open ? "展開" : "收合";
+      });
+      head.appendChild(t); head.appendChild(tog);
+      item.appendChild(head);
+
+      var body = document.createElement("div");
+      body.className = "ch-body hidden";
+      body.id = "chBody-" + ch.n;
+
+      /* 操作按鈕列 */
+      var acts = document.createElement("div");
+      acts.className = "ch-actions";
+      function smallBtn(label, fn, danger){
+        var b = document.createElement("button");
+        b.className = "small-btn" + (danger ? " btn-danger" : "");
+        b.textContent = label;
+        b.addEventListener("click", fn);
+        return b;
+      }
+      acts.appendChild(smallBtn("閱讀全文", function(){
+        var boxEl = $("chRead-" + ch.n);
+        var hidden = boxEl.classList.toggle("hidden");
+        if(!hidden) renderReadArea(boxEl.querySelector(".read-area"), ch.text);
+      }));
+      acts.appendChild(smallBtn("看摘要", function(){
+        $("chSum-" + ch.n).classList.toggle("hidden");
+      }));
+      acts.appendChild(smallBtn("重寫這章", function(){ rewriteChapter(ch.n); }));
+      acts.appendChild(smallBtn("修改", function(){ modifyChapter(ch.n); }));
+      acts.appendChild(smallBtn("手動編輯", function(){ toggleManualEdit(ch.n); }));
+      if(isLast) acts.appendChild(smallBtn("刪除最後一章", deleteLastChapter, true));
+      body.appendChild(acts);
+
+      /* 方向／修改意見輸入 */
+      var dir = document.createElement("textarea");
+      dir.className = "ch-dir";
+      dir.id = "chDir-" + ch.n;
+      dir.rows = 2;
+      dir.placeholder = "這章想要的方向／修改意見（重寫、修改時使用）";
+      body.appendChild(dir);
+
+      /* 閱讀全文 */
+      var read = document.createElement("div");
+      read.id = "chRead-" + ch.n;
+      read.className = "hidden";
+      var ra = document.createElement("div");
+      ra.className = "read-area font-mid";
+      read.appendChild(ra);
+      body.appendChild(read);
+
+      /* 摘要四段 */
+      var sum = document.createElement("div");
+      sum.id = "chSum-" + ch.n;
+      sum.className = "hidden";
+      var s = ch.summary || {};
+      var blocks = [
+        ["劇情（plot）", s.plot], ["新設定（newThings）", s.newThings],
+        ["四男態度（attitudes）", s.attitudes], ["伏筆（threads）", s.threads]
+      ];
+      blocks.forEach(function(b){
+        var d = document.createElement("div");
+        d.className = "sum-block";
+        d.innerHTML = "<b>" + esc(b[0]) + "</b>" + esc(b[1] || "（未填）");
+        sum.appendChild(d);
+      });
+      body.appendChild(sum);
+
+      /* 手動編輯 */
+      var edit = document.createElement("div");
+      edit.id = "chEdit-" + ch.n;
+      edit.className = "hidden";
+      function editArea(id, label, val, tall){
+        var w = document.createElement("div");
+        var lab = document.createElement("label");
+        lab.textContent = label;
+        var ta = document.createElement("textarea");
+        ta.id = id; ta.value = val || "";
+        if(tall) ta.style.minHeight = "220px";
+        w.appendChild(lab); w.appendChild(ta);
+        return w;
+      }
+      edit.appendChild(editArea("chText-" + ch.n, "正文", ch.text, true));
+      edit.appendChild(editArea("chPlot-" + ch.n, "摘要・劇情", s.plot));
+      edit.appendChild(editArea("chNew-" + ch.n, "摘要・新設定", s.newThings));
+      edit.appendChild(editArea("chAtt-" + ch.n, "摘要・四男態度", s.attitudes));
+      edit.appendChild(editArea("chThr-" + ch.n, "摘要・伏筆", s.threads));
+      var saveBtn = document.createElement("button");
+      saveBtn.className = "btn"; saveBtn.textContent = "儲存編輯";
+      saveBtn.addEventListener("click", function(){ saveManualEdit(ch.n); });
+      edit.appendChild(saveBtn);
+      body.appendChild(edit);
+
+      item.appendChild(body);
+      box.appendChild(item);
+    })(chapters[i]);
+  }
+}
+
+function updateSumInfo(){
+  var total = summaryTotalChars();
+  var el = $("sumTotal");
+  if(el) el.textContent = "目前摘要總字數 " + total + " 字";
+  var warn = $("sumWarn");
+  if(warn) warn.classList.toggle("hidden", total <= 4000);
+}
+
+/* ===================== 選單與面板 ===================== */
+function openDrawer(){
+  $("drawer").classList.remove("hidden");
+  $("drawerMask").classList.remove("hidden");
+  showPanel(null);
+}
+function closeDrawer(){
+  $("drawer").classList.add("hidden");
+  $("drawerMask").classList.add("hidden");
+}
+function showPanel(name){
+  var list = $("menuList");
+  var panels = document.querySelectorAll("#drawer .panel");
+  if(!name){
+    list.classList.remove("hidden");
+    Array.prototype.forEach.call(panels, function(p){ p.classList.add("hidden"); });
+    $("drawerTitle").textContent = "選單";
+    return;
+  }
+  list.classList.add("hidden");
+  Array.prototype.forEach.call(panels, function(p){ p.classList.add("hidden"); });
+  var p = $("panel-" + name);
+  if(p) p.classList.remove("hidden");
+  $("drawerTitle").textContent = p ? p.querySelector("h2").textContent : "選單";
+  if(name === "chapters") renderChapterList();
+  if(name === "recap"){
+    var r = getRecap();
+    $("recapText").value = r.text || "";
+    $("recapCount").textContent = (r.text || "").length + " 字";
+  }
+  if(name === "settings") fillSettingsPanel();
+}
+
+function fillSettingsPanel(){
+  $("settingText").value = getSetting();
+  $("requireText").value = getRequirements();
+  var s = getNvSettings();
+  var radios = document.querySelectorAll('input[name="fontSize"]');
+  Array.prototype.forEach.call(radios, function(r){ r.checked = (r.value === s.fontSize); });
+  fillModelSelect();
+  updateSumInfo();
+}
+
+/* ===================== 金鑰流程 ===================== */
+function bindKeyModal(){
+  $("keySaveBtn").addEventListener("click", function(){
+    var key = $("keyInput").value.trim();
+    if(!key){ $("keyErr").textContent = "請先貼上金鑰。"; $("keyErr").classList.remove("hidden"); return; }
+    $("keySaveBtn").textContent = "連線中…";
+    loadModels(key).then(function(){
+      saveApiKey(key);
+      hideKeyModal();
+      $("keySaveBtn").textContent = "儲存並連線";
+      showToast("金鑰已儲存，模型列表已更新");
+    }).catch(function(err){
+      $("keySaveBtn").textContent = "儲存並連線";
+      $("keyErr").textContent = friendlyApiError(err && err.status);
+      $("keyErr").classList.remove("hidden");
+    });
+  });
+}
+
+/* ===================== 啟動與事件綁定 ===================== */
+function bindUI(){
+  $("writeBtn").addEventListener("click", writeNextChapter);
+  $("menuBtn").addEventListener("click", openDrawer);
+  $("drawerClose").addEventListener("click", closeDrawer);
+  $("drawerMask").addEventListener("click", closeDrawer);
+  document.querySelectorAll(".menu-item").forEach(function(btn){
+    btn.addEventListener("click", function(){ showPanel(btn.getAttribute("data-panel")); });
+  });
+  document.querySelectorAll("[data-back]").forEach(function(btn){
+    btn.addEventListener("click", function(){ showPanel(null); });
+  });
+  $("recapText").addEventListener("input", function(){
+    $("recapCount").textContent = this.value.length + " 字";
+  });
+  $("recapDraftBtn").addEventListener("click", requestRecapDraft);
+  $("recapSaveBtn").addEventListener("click", saveRecapFromPanel);
+  $("settingSaveBtn").addEventListener("click", function(){
+    saveSetting($("settingText").value);
+    showToast("設定集已儲存");
+  });
+  $("requireSaveBtn").addEventListener("click", function(){
+    saveRequirements($("requireText").value);
+    showToast("寫作要求已儲存");
+  });
+  document.querySelectorAll('input[name="fontSize"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var s = getNvSettings(); s.fontSize = r.value; saveNvSettings(s);
+      renderMain();
+      showToast("閱讀字級已更新");
+    });
+  });
+  $("modelSelect").addEventListener("change", function(){
+    var s = getNvSettings(); s.model = this.value; saveNvSettings(s);
+    showToast("已選擇模型");
+  });
+  $("changeKeyBtn").addEventListener("click", function(){
+    closeDrawer(); showKeyModal();
+  });
+  $("exportBtn").addEventListener("click", exportBook);
+  $("backupBtn").addEventListener("click", runBackup);
+  $("restoreBtn").addEventListener("click", function(){
+    $("restorePicker").value = "";
+    $("restorePicker").click();
+  });
+  $("restorePicker").addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    if(f) handleRestoreFile(f);
+  });
+  bindKeyModal();
+}
+
+function init(){
+  bindUI();
+  renderAll();
+  if(MOCK){
+    showToast("測試模式：不呼叫 API、不需要金鑰");
+    return;
+  }
+  var key = getApiKey();
+  if(!key){
+    showKeyModal();
+    return;
+  }
+  fillModelSelect();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
