@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>宅邸物語・互動故事聊天</title>
+<style>
+:root{
+  --bg:#0b1020;
+  --bg2:#101731;
+  --panel:#141c38;
+  --panel2:#1a2447;
+  --gold:#d8b36a;
+  --gold2:#f0d9a8;
+  --text:#e8e6df;
+  --muted:#9aa3bd;
+  --bubble:#1c2a52;
+  --line:#2a3560;
+  --danger:#e07070;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  font-size:16px;overflow-x:hidden;}
+body{padding:0 16px calc(16px + env(safe-area-inset-bottom));}
+button{font-family:inherit;cursor:pointer;}
+input,textarea,select{font-family:inherit;font-size:16px;color:var(--text);
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;}
+textarea{resize:vertical;min-height:120px;line-height:1.6;}
+h2{font-size:18px;color:var(--gold);margin:0 0 10px;}
+h3{font-size:16px;margin:16px 0 8px;color:var(--gold2);}
+.hidden{display:none !important;}
+
+/* 頂部列 */
+#topbar{position:sticky;top:0;z-index:20;margin:0 -16px;padding:10px 16px;
+  background:linear-gradient(180deg,#0b1020 70%,rgba(11,16,32,0));
+  display:flex;align-items:center;gap:8px;}
+#chapterName{font-size:15px;font-weight:700;color:var(--gold);flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#statusLine{font-size:11px;color:var(--muted);flex:2;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;}
+#menuBtn{background:var(--panel2);border:1px solid var(--line);color:var(--gold);
+  border-radius:10px;width:38px;height:38px;font-size:18px;flex:none;}
+
+/* 聊天區 */
+#chatWrap{position:relative;border-radius:16px;overflow:hidden;min-height:60vh;
+  background-size:cover;background-position:center;}
+#chatWrap::before{content:"";position:absolute;inset:0;background:rgba(8,12,26,.78);
+  transition:background .6s ease;}
+#chat{position:relative;z-index:1;padding:14px 10px;display:flex;flex-direction:column;gap:12px;}
+.msg-narr{font-size:15px;line-height:1.9;color:var(--text);
+  background:rgba(20,28,56,.72);border-left:3px solid var(--gold);
+  border-radius:8px;padding:10px 12px;}
+.msg-narr em{color:var(--gold2);font-style:italic;}
+.msg-line{display:flex;gap:10px;align-items:flex-start;}
+.avatar{width:42px;height:42px;border-radius:50%;flex:none;object-fit:cover;
+  border:2px solid var(--gold);background:var(--panel2);
+  display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;}
+.bubble-wrap{min-width:0;}
+.speaker-name{font-size:12px;color:var(--gold);margin-bottom:4px;}
+.bubble{background:var(--bubble);border:1px solid var(--line);border-radius:4px 14px 14px 14px;
+  padding:10px 12px;font-size:15px;line-height:1.8;}
+.msg-msg{align-self:flex-end;width:82%;max-width:340px;}
+.phone-card{background:#0e1631;border:1px solid var(--line);border-radius:16px;
+  padding:10px 12px;box-shadow:0 4px 14px rgba(0,0,0,.4);}
+.phone-head{font-size:12px;color:var(--muted);border-bottom:1px solid var(--line);
+  padding-bottom:6px;margin-bottom:8px;display:flex;gap:6px;align-items:center;}
+.phone-text{font-size:14px;line-height:1.7;background:#1c2a52;border-radius:12px 12px 12px 4px;
+  padding:8px 10px;display:inline-block;}
+.msg-user{align-self:flex-end;max-width:85%;background:linear-gradient(135deg,#2a3a6e,#22305c);
+  border:1px solid var(--gold);border-radius:14px 4px 14px 14px;padding:10px 12px;font-size:15px;line-height:1.7;}
+.msg-sys{align-self:center;font-size:12px;color:var(--muted);text-align:center;}
+.msg-raw{white-space:pre-wrap;font-size:14px;color:#f3c9c9;background:rgba(70,30,30,.4);
+  border:1px solid var(--danger);border-radius:8px;padding:10px;}
+.chat-mode-plain .msg-narr,.chat-mode-plain .bubble,.chat-mode-plain .phone-card{background:transparent;border-color:transparent;}
+#typing{align-self:flex-start;color:var(--muted);font-size:20px;letter-spacing:3px;padding:4px 10px;}
+#reRoll{align-self:center;background:transparent;border:1px dashed var(--gold);color:var(--gold);
+  border-radius:20px;padding:6px 16px;font-size:13px;}
+
+/* 建議與輸入 */
+#suggestRow{display:flex;gap:8px;overflow-x:auto;padding:10px 0 6px;-webkit-overflow-scrolling:touch;}
+.sug-btn{flex:none;max-width:78%;background:var(--panel2);border:1px solid var(--gold);
+  color:var(--gold2);border-radius:18px;padding:8px 14px;font-size:14px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#inputRow{display:flex;gap:8px;align-items:flex-end;}
+#userInput{flex:1;}
+#sendBtn{background:var(--gold);color:#1a1408;border:none;border-radius:12px;
+  padding:11px 18px;font-weight:700;font-size:15px;flex:none;}
+
+/* Modal */
+.modal-mask{position:fixed;inset:0;z-index:60;background:rgba(4,6,14,.8);
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-card{background:var(--panel);border:1px solid var(--gold);border-radius:16px;
+  padding:20px;width:100%;max-width:420px;max-height:86vh;overflow-y:auto;}
+.modal-card p{font-size:14px;line-height:1.8;color:var(--text);margin:8px 0;}
+.hint{color:var(--muted);font-size:13px !important;}
+.btn{background:var(--gold);color:#1a1408;border:none;border-radius:12px;
+  padding:11px 16px;font-weight:700;font-size:15px;width:100%;margin-top:10px;}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--muted);}
+.btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger);}
+.err-text{color:var(--danger);font-size:13px !important;}
+
+/* 選單 */
+#drawerMask{position:fixed;inset:0;z-index:50;background:rgba(4,6,14,.6);}
+#drawer{position:fixed;top:0;right:0;bottom:0;z-index:55;width:min(88vw,400px);
+  background:var(--panel);border-left:1px solid var(--line);
+  padding:16px;overflow-y:auto;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+.drawer-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.drawer-top h2{flex:1;}
+#drawerClose{background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  border-radius:10px;width:34px;height:34px;font-size:16px;}
+.menu-list{display:flex;flex-direction:column;gap:8px;}
+.menu-item{background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  border-radius:12px;padding:13px 14px;font-size:15px;text-align:left;
+  display:flex;justify-content:space-between;align-items:center;}
+.menu-item span{color:var(--gold);font-size:12px;}
+.panel-back{background:none;border:none;color:var(--muted);font-size:14px;padding:0 0 10px;}
+.panel label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px;}
+.panel .small-btn{background:var(--panel2);border:1px solid var(--line);color:var(--gold2);
+  border-radius:10px;padding:8px 12px;font-size:13px;width:auto;margin-top:6px;}
+.char-card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+  padding:12px;margin-bottom:12px;}
+.char-card .char-head{display:flex;gap:10px;align-items:center;margin-bottom:6px;}
+.char-card img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);}
+.char-card .char-name{font-weight:700;color:var(--gold2);}
+.char-card .char-meta{font-size:12px;color:var(--muted);}
+.char-card p{font-size:13px;line-height:1.7;color:var(--text);margin:6px 0;}
+.char-card .row{display:flex;gap:8px;flex-wrap:wrap;}
+.chat-item{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;margin-bottom:8px;font-size:14px;}
+.chat-item.active{border-color:var(--gold);}
+.radio-row{display:flex;gap:14px;align-items:center;margin:6px 0;}
+.radio-row label{display:flex;gap:6px;align-items:center;margin:0;font-size:14px;color:var(--text);}
+.radio-row input{width:auto;}
+.count{font-size:12px;color:var(--muted);text-align:right;margin-top:4px;}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);
+  background:#20294d;border:1px solid var(--gold);color:var(--gold2);
+  border-radius:24px;padding:10px 20px;font-size:14px;z-index:99;
+  opacity:0;transition:opacity .3s;pointer-events:none;max-width:86vw;text-align:center;}
+#quotePop{position:fixed;z-index:70;left:50%;bottom:120px;transform:translateX(-50%);
+  background:var(--panel2);border:1px solid var(--gold);border-radius:12px;
+  padding:10px 14px;font-size:14px;color:var(--gold2);}
+
+/* 訊息卡片 */
+#cardPop{position:fixed;z-index:72;background:var(--panel2);border:1px solid var(--gold);
+  border-radius:12px;padding:10px 14px;font-size:14px;color:var(--gold2);white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,0,0,.5);}
+#cardSelBar{position:fixed;top:0;left:0;right:0;z-index:65;
+  background:var(--panel);border-bottom:1px solid var(--gold);
+  padding:10px 16px;display:flex;align-items:center;gap:10px;
+  padding-top:calc(10px + env(safe-area-inset-top));}
+#cardSelBar .sel-count{flex:1;font-size:14px;color:var(--gold2);}
+#cardSelBar button{background:var(--gold);color:#1a1408;border:none;border-radius:10px;
+  padding:8px 16px;font-weight:700;font-size:14px;flex:none;}
+#cardSelBar button.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);}
+.card-sel{outline:2px solid var(--gold);outline-offset:2px;border-radius:8px;}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div id="chapterName">宅邸物語</div>
+  <div id="statusLine"></div>
+  <button id="menuBtn" aria-label="選單">☰</button>
+</div>
+
+<div id="chatWrap">
+  <div id="chat" class="chat-mode-bubble"></div>
+</div>
+
+<div id="suggestRow"></div>
+
+<div id="inputRow">
+  <textarea id="userInput" rows="1" placeholder="輸入許知夏的話或動作…"></textarea>
+  <button id="sendBtn">送出</button>
+</div>
+
+<!-- 金鑰設定卡 -->
+<div id="keyModal" class="modal-mask hidden">
+  <div class="modal-card">
+    <h2>設定 API 金鑰</h2>
+    <p>本頁直接由瀏覽器呼叫 Google 生成式 API，不需中介伺服器。</p>
+    <p class="hint">到 aistudio.google.com 按 Get API key，複製貼上。</p>
+    <label style="font-size:13px;color:var(--muted);display:block;margin:10px 0 5px;">API 金鑰</label>
+    <input id="keyInput" type="password" placeholder="貼上金鑰" autocomplete="off">
+    <p id="keyErr" class="err-text hidden"></p>
+    <button class="btn" id="keySaveBtn">儲存並連線</button>
+  </div>
+</div>
+
+<!-- 選單 -->
+<div id="drawerMask" class="hidden"></div>
+<aside id="drawer" class="hidden">
+  <div class="drawer-top">
+    <h2 id="drawerTitle">選單</h2>
+    <button id="drawerClose">✕</button>
+  </div>
+  <div class="menu-list" id="menuList">
+    <button class="menu-item" data-panel="memory">長期記憶本<span>整理故事進度</span></button>
+    <button class="menu-item" data-panel="profile">我的人設<span>名字・介紹・頭像</span></button>
+    <button class="menu-item" data-panel="chars">角色<span>四位登場人物</span></button>
+    <button class="menu-item" data-panel="settings">設定<span>顯示・模型・背景</span></button>
+    <button class="menu-item" data-panel="chats">聊天管理<span>多段聊天・分支</span></button>
+    <button class="menu-item" data-panel="quote">名言卡<span>把台詞做成圖卡</span></button>
+    <button class="menu-item" id="cardMsgMenuBtn">訊息卡片<span>選訊息做圖卡分享</span></button>
+  </div>
+
+  <div class="panel hidden" id="panel-memory">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>長期記憶本</h2>
+    <p class="hint">模型每次回覆都會讀取這份記憶；修改後要按「儲存」才會生效。</p>
+    <textarea id="memoryText" placeholder="（空白）記下重要的事件、好感變化、伏筆…"></textarea>
+    <div class="count" id="memoryCount">0 字</div>
+    <button class="btn" id="memorySaveBtn">儲存</button>
+    <button class="btn btn-ghost" id="memoryDraftBtn">幫我整理（呼叫模型產生草稿）</button>
+  </div>
+
+  <div class="panel hidden" id="panel-profile">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>我的人設</h2>
+    <label>名字</label>
+    <input id="profileName">
+    <label>介紹</label>
+    <textarea id="profileIntro" style="min-height:160px"></textarea>
+    <label>頭像</label>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <img id="profileAvatarImg" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:none;">
+      <button class="small-btn" id="profileAvatarBtn">上傳頭像</button>
+    </div>
+    <button class="btn" id="profileSaveBtn">儲存</button>
+  </div>
+
+  <div class="panel hidden" id="panel-chars">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>角色</h2>
+    <div id="charCards"></div>
+  </div>
+
+  <div class="panel hidden" id="panel-settings">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>設定</h2>
+    <label>回覆長度</label>
+    <div class="radio-row">
+      <label><input type="radio" name="replyLen" value="short"> 短</label>
+      <label><input type="radio" name="replyLen" value="long"> 長</label>
+    </div>
+    <label>章節模式</label>
+    <div class="radio-row">
+      <label><input type="checkbox" id="chapterMode"> 依章節推進（每換章先標章名）</label>
+    </div>
+    <label>聊天背景</label>
+    <div class="radio-row">
+      <label><input type="checkbox" id="chatBgOn"> 啟用自訂聊天背景</label>
+    </div>
+    <button class="small-btn" id="chatBgBtn">上傳聊天背景圖</button>
+    <label>說話者背景</label>
+    <div class="radio-row">
+      <label><input type="checkbox" id="speakerBgOn"> 跟著說話的角色換背景照（淡入淡出）</label>
+    </div>
+    <label>顯示方式</label>
+    <div class="radio-row">
+      <label><input type="radio" name="dispMode" value="bubble"> 對話泡泡</label>
+      <label><input type="radio" name="dispMode" value="plain"> 純文字</label>
+    </div>
+    <label>模型</label>
+    <select id="modelSelect"></select>
+    <button class="btn btn-ghost" id="changeKeyBtn">更換金鑰</button>
+  </div>
+
+  <div class="panel hidden" id="panel-chats">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>聊天管理</h2>
+    <button class="btn" id="newChatBtn">開始新聊天（第一章第一晚開場）</button>
+    <button class="btn btn-ghost" id="branchBtn">開始分支（複製目前聊天）</button>
+    <button class="btn btn-danger" id="deleteChatBtn">刪除這段聊天</button>
+    <h3>聊天列表</h3>
+    <div id="chatList"></div>
+  </div>
+
+  <div class="panel hidden" id="panel-quote">
+    <button class="panel-back" data-back>← 回選單</button>
+    <h2>名言卡</h2>
+    <p class="hint">在聊天中「長按或點選」任何一句角色台詞，即可把它做成直式名言卡，可分享或下載 PNG。</p>
+    <button class="btn btn-ghost" id="quoteTryBtn">檢視目前可選台詞</button>
+  </div>
+</aside>
+
+<input type="file" id="filePicker" accept="image/*" class="hidden">
+<div id="toast"></div>
+<div id="quotePop" class="hidden">做成名言卡</div>
+<canvas id="quoteCanvas" class="hidden"></canvas>
+<div id="cardPop" class="hidden">做成訊息卡片</div>
+<div id="cardSelBar" class="hidden">
+  <div class="sel-count">已選 <b id="cardSelCount">0</b> 則</div>
+  <button id="cardDoneBtn">完成</button>
+  <button id="cardCancelBtn" class="ghost">取消</button>
+</div>
+
+<!-- 訊息卡片預覽 -->
+<div id="cardPreviewModal" class="modal-mask hidden">
+  <div class="modal-card">
+    <h2>訊息卡片</h2>
+    <img id="cardPreviewImg" alt="訊息卡片預覽" style="width:100%;border-radius:12px;border:1px solid var(--gold);display:block;">
+    <button class="btn" id="cardShareBtn">分享</button>
+    <button class="btn btn-ghost" id="cardSaveBtn">存圖</button>
+    <button class="btn btn-ghost" id="cardCloseBtn">關閉</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ===================== 常數與預設資料 ===================== */
+var API_BASE = "https://generativelanguage.googleapis.com";
+var LS = {
+  key: "fs_key", settings: "fs_settings", profile: "fs_profile",
+  memory: "fs_memory", chats: "fs_chats", order: "fs_order",
+  active: "fs_active", models: "fs_models"
+};
+var MOCK = /[?&]mock=1/.test(location.search);
+
+var HEROINE_DEFAULT = "許知夏，24歲，文學院畢業，會英法西三語，在藝術學院唸研究所。五官柔和精緻、眼神清澈、皮膚白；有時專注清冷，有時像隻靈動的小狐狸。";
+
+var CHARACTERS = [
+  { id:"han", name:"韓曜辰", age:29, height:"188cm",
+    intro:"韓家現任掌權人、宅邸真正主人。金灰色頭髮、淡金偏銅色眼睛，高級訂製西裝、深色襯衫、大衣，低調奢華。冷靜、理性、寡言、極度自律，對外人距離感明顯；厭煩帶目的接近他的人。第一次回家就被女主角毫不留情趕出門（她不認得他）。起初覺得被侵犯領地，後來漸漸習慣她在，甚至依賴那份安心感。" },
+  { id:"gu", name:"顧承硯", age:32, height:"187cm",
+    intro:"韓曜辰最信任的心腹，處理家族、公司與私人事務。藍灰色頭髮、藍色眼睛，穿著講究、舉止從容，看起來極度嚴謹。實際上非常愛看戲、愛八卦。找女主角入住是他的主意，故意不說韓曜辰的身分；早就知道會出亂子，卻樂於看韓曜辰一次次被趕出自己的房子。笑點低。" },
+  { id:"jl", name:"姜凜", age:27, height:"190cm",
+    intro:"韓家頂級私人保鑣，姜朔的雙胞胎哥哥。黑色短髮、深灰色眼睛、黑色戰術服。寡言、冷靜、自律、效率極高，只認命令；戒心強，對認定的人極忠誠也護短。起初只把她當工作對象，後來發現她連真正的韓曜辰都敢趕，開始覺得驚訝又好笑，不知不覺把保護她當成責任。別人稱讚他帥他無感，但她誇他時會在意。" },
+  { id:"js", name:"姜朔", age:27, height:"190cm",
+    intro:"姜凜的雙胞胎弟弟，長得幾乎一模一樣，笑起來比哥哥危險。表面沉穩，其實比哥哥張揚，帶點瘋批與惡趣味，越危險越興奮，但非常清楚自己在做什麼。比哥哥愛說話，很快就對她有好感；最喜歡她稱讚他帥，會故意在她面前多晃幾次。實際上是愛撒嬌、愛找她聊天的大型危險犬。" }
+];
+
+var DEFAULT_SETTINGS = {
+  replyLen: "short", chapterMode: true, chatBgOn: false,
+  speakerBgOn: true, dispMode: "bubble", model: ""
+};
+
+var STORY_RULES = {
+  background: "某豪宅招聘長期居住人員：不用打掃煮飯，三餐有人準備，想做保養可請美容師到宅、費用雇主買單，還有專業保鑣負責安全。唯一工作：有人未經允許闖入宅邸時，把對方趕出去，不管對方是誰。面試當天面試官顧承硯遲到一小時，女主角第一句就要他先道歉，他愣了一下認真道歉，因此決定錄用她：敢說、不怕事、不因對方身分改變判斷。她當時不知道這份工作比想像中熱鬧。",
+  narratorRules: [
+    "永遠不替女主角說話、不替女主角做任何決定、不描寫女主角的內心。",
+    "以第三人稱小說式敘述推進，動作用 *星號* 包住。",
+    "角色台詞前標角色名；角色傳手機訊息時用 message segment 呈現。",
+    "劇情推進看使用者選擇，不要急著跳章；每換一章先用一行標章名。",
+    "每次回覆開頭提供狀態行資料（日期、時間、地點）。"
+  ],
+  chapters: ["第一章 開始上班啦", "第二章 真正的主人回來了", "第三章 豪宅生活正式失控"]
+};
+
+/* ===================== 通用工具 ===================== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function italics(s){ return esc(s).replace(/\*([^*\n]+)\*/g, "<em>$1</em>"); }
+function uid(){ return "c" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+var toastTimer = null;
+function showToast(msg){
+  var t = $("toast"); t.textContent = msg; t.style.opacity = "1";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.opacity = "0"; }, 2600);
+}
+
+/* ===================== localStorage（含 try/catch） ===================== */
+var storageWarned = false;
+function lsGet(key, fallback){
+  try{
+    var v = localStorage.getItem(key);
+    return v == null ? fallback : JSON.parse(v);
+  }catch(e){
+    if(!storageWarned){ storageWarned = true; showToast("儲存空間讀取失敗，本次變更不會保留"); }
+    return fallback;
+  }
+}
+function lsSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); return true; }
+  catch(e){
+    if(!storageWarned){ storageWarned = true; showToast("儲存空間寫入失敗，本次變更不會保留"); }
+    return false;
+  }
+}
+
+/* ===================== IndexedDB 圖片儲存 ===================== */
+var idbPromise = null;
+function idbOpen(){
+  if(idbPromise) return idbPromise;
+  idbPromise = new Promise(function(resolve, reject){
+    try{
+      var req = indexedDB.open("storyChatImages", 1);
+      req.onupgradeneeded = function(){
+        var db = req.result;
+        if(!db.objectStoreNames.contains("images")) db.createObjectStore("images");
+      };
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onerror = function(){ reject(req.error); };
+    }catch(e){ reject(e); }
+  });
+  idbPromise.catch(function(){ showToast("圖片庫無法使用，頭像與背景將不保存"); });
+  return idbPromise;
+}
+function idbPut(key, blob){
+  return idbOpen().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction("images", "readwrite");
+      tx.objectStore("images").put(blob, key);
+      tx.oncomplete = function(){ resolve(true); };
+      tx.onerror = function(){ reject(tx.error); };
+    });
+  }).catch(function(){ showToast("圖片儲存失敗"); return false; });
+}
+function idbGet(key){
+  return idbOpen().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction("images", "readonly");
+      var req = tx.objectStore("images").get(key);
+      req.onsuccess = function(){ resolve(req.result || null); };
+      req.onerror = function(){ reject(req.error); };
+    });
+  }).catch(function(){ return null; });
+}
+function idbDelete(key){
+  return idbOpen().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction("images", "readwrite");
+      tx.objectStore("images").delete(key);
+      tx.oncomplete = function(){ resolve(true); };
+      tx.onerror = function(){ reject(tx.error); };
+    });
+  }).catch(function(){ return false; });
+}
+var blobUrlCache = {};
+function blobUrl(key, blob){
+  if(blobUrlCache[key]) URL.revokeObjectURL(blobUrlCache[key]);
+  blobUrlCache[key] = URL.createObjectURL(blob);
+  return blobUrlCache[key];
+}
+
+/* ===================== 圖片上傳（縮到長邊 1280、JPEG 0.85） ===================== */
+var pickTarget = null;
+function pickImage(target){
+  pickTarget = target;
+  $("filePicker").value = "";
+  $("filePicker").click();
+}
+function processImageFile(file){
+  return new Promise(function(resolve, reject){
+    var reader = new FileReader();
+    reader.onload = function(){
+      var img = new Image();
+      img.onload = function(){
+        var canvas = document.createElement("canvas");
+        var max = 1280, w = img.width, h = img.height;
+        var scale = Math.min(1, max / Math.max(w, h));
+        canvas.width = Math.round(w * scale);
+        canvas.height = Math.round(h * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(function(b){ b ? resolve(b) : reject(new Error("轉檔失敗")); }, "image/jpeg", 0.85);
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ===================== 狀態（settings / profile / memory / chats） ===================== */
+function getSettings(){
+  var s = lsGet(LS.settings, null);
+  var out = Object.assign({}, DEFAULT_SETTINGS, s || {});
+  if(out.model) out.model = String(out.model).replace(/^models\//, "");
+  return out;
+}
+function saveSettings(s){ lsSet(LS.settings, s); }
+function getProfile(){
+  var p = lsGet(LS.profile, null);
+  return p || { name: "許知夏", intro: HEROINE_DEFAULT };
+}
+function saveProfile(p){ lsSet(LS.profile, p); }
+function getMemory(){ return lsGet(LS.memory, "") || ""; }
+function saveMemory(t){ lsSet(LS.memory, t); }
+
+function getChats(){ return lsGet(LS.chats, {}) || {}; }
+function getOrder(){ return lsGet(LS.order, []) || []; }
+function getActiveId(){ return lsGet(LS.active, "") || ""; }
+function setActiveId(id){ lsSet(LS.active, id); }
+function saveChat(chat){
+  var all = getChats(); all[chat.id] = chat; lsSet(LS.chats, all);
+  var order = getOrder();
+  if(order.indexOf(chat.id) < 0){ order.push(chat.id); lsSet(LS.order, order); }
+}
+function deleteChatById(id){
+  var all = getChats(); delete all[id]; lsSet(LS.chats, all);
+  var order = getOrder().filter(function(x){ return x !== id; }); lsSet(LS.order, order);
+  if(getActiveId() === id){
+    var next = order[0] || "";
+    setActiveId(next);
+    if(!next){ createNewChat(false); return; }
+  }
+  renderChatList(); renderAll();
+}
+function getActiveChat(){
+  var all = getChats(), id = getActiveId();
+  return all[id] || null;
+}
+
+/* ===================== API：金鑰與模型 ===================== */
+function getApiKey(){ return lsGet(LS.key, "") || ""; }
+function saveApiKey(k){ lsSet(LS.key, k); }
+
+function showKeyModal(){
+  $("keyModal").classList.remove("hidden");
+  $("keyErr").classList.add("hidden");
+}
+function hideKeyModal(){ $("keyModal").classList.add("hidden"); }
+
+function friendlyApiError(status, fallback){
+  if(status === 400) return "金鑰錯誤（400）：請確認 API 金鑰是否複製完整。";
+  if(status === 403) return "金鑰無效或沒有權限（403）：請到 aistudio.google.com 重新取得金鑰。";
+  if(status === 429) return "免費額度已用完（429）：請稍後再試，或到 AI Studio 確認配額。";
+  if(status === 0 || status === "network") return "網路錯誤：請確認網路連線後再試。";
+  return fallback || ("發生錯誤（" + status + "），請稍後再試。");
+}
+
+function fetchModelList(key){
+  return fetch(API_BASE + "/v1beta/models?key=" + encodeURIComponent(key))
+    .then(function(res){
+      if(!res.ok) throw { status: res.status };
+      return res.json();
+    })
+    .then(function(data){
+      var list = (data.models || []).filter(function(m){
+        var methods = m.supportedGenerationMethods || [];
+        return methods.indexOf("generateContent") >= 0;
+      }).map(function(m){ return (m.name || "").replace(/^models\//, ""); });
+      list.sort();
+      return list;
+    });
+}
+
+function loadModels(key){
+  return fetchModelList(key).then(function(list){
+    lsSet(LS.models, list);
+    var settings = getSettings();
+    if(!settings.model || list.indexOf(settings.model) < 0){
+      var pick = pickDefaultModel(list);
+      settings.model = pick || (list[0] || "");
+      saveSettings(settings);
+    }
+    fillModelSelect();
+    return list;
+  });
+}
+
+function pickDefaultModel(list){
+  var cands = list.filter(function(n){
+    var lower = n.toLowerCase();
+    return lower.indexOf("flash") >= 0 &&
+      lower.indexOf("lite") < 0 && lower.indexOf("image") < 0 &&
+      lower.indexOf("tts") < 0 && lower.indexOf("live") < 0;
+  });
+  return cands.length ? cands[cands.length - 1] : "";
+}
+
+function fillModelSelect(){
+  var list = lsGet(LS.models, []) || [];
+  var sel = $("modelSelect");
+  sel.innerHTML = "";
+  if(!list.length){
+    var opt = document.createElement("option");
+    opt.textContent = "（尚未連線，請先設定金鑰）";
+    sel.appendChild(opt);
+    return;
+  }
+  var settings = getSettings();
+  list.forEach(function(name){
+    var opt = document.createElement("option");
+    opt.value = name; opt.textContent = name;
+    sel.appendChild(opt);
+  });
+  sel.value = settings.model || list[0];
+}
+
+/* ===================== systemInstruction 組裝 ===================== */
+function buildSystemInstruction(){
+  var profile = getProfile();
+  var settings = getSettings();
+  var memory = getMemory();
+  var payload = {
+    roleDefinition: "你是互動角色故事說書人，同時扮演所有男性角色；使用者扮演女主角。",
+    storySetting: STORY_RULES.background,
+    chapters: STORY_RULES.chapters,
+    chapterMode: settings.chapterMode,
+    replyLength: settings.replyLen === "long" ? "長" : "短",
+    heroine: {
+      playedByUser: true,
+      name: profile.name || "許知夏",
+      description: profile.intro || HEROINE_DEFAULT,
+      absoluteRules: [
+        "永遠不替女主角說話或做任何決定",
+        "永遠不描寫女主角的內心",
+        "只敘述環境、其他角色與事件"
+      ]
+    },
+    characters: CHARACTERS.map(function(c){ return { name: c.name, age: c.age, height: c.height, description: c.intro }; }),
+    narratorRules: STORY_RULES.narratorRules,
+    longTermMemory: memory || "（尚未填寫）",
+    outputFormat: {
+      focus: "本則主要跟女主角互動的角色名（四人之一）或空字串",
+      chapter: "章節名",
+      date: "日期（含 📅 語意）", time: "時間", place: "地點",
+      segments: [
+        { type: "narration", text: "第三人稱小說式敘述，動作用 *星號* 包住" },
+        { type: "line", speaker: "角色名", text: "台詞" },
+        { type: "message", speaker: "角色名", text: "手機訊息內容" }
+      ],
+      suggestions: "三個建議回覆（字串陣列）"
+    }
+  };
+  return JSON.stringify(payload);
+}
+
+function getResponseSchema(){
+  return {
+    type: "OBJECT",
+    properties: {
+      focus: { type: "STRING" },
+      chapter: { type: "STRING" },
+      date: { type: "STRING" },
+      time: { type: "STRING" },
+      place: { type: "STRING" },
+      segments: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            type: { type: "STRING" },
+            speaker: { type: "STRING" },
+            text: { type: "STRING" }
+          }
+        }
+      },
+      suggestions: { type: "ARRAY", items: { type: "STRING" } }
+    }
+  };
+}
+
+/* ===================== 生成呼叫 ===================== */
+function buildContents(chat){
+  var turns = chat.turns.slice(-60);
+  return turns.map(function(t){
+    return { role: t.role === "user" ? "user" : "model",
+             parts: [{ text: t.text }] };
+  });
+}
+
+function callGenerate(chat){
+  var key = getApiKey();
+  var settings = getSettings();
+  var url = API_BASE + "/v1beta/models/" + encodeURIComponent(settings.model) + ":generateContent?key=" + encodeURIComponent(key);
+  var body = {
+    systemInstruction: { parts: [{ text: buildSystemInstruction() }] },
+    contents: buildContents(chat),
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: getResponseSchema()
+    }
+  };
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  }).then(function(res){
+    if(!res.ok){
+      return res.json().catch(function(){ return {}; }).then(function(err){
+        var status = (err && err.error && err.error.code) || res.status;
+        throw { status: status };
+      });
+    }
+    return res.json();
+  }).then(function(data){
+    var text = "";
+    try{
+      var cand = data.candidates && data.candidates[0];
+      text = cand.content.parts.map(function(p){ return p.text; }).join("");
+    }catch(e){ throw { status: "parse" }; }
+    return text;
+  });
+}
+
+function parseModelJson(text){
+  try{ return JSON.parse(text); }
+  catch(e){
+    var m = text.match(/\{[\s\S]*\}/);
+    if(m){ try{ return JSON.parse(m[0]); }catch(e2){} }
+    throw { status: "parse" };
+  }
+}
+
+function generateForChat(chat){
+  return callGenerate(chat).then(function(text){
+    try{ return parseModelJson(text); }
+    catch(e){ return callGenerate(chat).then(parseModelJson); }
+  });
+}
+
+/* ===================== 記憶本「幫我整理」 ===================== */
+function callMemoryDraft(chat){
+  if(MOCK) return Promise.resolve(mockMemoryDraft());
+  var key = getApiKey();
+  var settings = getSettings();
+  var url = API_BASE + "/v1beta/models/" + encodeURIComponent(settings.model) + ":generateContent?key=" + encodeURIComponent(key);
+  var brief = chat.turns.slice(-40).map(function(t){
+    return (t.role === "user" ? "使用者：" : "模型：") + t.text.slice(0, 500);
+  }).join("\n");
+  var body = {
+    systemInstruction: { parts: [{ text: "你是故事記憶整理助手。根據聊天紀錄整理長期記憶草稿，分三段：一、發生過的事；二、四位男性角色對女主角的好感與態度；三、未解伏筆。用繁體中文條列，純文字，不要 JSON。" }] },
+    contents: [{ role: "user", parts: [{ text: brief }] }],
+    generationConfig: { responseMimeType: "text/plain" }
+  };
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  }).then(function(res){
+    if(!res.ok) throw { status: (res.status) };
+    return res.json();
+  }).then(function(data){
+    return data.candidates[0].content.parts.map(function(p){ return p.text; }).join("");
+  });
+}
+
+/* ===================== mock 模式假資料 ===================== */
+var MOCK_STEP = 0;
+function mockGenerate(){
+  MOCK_STEP++;
+  var base = {
+    focus: "韓曜辰",
+    chapter: "第一章 開始上班啦",
+    date: "10 月 6 日",
+    time: "晚上 8:12",
+    place: "宅邸・一樓大廳",
+    suggestions: [
+      "「請問你哪位？這裡不開放參觀。」",
+      "*拿起對講機*「姜凜，大廳有一位訪客。」",
+      "*打量他*「西裝不錯，但門在那邊。」"
+    ],
+    segments: []
+  };
+  if(MOCK_STEP === 1){
+    base.segments = [
+      { type: "narration", speaker: "", text: "搬家公司的車駛離後，宅邸陷入一種過分安靜的氛圍。*水晶吊燈在挑高的大廳灑下暖光*，空氣裡有淡淡的白茶香。這裡就是她未來長住的地方——不用煮飯、不用打掃，唯一的工作是趕走擅自闖入的人。" },
+      { type: "line", speaker: "顧承硯", text: "歡迎入住。冰箱隨時有人補滿，美容師週三可以到宅。對了——無論看到誰進來，只要對方沒有事先知會，都請照規矩處理。" },
+      { type: "message", speaker: "顧承硯", text: "【顧承硯】宅邸守則第零條：不認得的人，一律趕出去。不用客氣。" },
+      { type: "narration", speaker: "", text: "門鈴毫無預警地響了。*她透過監視器看見一名金灰色頭髮、西裝筆挺的男人站在門外*，身後沒有半個隨從。" },
+      { type: "line", speaker: "韓曜辰", text: "開門。這裡是我家。" }
+    ];
+  } else {
+    base.segments = [
+      { type: "narration", speaker: "", text: "*男人的眉峰幾不可察地動了一下*，淡金色偏銅的眼睛裡閃過一絲難以置信。他顯然沒料到，自己家的門會從裡面被如此乾脆地拒絕。" },
+      { type: "line", speaker: "韓曜辰", text: "……妳知道妳在趕誰嗎。" },
+      { type: "line", speaker: "顧承硯", text: "（在一旁憋笑憋得很辛苦）照規矩辦就好，許小姐，規矩就是規矩。" },
+      { type: "message", speaker: "姜凜", text: "【姜凜】監視器看到了。需要我過去處理嗎？還是……妳想自己來？" },
+      { type: "narration", speaker: "", text: "大廳的空氣凝結了三秒。*韓曜辰薄唇抿成一條直線*，似乎在重新評估眼前這個二十四歲的租客。" }
+    ];
+  }
+  return JSON.stringify(base);
+}
+function mockMemoryDraft(){
+  return "一、發生過的事\n・許知夏搬入宅邸第一晚，顧承硯交付守則。\n・韓曜辰未表明身分回家，被許知夏擋在門外。\n・姜凜透過監視器關注大廳情況。\n\n二、四人對女主角的好感與態度\n・韓曜辰：錯愕、被冒犯，但隱約記住她。\n・顧承硯：看好戲，樂見其成。\n・姜凜：觀察中，對她的膽量感到意外。\n・姜朔：尚未登場。\n\n三、未解伏筆\n・顧承硯故意不說韓曜辰身分，後續必定爆發。\n・姜朔何時出現、會以什麼方式登場。";
+}
+
+/* ===================== 聊天流程 ===================== */
+function createNewChat(autoOpening){
+  var chat = {
+    id: uid(), title: "新聊天", chapter: "第一章 開始上班啦",
+    date: "", time: "", place: "宅邸", focus: "",
+    turns: [], suggestions: [], createdAt: Date.now()
+  };
+  saveChat(chat);
+  setActiveId(chat.id);
+  renderAll();
+  if(autoOpening !== false) sendOpening();
+  return chat;
+}
+
+function startBranchChat(){
+  var cur = getActiveChat();
+  if(!cur){ showToast("目前沒有可分支的聊天"); return; }
+  var copy = JSON.parse(JSON.stringify(cur));
+  copy.id = uid();
+  copy.title = (cur.title || "聊天") + "・分支";
+  copy.createdAt = Date.now();
+  saveChat(copy);
+  setActiveId(copy.id);
+  renderAll();
+  showToast("已建立分支");
+}
+
+function sendOpening(){
+  var chat = getActiveChat();
+  if(!chat) return;
+  var opening = "【開場】請產生第一章「開始上班啦」的開場：女主角剛搬進宅邸的第一個晚上。她整理完行李，第一次獨自待在偌大的宅邸；請安排環境敘述、一位角色短暫現身或傳訊息，並在結尾留下讓她必須回應的事件。注意：不要替女主角說話或行動。";
+  chat.turns.push({ role: "user", text: opening });
+  saveChat(chat);
+  requestModelTurn(chat, true);
+}
+
+function sendUserMessage(text){
+  var chat = getActiveChat();
+  if(!chat) chat = createNewChat(true);
+  text = (text || "").trim();
+  if(!text) return;
+  chat.turns.push({ role: "user", text: text });
+  saveChat(chat);
+  $("userInput").value = "";
+  renderAll();
+  requestModelTurn(chat, false);
+}
+
+function requestModelTurn(chat, isOpening){
+  showTyping(true);
+  var promise = MOCK ? Promise.resolve(mockGenerate()) : generateForChat(chat);
+  promise.then(function(result){
+    var json;
+    if(typeof result === "string"){
+      try{ json = parseModelJson(result); }
+      catch(e){ json = null; }
+    } else json = result;
+
+    if(json){
+      chat.turns.push({ role: "model", text: typeof result === "string" ? result : JSON.stringify(result) });
+      applyModelJson(chat, json);
+      if(isOpening && chat.turns.length <= 2) chat.title = chat.chapter || "第一章 開始上班啦";
+    }else{
+      chat.turns.push({ role: "model", text: typeof result === "string" ? result : JSON.stringify(result), raw: true });
+      chat.suggestions = [];
+    }
+    saveChat(chat);
+    renderAll();
+  }).catch(function(err){
+    var status = err && err.status;
+    if(status === "parse"){
+      showToast("模型回傳格式無法解析，已顯示原文");
+    }else{
+      showToast(friendlyApiError(status));
+    }
+    if(chat.turns.length && chat.turns[chat.turns.length-1].role === "user" && isOpening){
+      /* 開場失敗保留回合，讓使用者可重試 */
+    }
+  }).finally(function(){
+    showTyping(false);
+  });
+}
+
+function applyModelJson(chat, json){
+  chat.chapter = json.chapter || chat.chapter;
+  chat.date = json.date || chat.date;
+  chat.time = json.time || chat.time;
+  chat.place = json.place || chat.place;
+  chat.focus = json.focus || "";
+  var sug = (json.suggestions || []).slice(0, 3);
+  while(sug.length < 3) sug.push("……（自由輸入回應）");
+  chat.suggestions = sug;
+}
+
+function regenerateLast(){
+  var chat = getActiveChat();
+  if(!chat || !chat.turns.length) return;
+  while(chat.turns.length && chat.turns[chat.turns.length-1].role === "model"){
+    chat.turns.pop();
+  }
+  if(!chat.turns.length) return;
+  saveChat(chat);
+  renderAll();
+  requestModelTurn(chat, false);
+}
+
+/* ===================== 渲染 ===================== */
+function showTyping(on){
+  var t = $("typing");
+  if(on){
+    if(!t){
+      t = document.createElement("div");
+      t.id = "typing"; t.textContent = "…";
+      $("chat").appendChild(t);
+    }
+    scrollChatToBottom();
+  }else if(t){ t.remove(); }
+}
+
+function scrollChatToBottom(){
+  setTimeout(function(){ window.scrollTo(0, document.body.scrollHeight); }, 50);
+}
+
+function charByName(name){
+  for(var i=0;i<CHARACTERS.length;i++) if(CHARACTERS[i].name === name) return CHARACTERS[i];
+  return null;
+}
+
+function renderAll(){
+  renderHeader();
+  renderChat();
+  renderSuggestions();
+  renderChatList();
+  applyChatBackground();
+}
+
+function renderHeader(){
+  var chat = getActiveChat();
+  $("chapterName").textContent = chat ? (chat.chapter || "宅邸物語") : "宅邸物語";
+  var parts = [];
+  if(chat){
+    if(chat.date) parts.push("📅 " + chat.date);
+    if(chat.time) parts.push("🕐 " + chat.time);
+    if(chat.place) parts.push("📍 " + chat.place);
+  }
+  $("statusLine").textContent = parts.join("　");
+}
+
+function getAvatarHtml(speaker){
+  var c = charByName(speaker);
+  var key = c ? "char_" + c.id + "_avatar" : "profile_avatar";
+  if(blobUrlCache[key]){
+    return '<img class="avatar" src="' + blobUrlCache[key] + '" alt="">';
+  }
+  var label = c ? c.name.charAt(0) : "許";
+  return '<div class="avatar">' + esc(label) + '</div>';
+}
+
+function renderChat(){
+  var chat = getActiveChat();
+  var box = $("chat");
+  box.innerHTML = "";
+  var settings = getSettings();
+  box.className = settings.dispMode === "plain" ? "chat-mode-plain" : "chat-mode-bubble";
+  if(!chat){
+    box.innerHTML = '<div class="msg-sys">尚無聊天。點右上角選單 →「聊天管理」開始新聊天。</div>';
+    return;
+  }
+  var lastModelIndex = -1;
+  for(var i=0;i<chat.turns.length;i++) if(chat.turns[i].role === "model") lastModelIndex = i;
+
+  chat.turns.forEach(function(turn, idx){
+    if(turn.role === "user"){
+      var opening = turn.text.indexOf("【開場】") === 0;
+      if(opening){
+        var sys = document.createElement("div");
+        sys.className = "msg-sys"; sys.textContent = "—— 第一章 開始上班啦・第一晚 ——";
+        box.appendChild(sys);
+      }else{
+        var u = document.createElement("div");
+        u.className = "msg-user";
+        u.textContent = turn.text;
+        box.appendChild(u);
+      }
+      return;
+    }
+    var json = null;
+    try{ json = JSON.parse(turn.text); }catch(e){ json = null; }
+    if(!json || !json.segments){
+      var raw = document.createElement("div");
+      raw.className = "msg-raw";
+      raw.textContent = "（模型回傳原文）\n" + turn.text;
+      box.appendChild(raw);
+    }else{
+      if(idx === lastModelIndex && json.chapter){
+        var ch = document.createElement("div");
+        ch.className = "msg-sys"; ch.textContent = "—— " + json.chapter + " ——";
+        box.appendChild(ch);
+      }
+      json.segments.forEach(function(seg){
+        box.appendChild(renderSegment(seg));
+      });
+    }
+  });
+
+  if(lastModelIndex >= 0){
+    var btn = document.createElement("button");
+    btn.id = "reRoll"; btn.textContent = "換一個版本";
+    btn.addEventListener("click", regenerateLast);
+    box.appendChild(btn);
+  }
+  scrollChatToBottom();
+}
+
+function renderSegment(seg){
+  var div = document.createElement("div");
+  if(seg.type === "line"){
+    div.className = "msg-line";
+    div.innerHTML = getAvatarHtml(seg.speaker) +
+      '<div class="bubble-wrap"><div class="speaker-name">' + esc(seg.speaker || "？") + '</div>' +
+      '<div class="bubble">' + italics(seg.text) + '</div></div>';
+  }else if(seg.type === "message"){
+    div.className = "msg-msg";
+    div.innerHTML = '<div class="phone-card"><div class="phone-head">📱 訊息・' + esc(seg.speaker || "？") + '</div>' +
+      '<span class="phone-text">' + italics(seg.text) + '</span></div>';
+  }else{
+    div.className = "msg-narr";
+    div.innerHTML = italics(seg.text);
+  }
+  div._seg = seg;
+  div.addEventListener("pointerdown", function(){ onSegPointerDown(seg, div); });
+  div.addEventListener("pointerup", onSegPointerUp);
+  div.addEventListener("pointerleave", onSegPointerUp);
+  div.addEventListener("click", function(){ onSegClick(seg, div); });
+  return div;
+}
+
+function renderSuggestions(){
+  var chat = getActiveChat();
+  var row = $("suggestRow");
+  row.innerHTML = "";
+  if(!chat || !chat.suggestions || !chat.suggestions.length) return;
+  chat.suggestions.forEach(function(s){
+    var b = document.createElement("button");
+    b.className = "sug-btn";
+    b.textContent = s;
+    b.addEventListener("click", function(){ sendUserMessage(s); });
+    row.appendChild(b);
+  });
+}
+
+function renderChatList(){
+  var list = $("chatList");
+  if(!list) return;
+  list.innerHTML = "";
+  var all = getChats(), order = getOrder(), active = getActiveId();
+  order.forEach(function(id){
+    var c = all[id]; if(!c) return;
+    var item = document.createElement("div");
+    item.className = "chat-item" + (id === active ? " active" : "");
+    var title = document.createElement("span");
+    title.textContent = c.title || c.chapter || "（未命名）";
+    var del = document.createElement("button");
+    del.className = "small-btn"; del.style.marginTop = "0";
+    del.textContent = "切換";
+    del.addEventListener("click", function(){
+      setActiveId(id); renderAll(); closeDrawer();
+    });
+    item.appendChild(title); item.appendChild(del);
+    list.appendChild(item);
+  });
+  if(!order.length) list.innerHTML = '<p class="hint">尚無聊天紀錄。</p>';
+}
+
+/* ===================== 聊天背景 / 說話者背景 ===================== */
+function applyChatBackground(){
+  var chat = getActiveChat();
+  var settings = getSettings();
+  var wrap = $("chatWrap");
+  var url = "", overlay = "rgba(8,12,26,.78)";
+  if(settings.speakerBgOn && chat && chat.focus){
+    var c = charByName(chat.focus);
+    var key = c ? "char_" + c.id + "_bg" : "";
+    if(key && blobUrlCache[key]){ url = blobUrlCache[key]; overlay = "rgba(8,12,26,.62)"; }
+  }
+  if(!url && settings.chatBgOn && blobUrlCache["chat_bg"]){
+    url = blobUrlCache["chat_bg"];
+  }
+  wrap.style.transition = "background-image .6s ease";
+  wrap.style.backgroundImage = url ? 'url("' + url + '")' : "none";
+  wrap.style.setProperty("--overlay", overlay);
+  var before = wrap.querySelector("style");
+  /* 用 CSS 變數調整遮罩 */
+  var styleEl = document.getElementById("overlayStyle");
+  if(!styleEl){
+    styleEl = document.createElement("style");
+    styleEl.id = "overlayStyle";
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = "#chatWrap::before{background:" + overlay + " !important;}";
+}
+
+function refreshBlobCache(){
+  var jobs = [];
+  CHARACTERS.forEach(function(c){
+    ["avatar", "bg"].forEach(function(kind){
+      var key = "char_" + c.id + "_" + kind;
+      jobs.push(idbGet(key).then(function(b){ if(b) blobUrlCache[key] = URL.createObjectURL(b); }));
+    });
+  });
+  ["chat_bg", "profile_avatar"].forEach(function(key){
+    jobs.push(idbGet(key).then(function(b){ if(b) blobUrlCache[key] = URL.createObjectURL(b); }));
+  });
+  return Promise.all(jobs);
+}
+
+/* ===================== 選單與面板 ===================== */
+function openDrawer(){
+  $("drawer").classList.remove("hidden");
+  $("drawerMask").classList.remove("hidden");
+  showPanel(null);
+}
+function closeDrawer(){
+  $("drawer").classList.add("hidden");
+  $("drawerMask").classList.add("hidden");
+}
+function showPanel(name){
+  var list = $("menuList");
+  var panels = document.querySelectorAll("#drawer .panel");
+  panels.forEach = Array.prototype.forEach;
+  if(!name){
+    list.classList.remove("hidden");
+    Array.prototype.forEach.call(panels, function(p){ p.classList.add("hidden"); });
+    $("drawerTitle").textContent = "選單";
+    return;
+  }
+  list.classList.add("hidden");
+  Array.prototype.forEach.call(panels, function(p){ p.classList.add("hidden"); });
+  var p = $("panel-" + name);
+  if(p) p.classList.remove("hidden");
+  $("drawerTitle").textContent = p ? p.querySelector("h2").textContent : "選單";
+  if(name === "memory") fillMemoryPanel();
+  if(name === "profile") fillProfilePanel();
+  if(name === "chars") renderCharCards();
+  if(name === "settings") fillSettingsPanel();
+  if(name === "chats") renderChatList();
+}
+
+/* ---- 面板 1：長期記憶本 ---- */
+function fillMemoryPanel(){
+  var t = getMemory();
+  $("memoryText").value = t;
+  $("memoryCount").textContent = t.length + " 字";
+}
+function saveMemoryFromPanel(){
+  saveMemory($("memoryText").value);
+  showToast("記憶本已儲存");
+}
+function requestMemoryDraft(){
+  var chat = getActiveChat();
+  if(!chat){ showToast("請先有一段聊天再整理"); return; }
+  $("memoryDraftBtn").textContent = "整理中…";
+  callMemoryDraft(chat).then(function(draft){
+    $("memoryText").value = draft;
+    $("memoryCount").textContent = draft.length + " 字";
+    showToast("草稿已放入編輯框，確認後請按「儲存」");
+  }).catch(function(err){
+    showToast(friendlyApiError(err && err.status));
+  }).finally(function(){
+    $("memoryDraftBtn").textContent = "幫我整理（呼叫模型產生草稿）";
+  });
+}
+
+/* ---- 面板 2：我的人設 ---- */
+function fillProfilePanel(){
+  var p = getProfile();
+  $("profileName").value = p.name || "";
+  $("profileIntro").value = p.intro || "";
+  if(blobUrlCache["profile_avatar"]){
+    var img = $("profileAvatarImg");
+    img.src = blobUrlCache["profile_avatar"];
+    img.style.display = "block";
+  }else{
+    $("profileAvatarImg").style.display = "none";
+  }
+}
+function saveProfileFromPanel(){
+  saveProfile({ name: $("profileName").value.trim() || "許知夏", intro: $("profileIntro").value.trim() || HEROINE_DEFAULT });
+  showToast("人設已儲存");
+}
+
+/* ---- 面板 3：角色 ---- */
+function renderCharCards(){
+  var box = $("charCards");
+  box.innerHTML = "";
+  CHARACTERS.forEach(function(c){
+    var custom = lsGet("fs_char_" + c.id, {}) || {};
+    var card = document.createElement("div");
+    card.className = "char-card";
+    var avKey = "char_" + c.id + "_avatar";
+    var imgHtml = blobUrlCache[avKey] ? '<img src="' + blobUrlCache[avKey] + '">' : '<img src="" style="display:none">';
+    card.innerHTML =
+      '<div class="char-head">' + imgHtml +
+      '<div><div class="char-name">' + esc(c.name) + '</div>' +
+      '<div class="char-meta">' + c.age + ' 歲・' + esc(c.height) + (custom.note ? "・自訂" : "") + '</div></div></div>' +
+      '<p>' + esc(c.intro) + '</p>' +
+      '<div class="row">' +
+      '<button class="small-btn" data-act="avatar">上傳頭像</button>' +
+      '<button class="small-btn" data-act="bg">上傳背景照</button>' +
+      '<button class="small-btn" data-act="reset">刪除上傳資料</button>' +
+      '</div>';
+    card.querySelector('[data-act="avatar"]').addEventListener("click", function(){ pickImage({ kind: "char", id: c.id, type: "avatar" }); });
+    card.querySelector('[data-act="bg"]').addEventListener("click", function(){ pickImage({ kind: "char", id: c.id, type: "bg" }); });
+    card.querySelector('[data-act="reset"]').addEventListener("click", function(){
+      if(!confirm("確定刪除「" + c.name + "」上傳的圖片與自訂資料，恢復預設？")) return;
+      var k1 = "char_" + c.id + "_avatar", k2 = "char_" + c.id + "_bg";
+      delete blobUrlCache[k1]; delete blobUrlCache[k2];
+      idbDelete(k1); idbDelete(k2);
+      lsSet("fs_char_" + c.id, {});
+      showToast("已恢復預設");
+      renderCharCards(); applyChatBackground();
+    });
+    box.appendChild(card);
+  });
+}
+
+/* ---- 面板 4：設定 ---- */
+function fillSettingsPanel(){
+  var s = getSettings();
+  var radios = document.querySelectorAll('input[name="replyLen"]');
+  Array.prototype.forEach.call(radios, function(r){ r.checked = (r.value === s.replyLen); });
+  $("chapterMode").checked = !!s.chapterMode;
+  $("chatBgOn").checked = !!s.chatBgOn;
+  $("speakerBgOn").checked = !!s.speakerBgOn;
+  var dr = document.querySelectorAll('input[name="dispMode"]');
+  Array.prototype.forEach.call(dr, function(r){ r.checked = (r.value === s.dispMode); });
+  fillModelSelect();
+}
+function bindSettingsPanel(){
+  document.querySelectorAll('input[name="replyLen"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var s = getSettings(); s.replyLen = r.value; saveSettings(s);
+    });
+  });
+  $("chapterMode").addEventListener("change", function(){
+    var s = getSettings(); s.chapterMode = this.checked; saveSettings(s);
+  });
+  $("chatBgOn").addEventListener("change", function(){
+    var s = getSettings(); s.chatBgOn = this.checked; saveSettings(s); applyChatBackground();
+  });
+  $("speakerBgOn").addEventListener("change", function(){
+    var s = getSettings(); s.speakerBgOn = this.checked; saveSettings(s); applyChatBackground();
+  });
+  document.querySelectorAll('input[name="dispMode"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var s = getSettings(); s.dispMode = r.value; saveSettings(s); renderChat();
+    });
+  });
+  $("modelSelect").addEventListener("change", function(){
+    var s = getSettings(); s.model = this.value; saveSettings(s);
+    showToast("已選擇模型");
+  });
+  $("chatBgBtn").addEventListener("click", function(){ pickImage({ kind: "chatBg" }); });
+  $("changeKeyBtn").addEventListener("click", function(){
+    closeDrawer(); showKeyModal();
+  });
+}
+
+/* ---- 面板 5：聊天管理 ---- */
+function bindChatsPanel(){
+  $("newChatBtn").addEventListener("click", function(){
+    createNewChat(true); closeDrawer();
+  });
+  $("branchBtn").addEventListener("click", function(){
+    startBranchChat(); closeDrawer();
+  });
+  $("deleteChatBtn").addEventListener("click", function(){
+    var chat = getActiveChat();
+    if(!chat){ showToast("沒有可刪除的聊天"); return; }
+    if(!confirm("確定刪除這段聊天？此操作無法復原。")) return;
+    deleteChatById(chat.id);
+    showToast("已刪除");
+    closeDrawer();
+  });
+}
+
+/* ---- 面板 6：名言卡 ---- */
+var quoteTargetSeg = null;
+function onLineClick(seg, el){
+  quoteTargetSeg = seg;
+  var pop = $("quotePop");
+  pop.classList.remove("hidden");
+  clearTimeout(pop._timer);
+  pop._timer = setTimeout(function(){ pop.classList.add("hidden"); }, 3000);
+}
+function makeQuoteCard(){
+  var pop = $("quotePop");
+  pop.classList.add("hidden");
+  var seg = quoteTargetSeg;
+  if(!seg){ showToast("請先點選一句角色台詞"); return; }
+  var canvas = $("quoteCanvas");
+  var W = 900, H = 1350;
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext("2d");
+  var grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, "#141c38"); grad.addColorStop(1, "#0b1020");
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = "#d8b36a"; ctx.lineWidth = 6;
+  ctx.strokeRect(40, 40, W - 80, H - 80);
+
+  var c = charByName(seg.speaker);
+  var key = c ? "char_" + c.id + "_avatar" : "";
+  var drawText = function(){
+    ctx.fillStyle = "#f0d9a8";
+    ctx.font = "bold 44px 'PingFang TC', sans-serif";
+    ctx.textAlign = "center";
+    var text = seg.text || "";
+    var lines = wrapCanvasText(ctx, text, W - 200);
+    var startY = H / 2 - (lines.length * 62) / 2 + 40;
+    lines.forEach(function(line, i){
+      ctx.fillText(line, W / 2, startY + i * 62);
+    });
+    ctx.fillStyle = "#d8b36a";
+    ctx.font = "36px 'PingFang TC', sans-serif";
+    ctx.fillText("── " + (seg.speaker || "") + " ──", W / 2, H - 160);
+    ctx.fillStyle = "#9aa3bd";
+    ctx.font = "24px sans-serif";
+    ctx.fillText("宅邸物語", W / 2, H - 110);
+    shareQuoteCanvas(canvas);
+  };
+  if(key && blobUrlCache[key]){
+    var img = new Image();
+    img.onload = function(){
+      ctx.save();
+      ctx.beginPath(); ctx.arc(W/2, 300, 110, 0, Math.PI*2); ctx.closePath(); ctx.clip();
+      ctx.drawImage(img, W/2-110, 300-110, 220, 220);
+      ctx.restore();
+      ctx.strokeStyle = "#d8b36a"; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.arc(W/2, 300, 112, 0, Math.PI*2); ctx.stroke();
+      drawText();
+    };
+    img.onerror = drawText;
+    img.src = blobUrlCache[key];
+  }else{
+    ctx.fillStyle = "#1a2447";
+    ctx.beginPath(); ctx.arc(W/2, 300, 110, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#d8b36a";
+    ctx.font = "bold 90px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText((seg.speaker || "？").charAt(0), W/2, 335);
+    drawText();
+  }
+}
+function wrapCanvasText(ctx, text, maxW){
+  var chars = String(text).split("");
+  var lines = [], cur = "";
+  chars.forEach(function(ch){
+    if(ctx.measureText(cur + ch).width > maxW && cur){ lines.push(cur); cur = ch; }
+    else cur += ch;
+  });
+  if(cur) lines.push(cur);
+  return lines;
+}
+function shareQuoteCanvas(canvas){
+  canvas.toBlob(function(blob){
+    if(!blob){ showToast("圖卡產生失敗"); return; }
+    var file = new File([blob], "quote.png", { type: "image/png" });
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      navigator.share({ files: [file], title: "名言卡" }).catch(function(){});
+      return;
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quote.png";
+    a.click();
+    showToast("已下載 PNG");
+  }, "image/png");
+}
+
+/* ---- 面板 7：訊息卡片 ---- */
+var cardPickMode = false;
+var cardLongPressTimer = null;
+var cardLongPressSeg = null;
+var cardLongPressFired = false;
+var cardLastBlob = null;
+
+function onSegPointerDown(seg, el){
+  if(cardPickMode) return;
+  hideCardPop();
+  clearTimeout(cardLongPressTimer);
+  cardLongPressFired = false;
+  cardLongPressTimer = setTimeout(function(){
+    cardLongPressTimer = null;
+    cardLongPressFired = true;
+    cardLongPressSeg = seg;
+    showCardPop(el);
+  }, 500);
+}
+function onSegPointerUp(){
+  clearTimeout(cardLongPressTimer);
+  cardLongPressTimer = null;
+}
+function onSegClick(seg, el){
+  if(cardLongPressFired){ cardLongPressFired = false; return; }
+  if(cardPickMode){ toggleCardSelect(el); return; }
+  if(seg.type === "line") onLineClick(seg, el);
+}
+function showCardPop(el){
+  var pop = $("cardPop");
+  var r = el.getBoundingClientRect();
+  var x = Math.max(8, Math.min(window.innerWidth - 170, r.left));
+  var y = Math.max(56, r.top - 52);
+  pop.style.left = x + "px";
+  pop.style.top = y + "px";
+  pop.classList.remove("hidden");
+}
+function hideCardPop(){ $("cardPop").classList.add("hidden"); }
+
+function enterCardPickMode(){
+  cardPickMode = true;
+  Array.prototype.forEach.call(document.querySelectorAll("#chat .card-sel"), function(el){ el.classList.remove("card-sel"); });
+  updateCardSelCount();
+  $("cardSelBar").classList.remove("hidden");
+  closeDrawer();
+  showToast("點選要收進卡片裡的角色回覆，可複選");
+}
+function exitCardPickMode(){
+  cardPickMode = false;
+  Array.prototype.forEach.call(document.querySelectorAll("#chat .card-sel"), function(el){ el.classList.remove("card-sel"); });
+  $("cardSelBar").classList.add("hidden");
+}
+function toggleCardSelect(el){
+  el.classList.toggle("card-sel");
+  updateCardSelCount();
+}
+function updateCardSelCount(){
+  $("cardSelCount").textContent = document.querySelectorAll("#chat .card-sel").length;
+}
+function finishCardPick(){
+  var els = document.querySelectorAll("#chat .card-sel");
+  var segs = [];
+  Array.prototype.forEach.call(els, function(el){ if(el._seg) segs.push(el._seg); });
+  exitCardPickMode();
+  if(!segs.length){ showToast("尚未選取任何訊息"); return; }
+  makeMessageCards(segs);
+}
+function makeCardFromPop(){
+  hideCardPop();
+  var seg = cardLongPressSeg;
+  cardLongPressSeg = null;
+  if(seg) makeMessageCards([seg]);
+}
+
+function cardBgSource(){
+  var chat = getActiveChat();
+  var settings = getSettings();
+  if(settings.speakerBgOn && chat && chat.focus){
+    var c = charByName(chat.focus);
+    var key = c ? "char_" + c.id + "_bg" : "";
+    if(key && blobUrlCache[key]) return blobUrlCache[key];
+  }
+  if(settings.chatBgOn && blobUrlCache["chat_bg"]) return blobUrlCache["chat_bg"];
+  return "";
+}
+function loadImg(src){
+  return new Promise(function(resolve){
+    if(!src){ resolve(null); return; }
+    var img = new Image();
+    img.onload = function(){ resolve(img); };
+    img.onerror = function(){ resolve(null); };
+    img.src = src;
+  });
+}
+function cardFontPx(px, italic){
+  return (italic ? "italic " : "") + px + "px 'PingFang TC','Microsoft JhengHei',sans-serif";
+}
+function richWrap(ctx, text, maxW, px){
+  var parts = String(text == null ? "" : text).split(/(\*[^*\n]+\*)/);
+  var lines = [], cur = [], curW = 0;
+  parts.forEach(function(p){
+    var italic = p.length > 2 && p.charAt(0) === "*" && p.charAt(p.length - 1) === "*";
+    var body = italic ? p.slice(1, -1) : p;
+    ctx.font = cardFontPx(px, italic);
+    body.split("").forEach(function(ch){
+      var w = ctx.measureText(ch).width;
+      if(curW + w > maxW && cur.length){ lines.push(cur); cur = []; curW = 0; }
+      cur.push({ ch: ch, italic: italic });
+      curW += w;
+    });
+  });
+  if(cur.length) lines.push(cur);
+  return lines;
+}
+function drawRichLines(ctx, lines, x, y, px, lineH, color){
+  ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillStyle = color;
+  var cy = y;
+  lines.forEach(function(line){
+    var cx = x;
+    line.forEach(function(t){
+      ctx.font = cardFontPx(px, t.italic);
+      ctx.fillText(t.ch, cx, cy);
+      cx += ctx.measureText(t.ch).width;
+    });
+    cy += lineH;
+  });
+  return cy;
+}
+function makeMessageCards(segs){
+  var W = 1080, PAD = 72;
+  var canvas = document.createElement("canvas");
+  canvas.width = W;
+  var ctx = canvas.getContext("2d");
+  var px = 34, lineH = 52, avR = 46;
+
+  var blocks = segs.map(function(seg){
+    var name = (seg.speaker || "旁白");
+    var maxW = W - PAD * 2 - (avR * 2 + 28);
+    var lines = richWrap(ctx, seg.text, maxW, px);
+    var textH = Math.max(lineH, lines.length * lineH);
+    return { seg: seg, name: name, lines: lines, h: Math.max(avR * 2, textH) + 60 };
+  });
+  var H = PAD * 2 + blocks.reduce(function(a, b){ return a + b.h; }, 0) + 100;
+  canvas.height = H;
+
+  var grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, "#141c38"); grad.addColorStop(1, "#0b1020");
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = "#d8b36a"; ctx.lineWidth = 5;
+  ctx.strokeRect(36, 36, W - 72, H - 72);
+
+  var drawContent = function(avatars){
+    var y = PAD + 10;
+    blocks.forEach(function(b, i){
+      var cx = PAD, cy = y;
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx + avR, cy + avR, avR, 0, Math.PI * 2); ctx.closePath(); ctx.clip();
+      var img = avatars[i];
+      if(img){ ctx.drawImage(img, cx, cy, avR * 2, avR * 2); }
+      else{ ctx.fillStyle = "#1a2447"; ctx.fillRect(cx, cy, avR * 2, avR * 2); }
+      ctx.restore();
+      ctx.strokeStyle = "#d8b36a"; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(cx + avR, cy + avR, avR, 0, Math.PI * 2); ctx.stroke();
+      if(!img){
+        ctx.fillStyle = "#d8b36a";
+        ctx.font = "bold 40px 'PingFang TC','Microsoft JhengHei',sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(b.name.charAt(0), cx + avR, cy + avR + 2);
+      }
+      ctx.fillStyle = "#d8b36a";
+      ctx.font = "bold 30px 'PingFang TC','Microsoft JhengHei',sans-serif";
+      ctx.textAlign = "left"; ctx.textBaseline = "top";
+      ctx.fillText(b.name, cx + avR * 2 + 28, cy + 2);
+      drawRichLines(ctx, b.lines, cx + avR * 2 + 28, cy + 50, px, lineH, "#e8e6df");
+      y += b.h;
+    });
+    ctx.fillStyle = "#9aa3bd";
+    ctx.font = "26px 'PingFang TC','Microsoft JhengHei',sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+    ctx.fillText("這爽缺我賴定了", W / 2, H - 52);
+    showCardPreview(canvas);
+  };
+
+  var jobs = segs.map(function(seg){
+    var c = charByName(seg.speaker);
+    var key = c ? "char_" + c.id + "_avatar" : "";
+    return loadImg(key && blobUrlCache[key] ? blobUrlCache[key] : "");
+  });
+  Promise.all(jobs).then(function(avatars){
+    var bgSrc = cardBgSource();
+    if(!bgSrc){ drawContent(avatars); return; }
+    loadImg(bgSrc).then(function(bg){
+      if(bg){
+        var s = Math.max(W / bg.width, H / bg.height);
+        var dw = bg.width * s, dh = bg.height * s;
+        ctx.drawImage(bg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+        ctx.fillStyle = "rgba(8,12,26,.78)";
+        ctx.fillRect(0, 0, W, H);
+        ctx.strokeStyle = "#d8b36a"; ctx.lineWidth = 5;
+        ctx.strokeRect(36, 36, W - 72, H - 72);
+      }
+      drawContent(avatars);
+    });
+  });
+}
+function showCardPreview(canvas){
+  canvas.toBlob(function(blob){
+    if(!blob){ showToast("卡片產生失敗"); return; }
+    cardLastBlob = blob;
+    $("cardPreviewImg").src = URL.createObjectURL(blob);
+    var canShare = false;
+    if(navigator.canShare){
+      try{
+        canShare = navigator.canShare({ files: [new File([blob], "card.png", { type: "image/png" })] });
+      }catch(e){ canShare = false; }
+    }
+    $("cardShareBtn").classList.toggle("hidden", !canShare);
+    $("cardPreviewModal").classList.remove("hidden");
+  }, "image/png");
+}
+function bindCardUI(){
+  $("cardMsgMenuBtn").addEventListener("click", enterCardPickMode);
+  $("cardPop").addEventListener("click", makeCardFromPop);
+  $("cardDoneBtn").addEventListener("click", finishCardPick);
+  $("cardCancelBtn").addEventListener("click", function(){ exitCardPickMode(); });
+  $("cardShareBtn").addEventListener("click", function(){
+    if(!cardLastBlob) return;
+    var file = new File([cardLastBlob], "card.png", { type: "image/png" });
+    if(navigator.share){
+      navigator.share({ files: [file], title: "訊息卡片" }).catch(function(){});
+    }
+  });
+  $("cardSaveBtn").addEventListener("click", function(){
+    if(!cardLastBlob) return;
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(cardLastBlob);
+    a.download = "card.png";
+    a.click();
+    showToast("已下載 PNG");
+  });
+  $("cardCloseBtn").addEventListener("click", function(){ $("cardPreviewModal").classList.add("hidden"); });
+  $("cardPreviewModal").addEventListener("click", function(e){
+    if(e.target === this) this.classList.add("hidden");
+  });
+}
+
+/* ===================== 檔案選擇處理 ===================== */
+function bindFilePicker(){
+  $("filePicker").addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    if(!f || !pickTarget) return;
+    processImageFile(f).then(function(blob){
+      if(pickTarget.kind === "char"){
+        var key = "char_" + pickTarget.id + "_" + pickTarget.type;
+        return idbPut(key, blob).then(function(){
+          blobUrlCache[key] = URL.createObjectURL(blob);
+          showToast("圖片已儲存");
+          renderCharCards(); applyChatBackground();
+        });
+      }
+      if(pickTarget.kind === "chatBg"){
+        return idbPut("chat_bg", blob).then(function(){
+          blobUrlCache["chat_bg"] = URL.createObjectURL(blob);
+          var s = getSettings(); s.chatBgOn = true; saveSettings(s);
+          showToast("聊天背景已更新");
+          applyChatBackground(); fillSettingsPanel();
+        });
+      }
+      if(pickTarget.kind === "profile"){
+        return idbPut("profile_avatar", blob).then(function(){
+          blobUrlCache["profile_avatar"] = URL.createObjectURL(blob);
+          showToast("頭像已更新");
+          fillProfilePanel(); renderChat();
+        });
+      }
+    }).catch(function(){
+      showToast("圖片處理失敗");
+    });
+  });
+}
+
+/* ===================== 金鑰流程 ===================== */
+function bindKeyModal(){
+  $("keySaveBtn").addEventListener("click", function(){
+    var key = $("keyInput").value.trim();
+    if(!key){ $("keyErr").textContent = "請先貼上金鑰。"; $("keyErr").classList.remove("hidden"); return; }
+    $("keySaveBtn").textContent = "連線中…";
+    loadModels(key).then(function(){
+      saveApiKey(key);
+      hideKeyModal();
+      $("keySaveBtn").textContent = "儲存並連線";
+      showToast("金鑰已儲存，模型列表已更新");
+      var chat = getActiveChat();
+      if(!chat || !chat.turns.length) createNewChat(true);
+    }).catch(function(err){
+      $("keySaveBtn").textContent = "儲存並連線";
+      $("keyErr").textContent = friendlyApiError(err && err.status);
+      $("keyErr").classList.remove("hidden");
+    });
+  });
+}
+
+/* ===================== 啟動 ===================== */
+function bindUI(){
+  $("sendBtn").addEventListener("click", function(){ sendUserMessage($("userInput").value); });
+  $("userInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); sendUserMessage(this.value); }
+  });
+  $("menuBtn").addEventListener("click", openDrawer);
+  $("drawerClose").addEventListener("click", closeDrawer);
+  $("drawerMask").addEventListener("click", closeDrawer);
+  document.querySelectorAll(".menu-item").forEach(function(btn){
+    btn.addEventListener("click", function(){ showPanel(btn.getAttribute("data-panel")); });
+  });
+  document.querySelectorAll("[data-back]").forEach(function(btn){
+    btn.addEventListener("click", function(){ showPanel(null); });
+  });
+  $("memorySaveBtn").addEventListener("click", saveMemoryFromPanel);
+  $("memoryDraftBtn").addEventListener("click", requestMemoryDraft);
+  $("memoryText").addEventListener("input", function(){
+    $("memoryCount").textContent = this.value.length + " 字";
+  });
+  $("profileSaveBtn").addEventListener("click", saveProfileFromPanel);
+  $("profileAvatarBtn").addEventListener("click", function(){ pickImage({ kind: "profile" }); });
+  $("quotePop").addEventListener("click", makeQuoteCard);
+  $("quoteTryBtn").addEventListener("click", function(){
+    showToast("回到聊天區，點任何一句角色台詞即可做卡");
+    closeDrawer();
+  });
+  bindSettingsPanel();
+  bindChatsPanel();
+  bindFilePicker();
+  bindKeyModal();
+  bindCardUI();
+}
+
+function init(){
+  bindUI();
+  refreshBlobCache().then(function(){
+    applyChatBackground();
+    renderAll();
+  });
+  if(MOCK){
+    showToast("測試模式：不呼叫 API、不需要金鑰");
+    var chat = getActiveChat();
+    if(!chat || !chat.turns.length) createNewChat(true);
+    else renderAll();
+    return;
+  }
+  var key = getApiKey();
+  if(!key){
+    showKeyModal();
+    return;
+  }
+  fillModelSelect();
+  var chat = getActiveChat();
+  if(!chat || !chat.turns.length) createNewChat(true);
+  else renderAll();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
