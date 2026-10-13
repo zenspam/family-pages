@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#14121c">
+<title>我的角色</title>
+<style>
+:root{--bg:#14121c;--card:#1f1c2b;--card2:#2a2639;--ink:#f1eef8;--dim:#a39fb5;--accent:#ff7aa8;--accent2:#8f7bff;--line:#37324a;--err:#ff6b6b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,"PingFang TC","Noto Sans TC",sans-serif}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,textarea{font:inherit;color:var(--ink);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:70px}
+label{display:block;font-size:13px;color:var(--dim);margin:14px 0 6px}
+.view{display:none;min-height:100vh;padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 90px)}
+.view.on{display:block}
+header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+header h1{font-size:22px;margin:0;flex:1}
+.icon{width:38px;height:38px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{border-radius:18px;overflow:hidden;background:var(--card);text-align:left;display:flex;flex-direction:column}
+.card .face{aspect-ratio:3/4;display:grid;place-items:center;font-size:64px;position:relative}
+.card .face::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.65))}
+.card .name{position:absolute;left:12px;bottom:10px;z-index:1;font-weight:700;font-size:17px;text-shadow:0 1px 3px #000}
+.card .intro{margin:8px 12px 12px;padding:0;font-size:13px;line-height:1.5;color:var(--dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:3em}
+.empty{color:var(--dim);text-align:center;margin-top:60px;line-height:2}
+.fab{position:fixed;right:20px;bottom:calc(env(safe-area-inset-bottom) + 20px);width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));font-size:30px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.btn{display:inline-block;padding:11px 18px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));font-weight:600}
+.btn.ghost{background:var(--card2)}
+.btn.danger{background:#4a2230;color:#ffb3c4}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.ex{background:var(--card);border-radius:14px;padding:10px;margin-bottom:10px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:32px;height:32px;border-radius:50%;border:2px solid transparent}
+.sw.on{border-color:#fff}
+/* chat */
+#chat{padding:0;display:none;flex-direction:column;height:100vh;height:100dvh}
+#chat.on{display:flex}
+.chead{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 12px 10px;background:var(--card);border-bottom:1px solid var(--line)}
+.ava{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:22px;flex:none}
+.chead .t{flex:1;min-width:0}.chead .t b{display:block}.chead .t small{color:var(--dim);font-size:12px}
+#msgs{flex:1;overflow-y:auto;padding:14px 12px;-webkit-overflow-scrolling:touch}
+.m{max-width:84%;margin:0 0 12px;padding:10px 13px;border-radius:18px;word-break:break-word;position:relative}
+.m .tx{white-space:pre-wrap}
+.m.model{background:var(--card2);border-bottom-left-radius:6px}
+.m.user{background:linear-gradient(135deg,#ff7aa8cc,#8f7bffcc);margin-left:auto;border-bottom-right-radius:6px;width:fit-content}
+.m.model{width:fit-content}
+.m .acts{display:none;gap:6px;margin-top:6px}
+.m.sel .acts{display:flex}
+.m .acts button{font-size:12px;background:rgba(0,0,0,.25);padding:3px 9px;border-radius:9px}
+.m.typing{color:var(--dim)}
+.err{background:#3a1d24;border:1px solid var(--err);color:#ffd2d2;border-radius:12px;padding:9px 12px;margin:0 12px 10px;font-size:14px}
+.composer{display:flex;gap:8px;padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);background:var(--card);border-top:1px solid var(--line)}
+.composer textarea{min-height:44px;max-height:120px;border-radius:22px;padding:11px 16px}
+.send{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));font-size:20px;flex:none;align-self:flex-end}
+.send:disabled{opacity:.4}
+/* sheet */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;z-index:9}
+.sheet.on{display:flex}
+.sheet .in{background:var(--bg);width:100%;max-height:88vh;overflow-y:auto;border-radius:22px 22px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 20px)}
+.sheet h2{margin:0 0 4px;font-size:19px}
+.note{font-size:13px;color:var(--dim)}
+.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#000c;padding:8px 16px;border-radius:20px;font-size:14px;display:none;z-index:20}
+</style>
+</head>
+<body>
+
+<!-- 首頁：角色卡牆 -->
+<section id="home" class="view on">
+  <header><h1>我的角色</h1><button class="icon" onclick="go('settings')" aria-label="設定">⚙️</button></header>
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" style="display:none">還沒有角色<br>按右下角 ＋ 做第一個吧</div>
+  <button class="fab" onclick="editChar()" aria-label="新增角色">＋</button>
+</section>
+
+<!-- 角色編輯 -->
+<section id="edit" class="view">
+  <header><button class="icon" onclick="go('home')">‹</button><h1 id="editTitle">新角色</h1></header>
+  <label>頭像（一個 emoji）</label><input id="f_emoji" maxlength="4" placeholder="🌙">
+  <label>卡片顏色</label><div id="swatches" class="swatches"></div>
+  <label>名字</label><input id="f_name" placeholder="例如：韓景">
+  <label>一句介紹（卡片上顯示）</label><input id="f_intro" placeholder="冷淡的學生會長，只對妳例外">
+  <label>性格</label><textarea id="f_persona" placeholder="外冷內熱、很會照顧人、討厭說謊…"></textarea>
+  <label>說話風格</label><textarea id="f_style" placeholder="句子短、偶爾毒舌、叫妳的時候只叫名字…"></textarea>
+  <label>跟「我」的關係</label><textarea id="f_relation" placeholder="青梅竹馬，三年沒見…"></textarea>
+  <label>世界觀</label><textarea id="f_world" placeholder="現代校園／古代宮廷／末日之後…"></textarea>
+  <label>開場白（進聊天第一句）</label><textarea id="f_opening" placeholder="（推開門）……妳怎麼會在這裡？"></textarea>
+  <label>範例對話（教角色怎麼說話，可多組）</label>
+  <div id="exList"></div>
+  <button class="btn ghost" onclick="addEx()">＋ 加一組範例</button>
+  <div class="row">
+    <button class="btn" onclick="saveChar()">儲存</button>
+    <button class="btn danger" id="delBtn" onclick="delChar()">刪除角色</button>
+  </div>
+</section>
+
+<!-- 聊天 -->
+<section id="chat" class="view">
+  <div class="chead">
+    <button class="icon" onclick="go('home')">‹</button>
+    <div class="ava" id="cAva"></div>
+    <div class="t"><b id="cName"></b><small id="cMemNote"></small></div>
+    <button class="icon" onclick="openMem()" aria-label="記憶">🧠</button>
+    <button class="icon" onclick="editChar(cur)" aria-label="編輯">✏️</button>
+  </div>
+  <div id="msgs"></div>
+  <div id="errBox"></div>
+  <div class="composer">
+    <textarea id="inp" rows="1" placeholder="說點什麼…"></textarea>
+    <button class="send" id="sendBtn" onclick="send()">➤</button>
+  </div>
+</section>
+
+<!-- 設定 -->
+<section id="settings" class="view">
+  <header><button class="icon" onclick="go('home')">‹</button><h1>設定</h1></header>
+  <label>Gemini 金鑰</label>
+  <input id="s_key" type="password" autocomplete="off" placeholder="貼上妳的金鑰">
+  <p class="note">金鑰只存在這支手機，不會傳到 Google 以外的地方。</p>
+  <label>模型名</label><input id="s_model" placeholder="gemini-3.5-flash">
+  <p class="note">平常不用改。如果一直出現「忙不過來」，可以換別的模型名試試。</p>
+  <div class="row"><button class="btn" onclick="saveSettings()">儲存</button></div>
+  <label style="margin-top:30px">換手機／備份</label>
+  <div class="row" style="margin-top:0">
+    <button class="btn ghost" onclick="exportAll()">匯出全部</button>
+    <button class="btn ghost" onclick="document.getElementById('imp').click()">匯入</button>
+    <input type="file" id="imp" accept=".json,application/json" style="display:none" onchange="importAll(this)">
+  </div>
+  <p class="note">匯出會存成一個檔，裡面有所有角色、對話和記憶（不含金鑰）。</p>
+</section>
+
+<!-- 記憶面板 -->
+<div class="sheet" id="memSheet" onclick="if(event.target===this)closeMem()">
+  <div class="in">
+    <h2>🧠 角色記得的事</h2>
+    <p class="note">每聊 6 輪會自動整理一次。妳也可以直接改。</p>
+    <div id="memFields"></div>
+    <div class="row">
+      <button class="btn" onclick="saveMem()">儲存</button>
+      <button class="btn ghost" onclick="updateMemory(true)">現在整理</button>
+      <button class="btn danger" onclick="clearMem()">清空記憶</button>
+      <button class="btn danger" onclick="clearChat()">清空對話</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== 資料 =====
+const STORE = 'myCharChat.v1';
+const MEM_KEYS = [
+  ['fixed', '固定設定', '不會變的事：身分、外表、重要背景'],
+  ['timeline', '事件時間線', '依序發生過的事'],
+  ['relations', '人物關係', '角色和妳、和其他人之間的關係變化'],
+  ['scene', '目前場景', '現在在哪裡、在做什麼、氣氛'],
+  ['details', '細節', '小事：喜好、約定、說過的梗']
+];
+const COLORS = ['#ff7aa8', '#8f7bff', '#4cc9f0', '#2ec4b6', '#f4a261', '#e76f51', '#9b5de5', '#6c757d'];
+const MEM_EVERY = 6;
+
+let S = load();
+let cur = null;      // 目前聊天的角色 id
+let editing = null;  // 目前編輯的角色 id（null＝新角色）
+let pickColor = COLORS[0];
+let busy = false;
+
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE));
+    if (s && Array.isArray(s.chars)) return s;
+  } catch (e) {}
+  return { chars: [], settings: { key: '', model: 'gemini-3.5-flash' } };
+}
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(S)); }
+  catch (e) { toast('存不進去：手機空間可能滿了'); }
+}
+const byId = id => S.chars.find(c => c.id === id);
+const $ = id => document.getElementById(id);
+const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function toast(t) { const el = $('toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(toast.h); toast.h = setTimeout(() => el.style.display = 'none', 2200); }
+function blankMem() { const m = {}; MEM_KEYS.forEach(([k]) => m[k] = ''); return m; }
+
+// ===== 畫面切換 =====
+function go(v) {
+  document.querySelectorAll('.view').forEach(e => e.classList.remove('on'));
+  $(v).classList.add('on');
+  if (v === 'home') renderHome();
+  if (v === 'settings') { $('s_key').value = S.settings.key || ''; $('s_model').value = S.settings.model || 'gemini-3.5-flash'; }
+  window.scrollTo(0, 0);
+}
+
+// ===== 1. 角色卡牆 =====
+function renderHome() {
+  $('grid').innerHTML = S.chars.map(c => `
+    <button class="card" onclick="openChat('${c.id}')">
+      <div class="face" style="background:linear-gradient(160deg,${c.color},#14121c)">${esc(c.emoji || '✨')}<span class="name">${esc(c.name)}</span></div>
+      <div class="intro">${esc(c.intro || '')}</div>
+    </button>`).join('');
+  $('empty').style.display = S.chars.length ? 'none' : 'block';
+}
+
+// ===== 2. 角色編輯 =====
+function editChar(id) {
+  editing = id || null;
+  const c = id ? byId(id) : { emoji: '', name: '', intro: '', persona: '', style: '', relation: '', world: '', opening: '', examples: [], color: COLORS[Math.floor(Math.random() * COLORS.length)] };
+  $('editTitle').textContent = id ? '編輯角色' : '新角色';
+  $('delBtn').style.display = id ? '' : 'none';
+  ['emoji', 'name', 'intro', 'persona', 'style', 'relation', 'world', 'opening'].forEach(k => $('f_' + k).value = c[k] || '');
+  pickColor = c.color;
+  $('swatches').innerHTML = COLORS.map(col => `<button class="sw${col === pickColor ? ' on' : ''}" style="background:${col}" onclick="pickColor='${col}';document.querySelectorAll('.sw').forEach(s=>s.classList.toggle('on',s.style.background===this.style.background))"></button>`).join('');
+  $('exList').innerHTML = '';
+  (c.examples || []).forEach(e => addEx(e));
+  go('edit');
+}
+function addEx(e) {
+  const d = document.createElement('div');
+  d.className = 'ex';
+  d.innerHTML = `<textarea class="exu" placeholder="我說…">${esc(e && e.u)}</textarea>
+    <textarea class="exa" style="margin-top:6px" placeholder="角色回…">${esc(e && e.a)}</textarea>
+    <button class="note" style="margin-top:4px" onclick="this.parentNode.remove()">刪掉這組</button>`;
+  $('exList').appendChild(d);
+}
+function saveChar() {
+  const name = $('f_name').value.trim();
+  if (!name) { toast('先幫角色取個名字'); return; }
+  const v = {};
+  ['emoji', 'name', 'intro', 'persona', 'style', 'relation', 'world', 'opening'].forEach(k => v[k] = $('f_' + k).value.trim());
+  v.color = pickColor;
+  v.examples = [...document.querySelectorAll('#exList .ex')].map(d => ({ u: d.querySelector('.exu').value.trim(), a: d.querySelector('.exa').value.trim() })).filter(x => x.u || x.a);
+  if (editing) Object.assign(byId(editing), v);
+  else S.chars.unshift(Object.assign({ id: 'c' + Date.now().toString(36), msgs: [], memory: blankMem(), sinceMem: 0 }, v));
+  save();
+  toast('存好了');
+  if (editing && cur === editing) openChat(editing); else go('home');
+}
+function delChar() {
+  if (!editing || !confirm('確定刪掉這個角色？對話和記憶也會一起刪掉。')) return;
+  S.chars = S.chars.filter(c => c.id !== editing);
+  save(); go('home');
+}
+
+// ===== 3. 聊天 =====
+function openChat(id) {
+  cur = id;
+  const c = byId(id);
+  $('cAva').textContent = c.emoji || '✨';
+  $('cAva').style.background = c.color;
+  $('cName').textContent = c.name;
+  if (!c.msgs.length && c.opening) { c.msgs.push({ r: 'model', t: c.opening }); save(); }
+  setErr('');
+  renderMsgs();
+  go('chat');
+  renderMsgs();
+}
+function memNote(c) { $('cMemNote').textContent = '再聊 ' + Math.max(0, MEM_EVERY - (c.sinceMem || 0)) + ' 輪整理記憶'; }
+function renderMsgs(typing) {
+  const c = byId(cur);
+  const last = c.msgs.length - 1;
+  $('msgs').innerHTML = c.msgs.map((m, i) => `
+    <div class="m ${m.r}" onclick="this.classList.toggle('sel')"><div class="tx">${esc(m.t)}</div><div class="acts">${i === last && m.r === 'model' && i > 0 ? `<button onclick="event.stopPropagation();regen()">重新生成</button>` : ''}<button onclick="event.stopPropagation();delMsg(${i})">刪除</button></div>
+    </div>`).join('') + (typing ? '<div class="m model typing">…</div>' : '');
+  memNote(c);
+  const box = $('msgs'); box.scrollTop = box.scrollHeight;
+}
+function setErr(t) { $('errBox').innerHTML = t ? `<div class="err">${t}</div>` : ''; }
+function delMsg(i) { const c = byId(cur); c.msgs.splice(i, 1); save(); renderMsgs(); }
+
+function systemText(c) {
+  const mem = MEM_KEYS.map(([k, label]) => c.memory[k] ? `【${label}】\n${c.memory[k]}` : '').filter(Boolean).join('\n\n');
+  const ex = (c.examples || []).map(e => `我：${e.u}\n${c.name}：${e.a}`).join('\n\n');
+  return [
+    `你現在是「${c.name}」，在一個角色扮演故事裡跟使用者（稱為「我」）對話。全程用繁體中文，只用${c.name}的身分說話，不要跳出角色、不要說自己是 AI、不要替「我」說話或做決定。動作或神情可以用（ ）寫。`,
+    c.persona && `【性格】\n${c.persona}`,
+    c.style && `【說話風格】\n${c.style}`,
+    c.relation && `【跟「我」的關係】\n${c.relation}`,
+    c.world && `【世界觀】\n${c.world}`,
+    ex && `【說話範例】\n${ex}`,
+    mem && `【你記得的事（要跟這些一致）】\n${mem}`
+  ].filter(Boolean).join('\n\n');
+}
+
+async function callGemini(body) {
+  const key = (S.settings.key || '').trim();
+  if (!key) throw new Error('還沒設定金鑰：到首頁右上角 ⚙️ 貼上 Gemini 金鑰。');
+  const model = (S.settings.model || 'gemini-3.5-flash').trim();
+  let res;
+  try {
+    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+  } catch (e) { throw new Error('連不上網路：確認有網路，再按一次送出。'); }
+  if (!res.ok) {
+    let detail = '';
+    try { detail = (await res.json()).error.message || ''; } catch (e) {}
+    const why = {
+      400: /API key/i.test(detail) ? '金鑰不對：到 ⚙️ 重新貼一次金鑰。' : '這次的內容 Google 不接受，換個說法試試。',
+      403: '金鑰沒有權限：到 ⚙️ 確認金鑰是 Gemini 的那一把。',
+      404: `找不到模型「${model}」：到 ⚙️ 把模型名改成 gemini-3.5-flash。`,
+      429: '用得太快或今天的免費額度用完了：等一分鐘再試；一直這樣就明天再玩。',
+      503: 'Google 現在太多人在用，忙不過來：等一下再按一次送出。'
+    }[res.status] || `出錯了（${res.status}）：等一下再試。`;
+    throw new Error(why);
+  }
+  const j = await res.json();
+  const cand = j.candidates && j.candidates[0];
+  const text = cand && cand.content && cand.content.parts ? cand.content.parts.map(p => p.text || '').join('') : '';
+  if (!text) throw new Error(cand && cand.finishReason === 'SAFETY' ? '這段被 Google 的安全規則擋下來了，換個說法試試。' : '這次沒有回應，再按一次試試。');
+  return text.trim();
+}
+
+function chatBody(c) {
+  const hist = c.msgs.slice(-40);
+  const contents = hist.map(m => ({ role: m.r === 'user' ? 'user' : 'model', parts: [{ text: m.t }] }));
+  while (contents.length && contents[0].role === 'model') contents.shift(); // 第一則要是使用者說的
+  if (hist[0] && hist[0].r === 'model' && c.opening) contents.unshift({ role: 'user', parts: [{ text: '（故事開始）' }] }, { role: 'model', parts: [{ text: hist[0].t }] });
+  return { systemInstruction: { parts: [{ text: systemText(c) }] }, contents, generationConfig: { temperature: 0.95 } };
+}
+
+async function send() {
+  if (busy) return;
+  const c = byId(cur);
+  const t = $('inp').value.trim();
+  if (!t) return;
+  c.msgs.push({ r: 'user', t });
+  $('inp').value = '';
+  save();
+  await reply(c);
+}
+async function regen() {
+  if (busy) return;
+  const c = byId(cur);
+  if (c.msgs.length && c.msgs[c.msgs.length - 1].r === 'model') c.msgs.pop();
+  save();
+  await reply(c, true);
+}
+async function reply(c, isRegen) {
+  busy = true; $('sendBtn').disabled = true; setErr('');
+  renderMsgs(true);
+  try {
+    const text = await callGemini(chatBody(c));
+    c.msgs.push({ r: 'model', t: text });
+    if (!isRegen) c.sinceMem = (c.sinceMem || 0) + 1;
+    save();
+    renderMsgs();
+    if (c.sinceMem >= MEM_EVERY) updateMemory(false);
+  } catch (e) {
+    renderMsgs();
+    setErr(esc(e.message) + '（妳剛剛那句還在，不會不見）');
+  } finally { busy = false; $('sendBtn').disabled = false; }
+}
+
+// ===== 4. 五格記憶 =====
+function openMem() {
+  const c = byId(cur);
+  $('memFields').innerHTML = MEM_KEYS.map(([k, label, hint]) => `<label>${label}</label><textarea id="mem_${k}" placeholder="${hint}">${esc(c.memory[k])}</textarea>`).join('');
+  $('memSheet').classList.add('on');
+}
+function closeMem() { $('memSheet').classList.remove('on'); }
+function saveMem() { const c = byId(cur); MEM_KEYS.forEach(([k]) => c.memory[k] = $('mem_' + k).value.trim()); save(); closeMem(); toast('記憶存好了'); }
+function clearMem() { if (!confirm('清空這個角色的五格記憶？')) return; const c = byId(cur); c.memory = blankMem(); c.sinceMem = 0; save(); openMem(); }
+function clearChat() { if (!confirm('清空對話，從開場白重新開始？（記憶會留著）')) return; const c = byId(cur); c.msgs = c.opening ? [{ r: 'model', t: c.opening }] : []; c.sinceMem = 0; save(); closeMem(); renderMsgs(); }
+
+async function updateMemory(manual) {
+  const c = byId(cur);
+  if (manual && $('memSheet').classList.contains('on')) MEM_KEYS.forEach(([k]) => c.memory[k] = $('mem_' + k).value.trim());
+  const recent = c.msgs.slice(-MEM_EVERY * 2 - 2).map(m => (m.r === 'user' ? '我' : c.name) + '：' + m.t).join('\n');
+  const prompt = `你是故事記錄員。下面是角色「${c.name}」目前的記憶（五格）和最近的對話。請把對話裡的新資訊合併進記憶，保留舊的重要內容，刪掉重複，每格精簡條列（每條一行，以「・」開頭）。
+只回傳 JSON，鍵固定為 fixed（固定設定）、timeline（事件時間線）、relations（人物關係）、scene（目前場景，只寫現在）、details（細節），值都是字串。
+
+目前記憶：
+${JSON.stringify(c.memory, null, 1)}
+
+最近對話：
+${recent}`;
+  try {
+    const text = await callGemini({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, responseMimeType: 'application/json' } });
+    let obj;
+    try { obj = JSON.parse(text.replace(/^```(json)?|```$/g, '').trim()); } catch (e) { obj = null; }
+    if (!obj || MEM_KEYS.some(([k]) => typeof obj[k] !== 'string')) { toast('記憶這次沒整理成功，舊的都還在'); return; }
+    MEM_KEYS.forEach(([k]) => c.memory[k] = obj[k].trim());
+    c.sinceMem = 0;
+    save();
+    if (cur === c.id) memNote(c);
+    if ($('memSheet').classList.contains('on')) openMem();
+    toast('🧠 記憶整理好了');
+  } catch (e) {
+    toast('記憶這次沒整理成功，舊的都還在');
+  }
+}
+
+// ===== 5. 設定 =====
+function saveSettings() {
+  S.settings.key = $('s_key').value.trim();
+  S.settings.model = $('s_model').value.trim() || 'gemini-3.5-flash';
+  save(); toast('設定存好了'); go('home');
+}
+
+// ===== 6. 匯出／匯入 =====
+function exportAll() {
+  const data = { app: 'myCharChat', v: 1, at: new Date().toISOString(), chars: S.chars };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
+  a.download = '我的角色備份.json';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function importAll(inp) {
+  const f = inp.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (!Array.isArray(d.chars)) throw 0;
+      const have = new Set(S.chars.map(c => c.id));
+      let n = 0;
+      d.chars.forEach(c => { if (c && c.id && c.name) { if (have.has(c.id)) S.chars = S.chars.filter(x => x.id !== c.id); c.memory = Object.assign(blankMem(), c.memory || {}); c.msgs = c.msgs || []; S.chars.push(c); n++; } });
+      save(); toast(`匯入了 ${n} 個角色`); go('home');
+    } catch (e) { toast('這個檔看不懂，確認是匯出的那個檔'); }
+    inp.value = '';
+  };
+  r.readAsText(f);
+}
+
+// ===== 啟動 =====
+$('inp').addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px'; });
+if (!S.chars.length) {
+  S.chars.push({
+    id: 'demo', emoji: '🌙', color: '#8f7bff', name: '韓景', intro: '冷淡的學生會長，只對妳例外（範例角色，可以改可以刪）',
+    persona: '外表冷淡、做事一絲不苟，其實很會照顧人；不擅長表達情緒，緊張時會推眼鏡。',
+    style: '句子短，語氣平淡，偶爾毒舌；只叫對方的名字，不用暱稱。',
+    relation: '和「我」是青梅竹馬，國中分開，高二在學生會重逢。',
+    world: '現代台灣的高中，學期剛開始，學生會正在準備校慶。',
+    opening: '（放下手中的文件，抬頭看妳一眼）……妳遲到了七分鐘。坐吧，校慶的企劃書還差妳那一份。',
+    examples: [{ u: '你在生氣嗎？', a: '沒有。（推了一下眼鏡）……只是在算妳欠我幾杯奶茶。' }],
+    msgs: [], memory: blankMem(), sinceMem: 0
+  });
+  save();
+}
+renderHome();
+</script>
+</body>
+</html>
