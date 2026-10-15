@@ -1,0 +1,55 @@
+# #487 VoiceStudio 試跑報告（02_run）
+
+produced-by: Celta@server1，2026-10-16 06:5x 台北。數字都是當下讀的，讀的時間寫在旁邊。
+
+## 一句話
+
+VoiceStudio v0.5.6 在 DGX 的 GPU 上跑得起來：中文合成 0.9 秒出一段 5.21 秒的音檔，轉寫 11.6 秒，字對但吐的是簡體、沒有標點。封網副本的四個外連目標全部連不出去，同一支探針在有網路的對照組全部連得上，所以「封網」這件事是被量到的，不是假設的。
+
+## 版本
+
+- VoiceStudio v0.5.6，commit 3915a62c。
+- 原始碼在 DGX `~/voicestudio_487/src`；雙載入修正版在 `src_fix`，diff 在 `gpu/fix/model_manager.diff`。
+- 映像：`vs487:built-1013`（89aca5aa6011，22.5GB，CPU 版建置）、`vs487:gpu-1015`（0e46f7c4e3e4，32.4GB，GPU 版，10-14 22:56Z commit，`net/commit.log` COMMIT_RC=0）。
+
+## 試跑結果（`net/cells_sealed.out`，10-14 22:56–22:57Z）
+
+- 健康檢查：status ok，device「cuda (NVIDIA GB10)」，version 0.5.6。
+- 合成：句子「今天下午三點，我們在台北開會，討論語音工具的試跑結果。」0.9 秒回 250,158 位元組的 wav，24kHz、5.21 秒。
+- 轉寫：11.6 秒，得到「今天下午三点 我们在台北开会 讨论语音工具的试跑结果」。每個字都對，但是簡體、標點變空白。給 Ray 用要另外轉繁體。
+- 封存：`net/SHA256SUMS` 釘了 serve_net.sh、cells_net.py、egress.py 與三份輸出。
+
+## 外連紀錄（`net/egress.py`，四個目標：huggingface.co:443、1.1.1.1:443、mobile.events.data.microsoft.com:443、8.8.8.8:53）
+
+- 封網副本（`control_egress.out`）：四個全失敗。huggingface 解不出名字，1.1.1.1 與 8.8.8.8 網路不可達，微軟遙測位址被 hosts 封鎖導到本機、連線被拒。
+- CPU 版對照（`control_cpu_egress.out`）：與封網副本逐位元組相同（sha256 f371ebc7）。
+- 陽性對照（`positive_control_egress.out`）：同一支探針在有網路的環境四個全連上。探針本身會說「連得上」，所以上面的全失敗是有判別力的。
+- 服務起法另加三道：`HF_HUB_OFFLINE=1`、`TRANSFORMERS_OFFLINE=1`、`OMNIVOICE_ANALYTICS_DISABLED=1`，每次起服務先跑 `gpu/block_telemetry.sh` 補 hosts（容器重開會清掉 hosts）。
+
+## 資源（10-16 06:48 台北讀）
+
+- GPU：vs487gpu 的服務程序 pid 1588512 佔 2,342 MiB（`nvidia-smi --query-compute-apps`）。同時間 GPU 上還有 llama-server（pid 796800，24,760 MiB）與 pid 34664（2,810 MiB），不屬於本票。
+- 容器：vs487gpu（Up 47 小時）、vs487cpu（Up 2 天）都還開著；vs487（建置用）已 Exited。三個都掛 `~/voicestudio_487 → /w`，網路模式 bridge。
+
+## 遺留
+
+- `connwatch.py` 兩個程序還在跑（pid 1962467 的 bash 包 1962546 的 python3，已跑 2 天），持續寫 `/w/trial/peers.log`。這是第一輪試跑看連線用的，沒有收掉。移除時一起停。
+
+## 移除方法（還沒執行；刪映像屬不可復原，等 Ray）
+
+1. 停連線看守：先 `ps -o pid,cmd -p 1962467,1962546` 核指令列，再用數字 pid 停。
+2. 停服務與容器：`docker stop vs487gpu vs487cpu`，再 `docker rm vs487gpu vs487cpu vs487`。停掉後 GPU 那 2,342 MiB 會釋放，用 `nvidia-smi --query-compute-apps` 核 pid 1588512 消失。
+3. 映像：`vs487:gpu-1015` 32.4GB、`vs487:built-1013` 22.5GB，合計約 55GB。Sol 06:46 定 22GB 那份先留；刪任何一份要 Ray 點頭。
+4. 工作目錄 `~/voicestudio_487/`（原始碼、hf 模型快取、試跑紀錄）留作證物，要刪也等 Ray。
+
+## 並排音檔
+
+`/team/runs/20261013/voicestudio/compare/`：
+- `voicestudio_zh.wav`（sha256 51158812，5.21 秒）＝上面合成那格的輸出。
+- `cosyvoice2_zh.wav`（sha256 0bc457cd，5.04 秒，生成 5.79 秒）＝我們原有的 CosyVoice2-0.5B，同一句，用 `~/tts_poc/ref/promptAB.wav` 當參考人聲。產生腳本 `cosy_one.py` 與 log 在同資料夾。
+- 10-16 06:5x 已貼 Discord 給 Ray 聽（訊息 1560425038761558099）。哪個自然由 Ray 判。
+
+## 還沒做
+
+- 主機連得到 8899 的轉發方案：先貼給 Sol，點頭才做。
+- 轉寫的簡轉繁沒有接。
