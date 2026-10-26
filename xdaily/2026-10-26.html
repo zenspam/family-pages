@@ -1,0 +1,32 @@
+<title>X-daily 2026-10-26</title><style>:root{--bg:#fbfbf9;--fg:#1f2326;--mute:#5d6770;--rule:#d9dcd6;--acc:#2f5d62;--warn:#8a5a12;--warnbg:#f6efe0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.75 "Noto Sans TC",system-ui,sans-serif;margin:0;padding:24px 16px}
+main{max-width:42rem;margin:0 auto}h1{font-size:1.6rem;line-height:1.3;margin:0 0 .3rem}
+h2{font-size:1.1rem;margin:2rem 0 .5rem;padding-top:1rem;border-top:1px solid var(--rule);color:var(--acc)}
+.src{color:var(--mute);font-size:.9rem}.warn{background:var(--warnbg);color:var(--warn);border-left:3px solid var(--warn);padding:.4rem .7rem}
+a{color:var(--acc);word-break:break-all}p{margin:.6rem 0}.link{font-size:.85rem}</style><main><p class="warn">這是 Grok 原稿，Argon 潤稿版退回：比對沒過：{&quot;error&quot;: &quot;ModuleNotFoundError: No module named &#x27;playwright&#x27;&quot;}</p><h1>X-daily 2026-10-26</h1>
+<p class="src">Grok 讀 X 公開帖寫稿；沒有人工逐句核對，數字都是作者自報。</p>
+<h2>今日主線</h2>
+<p>xiax 說 Strata 0.2.6 讓 16G 顯卡本地跑 DeepSeek V4.1-Flash 速度翻倍</p>
+<p>Claude Qin 說把能程式化判定的規則移出 prompt，剩下只留必須問人的邊界</p>
+<p>張理壯 說 Codex 裡 GPT-6.1 Sol 最高檔比 Astra 少 1 分但成本不到五分之一</p>
+<h2>xiax｜AI &amp; Agents @xiax0603</h2>
+<p>本地速度：他說 MIT 開源本地 AI 工具 Strata 迎來 0.2.6 版本升級。他說以 RTX 4080 Super 16G 搭配 128G 記憶體實測，開啟 IQ2_XXS 量化、8K 上下文條件下，生成速度從 10token/s 提升至 16.7–22.7token/s，Prefill 階段同樣翻倍。他說官方針對大記憶體設備做了專家載入 RAM 優化，Faster 模式還能再追加 16% 速度增益。他說 DeepSeek V4.1-Flash-1017 本身基準成績同步上漲，Terminal-Bench 提升 11.1 分。</p>
+<p class="link"><a href="https://x.com/xiax0603/status/2114689356132929561">x.com/xiax0603/status/2114689356132929561</a></p>
+<h2>Claude Qin @baboonAI4S</h2>
+<p>規則拆分：他說拆了兩條出去。凡是能拿工具返回值判定的（欄位在不在 schema、檔案是否存在）都改成程式碼裡的前置校驗，不進 prompt。剩下 4 條只留「什麼情況下必須停下來問人」這類沒法程式化的。他說再往下拆就得讓模型自己推斷規則，延遲會漲回來，所以停在這裡。</p>
+<p class="link"><a href="https://x.com/baboonAI4S/status/2114688225516392939">x.com/baboonAI4S/status/2114688225516392939</a></p>
+<p>成本分母：他說分母比比率本身更重要。他們記錄每次嘗試的花費再除以已驗證完成數，分開回報有上限與無上限的執行。他說有一個注意點：工具錯誤導致的重試會膨脹嘗試次數，所以不穩定的 shell 工具最後看起來像預算問題。他們因此也回報「完成數除以（嘗試數減去工具失敗嘗試數）」。</p>
+<p class="link"><a href="https://x.com/baboonAI4S/status/2114688376804925513">x.com/baboonAI4S/status/2114688376804925513</a></p>
+<p>合併攔截：他說攔截合併。提交前鉤子碰到主幹 immutable 區塊直接 exit 2，不給過。override 要兩個人同時點，實際上等於不可用。只有子樹裡的非 immutable 漂移才降級成告警 + label 排隊，所以告警永遠只落在「可以晚點看」的那一類上。</p>
+<p class="link"><a href="https://x.com/baboonAI4S/status/2114688074718556399">x.com/baboonAI4S/status/2114688074718556399</a></p>
+<h2>張理壯 @nextaurame</h2>
+<p>Codex 成本：他說 Codex 裡 GPT-6 Astra 最高檔，Coding Agent Index v2.0 得 55 分，每個任務 7.04 美元，24.8 分鐘。GPT-6.1 Sol 最高檔得 54 分，1.50 美元，23.7 分鐘。他說少 1 分，成本不到五分之一，還更快一點。他說 Codex 用戶要省，換 Sol。</p>
+<p class="link"><a href="https://x.com/nextaurame/status/2114688051184316528">x.com/nextaurame/status/2114688051184316528</a></p>
+<h2>冬青 Trywise @dongqingtry</h2>
+<p>Nanbeige 開源：他說 BOSS 直聘背後的 Nanbeige 昨天開源了 Nanbeige4.3-33B，Apache 2.0 協議、512K 上下文，主打 agentic coding 和辦公 cowork。他說以下全部為官方模型卡自報，無獨立複現。Terminal-Bench 2.1：80.9 vs Qwen3.8-27B 的 73.0；DeepSWE：65.5 vs 42.5。他說 BF16 權重約需 66GB 顯存，官方配方是 4 卡張量並行；4-bit 量化版約 20GB。他說它是 Nanbeige4.3 系列的「教師模型」，後續要蒸餾給更小的 3B 模型。</p>
+<p class="link"><a href="https://x.com/dongqingtry/status/2114689298926915967">x.com/dongqingtry/status/2114689298926915967</a></p>
+<h2>Nathan AI Lab @KOF97AI</h2>
+<p>開源網關：他說別再被各種三方 AI 聚合平台吃暗加價了。今天 GitHub 上屠榜的開源專案 Experiential，直接把模型網關做成了透明基礎設施。他說它支援 BYOK 和全網 1000+ 模型直連，不收一分抽成，一個本地端口就能把 Cursor、終端 Agent 和本地腳本全部接管。他說最狠的是它自帶成本優化器：會根據真實請求的複雜度，自動把能用輕量模型解決的任務分流過去，作者自報每月能砍掉 40% 的 Token 開銷。</p>
+<p class="link"><a href="https://x.com/KOF97AI/status/2114689036736684250">x.com/KOF97AI/status/2114689036736684250</a></p></main>
