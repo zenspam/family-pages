@@ -1,0 +1,38 @@
+<title>X-daily 10-31</title>
+<style>
+:root{--bg:#fbfbf9;--fg:#1f2326;--mute:#5d6770;--rule:#d9dcd6;--acc:#2f5d62;--warn:#8a5a12;--warnbg:#f6efe0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.75 "Noto Sans TC",system-ui,sans-serif;margin:0;padding:24px 16px}
+main{max-width:42rem;margin:0 auto}h1{font-size:1.6rem;line-height:1.3;margin:0 0 .3rem}
+h2{font-size:1.1rem;margin:2.2rem 0 .6rem;padding-top:1rem;border-top:1px solid var(--rule);color:var(--acc)}
+.src,.foot{color:var(--mute);font-size:.9rem}a{color:var(--acc);word-break:break-all}
+.unv{background:var(--warnbg);color:var(--warn);border-left:3px solid var(--warn);padding:.35rem .7rem;font-size:.92rem;margin:.4rem 0}
+.link{font-size:.85rem}li{margin:.4rem 0}
+.lead{font-size:1.15rem;line-height:1.7;margin:1rem 0 .5rem;padding:.8rem 1rem;border-left:4px solid var(--acc);background:var(--warnbg)}
+</style>
+<main>
+<h1>X-daily 10-31</h1>
+<p class="src">Grok 讀 X 公開帖寫草稿，Gemini Argon（網頁）潤飾文筆；程式核過每個數字與連結都出自草稿。內容未經人工逐句核對。</p>
+<p class="lead">用 AI 寫程式老是出錯的人，把自己的聊天記錄丟給 AI 總結踩過的坑，寫成規則檔就能少走彎路。</p>
+<h2>李天才｜TianCai @Lniosytest</h2>
+<p>他說用 AI 寫程式老是翻車的人，要把自己的聊天記錄丟給 AI 總結出踩過的坑，寫進全局 AGENTS.md，這是一種給 AI 看的規則說明書。</p>
+<p><b>對你有什麼用。</b>你可以把讀取權限、檔案路徑索引、驗收標準、不准刪倉庫和不准擅自 push 也就是上傳程式碼的規定寫清楚，避免 AI 亂改或把開發記錄當成源碼傳上去。</p>
+<p class="link"><a href="https://x.com/Lniosytest/status/2116359557551128719">x.com/Lniosytest/status/2116359557551128719</a></p>
+<h2>Cindy @askmycindy</h2>
+<p>她分享了他們在自己電腦上驗收程式的流程，把寫完程式和驗收通過分開，每個任務用獨立的 worktree 和分支，也就是各自隔離的工作區，讓 AI 實際操作介面跑通核心場景。</p>
+<p><b>對你有什麼用。</b>你在同時開發很多功能時可以把程式碼和資料隔開，不碰正式環境的資料，並確定程式真的能跑、資料庫能正常讀寫和恢復，而不是只有編譯通過而已。</p>
+<p class="link"><a href="https://x.com/askmycindy/status/2116415075745734918">x.com/askmycindy/status/2116415075745734918</a></p>
+<h2>如意｜Ruyi @ruyi3699</h2>
+<p>她介紹了 PixelRAG，這是一種不把網頁和 PDF 硬轉成文字，而是直接截圖靠畫面來找資料的工具，她說官方測試宣稱最高有 18.1% 的準確率提升，還宣稱能把 Agent 也就是 AI 助手的 Token 成本，也就是算字數收費的額度壓低約 10 倍。</p>
+<p><b>對你有什麼用。</b>你處理有表格、圖表或複雜排版的檔案時不會弄丟結構，而且她說目前已經預建好 828 萬個 Wikipedia 頁面索引，還有免費 API 也就是程式連接埠，跟 Claude 插件能直接體驗。</p>
+<p class="link"><a href="https://x.com/ruyi3699/status/2116501188007080295">x.com/ruyi3699/status/2116501188007080295</a></p>
+<h2>棈澧 @hodu382759</h2>
+<p>他介紹了寫程式的開源 Agent 叫作 Cline，開源就是程式碼公開讓人免費使用，他說這個工具在 GitHub 有 7 萬星，採用 Apache 2.0 協議這種免費授權規則。</p>
+<p><b>對你有什麼用。</b>你可以在 VS Code、JetBrains 或終端機這些寫程式的軟體裡用它改檔案跟跑命令，每一步都要你點同意才執行，還能自己選模型或接自己電腦上的 Ollama 來跑。</p>
+<p class="link"><a href="https://x.com/hodu382759/status/2116453623127323072">x.com/hodu382759/status/2116453623127323072</a></p>
+<h2>ElioEx @elioex0</h2>
+<p>他說 OpenAI 幫把 Agent 會話放到雲端跑的介面 Agents API 加了後台壓縮功能，並且正在實驗讓模型理解把 CI 修復，也就是自動測試與整理的流程控制在十分鐘內完成的時間感知功能，不過他說原帖沒給到點強制停止的保證。</p>
+<p><b>對你有什麼用。</b>你用這個介面跑長任務時可以在後台完成長對話壓縮，少一次乾等，還能在會話跑著的時候更新工具列表。</p>
+<p class="link"><a href="https://x.com/elioex0/status/2116360511465873815">x.com/elioex0/status/2116360511465873815</a></p>
+</main>
