@@ -8,7 +8,7 @@ h1{font-size:20px;margin:4px 0} h2{font-size:16px;margin:20px 0 6px;color:var(--
 .c.closed{border-left-color:var(--line);opacity:.8} summary{cursor:pointer} small,.m{color:var(--mut)}
 .b{font-size:14px;white-space:normal;overflow-wrap:anywhere} #age{font-weight:bold} .stale{color:var(--red)} .c.red{border-left-color:var(--red)} #live-warn{display:none;font-weight:bold;margin:6px 0}
 </style></head><body><h1>Nova 工作票狀態</h1>
-<p><small>產生於 2026-11-01 00:02 台北｜<span id="age"></span>｜點標題看最後一則進度。</small></p><p><small><b>範圍</b>：近 4 天內有更新的票（四天內新開的全部在內，也含更早開、近期有動的），進行中 1、已關 0。這不是全部票的盤點。<br>不列 2 張：標題關鍵字（家人／私人／交易） 2。理由：家人與私人內容不上公開網址；交易票含 Ray 的持股與價位；資安票會指出弱點位置。</small></p>
+<p><small>產生於 2026-11-01 00:12 台北｜<span id="age"></span>｜點標題看最後一則進度。</small></p><p><small><b>範圍</b>：近 4 天內有更新的票（四天內新開的全部在內，也含更早開、近期有動的），進行中 1、已關 0。這不是全部票的盤點。<br>不列 2 張：標題關鍵字（家人／私人／交易） 2。理由：家人與私人內容不上公開網址；交易票含 Ray 的持股與價位；資安票會指出弱點位置。</small></p>
 <h2>紅燈（即時）</h2><p><small>「預警」＝產物 20 分鐘沒動，可能只是慢，不是故障；30 分鐘沒動才是正式告警。</small></p><div id="live-warn" class="stale"></div><div id="live"><small>讀取中…</small></div><p><small id="live-at"></small></p>
 <script>
 var LU="https://api.github.com/repos/zenspam/family-pages/contents/status/data.json?ref=status-data",LP=90000,STALE=12,MAXB=600000,KEY="live479:"+LU,lastOk=null,fails=0,timer=null,blockedUntil=0;
@@ -44,5 +44,5 @@ function live(){
 if(lastOk)draw(lastOk,"還沒讀到新資料");live();document.addEventListener("visibilitychange",function(){if(!document.hidden)live()});
 </script>
 <h2>進行中</h2><details class='c open'><summary><b>#538</b> [jvg] Given Ray 10-31 14:11「nova team 設計的 evolving 交給你們」When 跑 X Daily 試點 Then 依期限交付並留<br><small>進行中｜負責 celta｜更新 10-31 23:11</small></summary><p class='m'>最後一則（celta 10-31 23:11）</p><div class='b'>**roadmap 日檢 2026-10-31（Celta，23:0x 台北；cron 23:03 觸發，首次）**<br><br>roadmap 日檢 2026-10-31｜階段：第 2 階段（一條線可靠完成，首場景 X Daily）進行中；第 1、3 階段只有 action item 在動（SoD、排程），沒有達標證據｜今天動了的達標證據：第 2 項「錯誤由產出者以外的人抓到」三筆——Celta46 對驗收器 M6 找出三個漏判、已修（2598）；Celta 獨立重跑 Sai 的 run.log（2594）；A6 看門狗 Celta 外驗（2603）。第 3 項「異常由團隊主動發現」今天反證兩筆：19:39 #538 停擺、19:58 Celta46 署名錯，都是 Ray 先發現。第 1 項「實際投入與明寫順序一致」：無讀數，試點線今天沒有被插單｜今天插入的新需求與原順序的處置：①Ray 22:47 API 點數線→排成判斷題，掛在既有 A2／A4／X Daily 驗收之後，A1–A8 順序未改（2610）；②Ray 22:49／22:56 圓夢計畫題（家庭線）→當場答，不進本票；③Ray 20:26 高層目標、20:40 roadmap 三層→當晚寫進票說明，佔用 20:3x–21:3x，A3 驗收器骨架仍提前交（19:55）；#539 Midjourney 等 Ray 授權，未動｜卡住：claudeapi 席等 Ray 換鑰並貼餘額（金鑰檔 23:08 查仍是 10-08 20:14 台北、107 bytes，未動）；指標 4～7 沒有票在量，11-01 12:13 定量法｜下一個到期：11-01 04:00 GPT 鐘首跑（Celta 04:13 核）；11-01 12:00 A1 Sai 凍結規格；A6 已完成。<br><br>負責人＋下一步＋期限（閉環規則）：Sai 11-01 12:00 A1；Celta 11-01 12:13 A2、18:00 A3；Celta46 11-01 20:00 前貼三項擾動方式、22:00 首次花費讀數；Sol 11-01 04:00 GPT 鐘</div></details><h2>近 4 天已關</h2>
-<script>var g=new Date("2026-11-01T00:02:29.690777+08:00"),m=Math.round((Date.now()-g)/60000),a=document.getElementById("age");
+<script>var g=new Date("2026-11-01T00:12:31.446735+08:00"),m=Math.round((Date.now()-g)/60000),a=document.getElementById("age");
 a.textContent=m<1?"剛更新":m+" 分鐘前更新";if(m>30){a.textContent+="（過久，可能停更）";a.className="stale"}</script></body></html>
