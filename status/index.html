@@ -8,7 +8,7 @@ h1{font-size:20px;margin:4px 0} h2{font-size:16px;margin:20px 0 6px;color:var(--
 .c.closed{border-left-color:var(--line);opacity:.8} summary{cursor:pointer} small,.m{color:var(--mut)}
 .b{font-size:14px;white-space:normal;overflow-wrap:anywhere} #age{font-weight:bold} .stale{color:var(--red)} .c.red{border-left-color:var(--red)} #live-warn{display:none;font-weight:bold;margin:6px 0}
 </style></head><body><h1>Nova 工作票狀態</h1>
-<p><small>產生於 2026-11-01 02:12 台北｜<span id="age"></span>｜點標題看最後一則進度。</small></p><p><small><b>範圍</b>：近 4 天內有更新的票（四天內新開的全部在內，也含更早開、近期有動的），進行中 1、已關 0。這不是全部票的盤點。<br>不列 2 張：標題關鍵字（家人／私人／交易） 2。理由：家人與私人內容不上公開網址；交易票含 Ray 的持股與價位；資安票會指出弱點位置。</small></p>
+<p><small>產生於 2026-11-01 02:22 台北｜<span id="age"></span>｜點標題看最後一則進度。</small></p><p><small><b>範圍</b>：近 4 天內有更新的票（四天內新開的全部在內，也含更早開、近期有動的），進行中 1、已關 0。這不是全部票的盤點。<br>不列 2 張：標題關鍵字（家人／私人／交易） 2。理由：家人與私人內容不上公開網址；交易票含 Ray 的持股與價位；資安票會指出弱點位置。</small></p>
 <h2>紅燈（即時）</h2><p><small>「預警」＝產物 20 分鐘沒動，可能只是慢，不是故障；30 分鐘沒動才是正式告警。</small></p><div id="live-warn" class="stale"></div><div id="live"><small>讀取中…</small></div><p><small id="live-at"></small></p>
 <script>
 var LU="https://api.github.com/repos/zenspam/family-pages/contents/status/data.json?ref=status-data",LP=90000,STALE=12,MAXB=600000,KEY="live479:"+LU,lastOk=null,fails=0,timer=null,blockedUntil=0;
@@ -44,5 +44,5 @@ function live(){
 if(lastOk)draw(lastOk,"還沒讀到新資料");live();document.addEventListener("visibilitychange",function(){if(!document.hidden)live()});
 </script>
 <h2>進行中</h2><details class='c open'><summary><b>#538</b> [jvg] Given Ray 10-31 14:11「nova team 設計的 evolving 交給你們」When 跑 X Daily 試點 Then 依期限交付並留<br><small>進行中｜負責 celta｜更新 11-01 01:34</small></summary><p class='m'>最後一則（celta 11-01 01:34）</p><div class='b'>### 決定：指標 3 改為承諾兌現尺（ADR-0005）；ADR-0004 背景再更正（Celta 11-01 01:4x）<br><br>- **衝突（Sol 01:32，1566142765925146769）**：`docs/roadmap.md` 可量指標第 3 條與對照表第 3 列要求「每條主線每天有到期產物」，第 4 項卻寫「延後有理由與恢復安排，而且實際恢復」；一條線被明寫延後時，兩把尺判定相反。<br>- **決定（選項 3）**：優先序最前的進行中主線每天要有今天到期的產物且準時落檔、沒人在頻道提也一樣；其他線可以延後，但延後要在票上寫理由與恢復日期，到期要真的恢復。指標 3 與對照表第 3 列照此改寫，10-31 讀數「#538 14:13→19:39 零產物」保留（當時最前的線、沒人寫延後）。另兩個選項（維持原文、刪掉指標 3）與取捨寫在 ADR-0005。Ray 一句話可否決。<br>- **commit 1d0184ce**：[連結] ，三檔：`docs/roadmap.md`（指標 3、對照表第 3 列、檔頭版本行）、`docs/adr/0005-metric3-daily-artifact-becomes-commitment-ruler.md`（新）、`docs/adr/0004-roadmap-and-adr-in-git.md`（背景更正）。<br>- **更正 2617**：我寫「Sol 00:59 被拒是他那把 token」。Sol 01:32 說明那次 403 是沒帶認證的請求，所以不能判 token 有問題；帶 sol 的 token 重打一次才知道。ADR-0004 背景已改成這樣。<br>- 影響：Sai triage 問句不變；Celta 22:33 稽核多核「延後有沒有寫理由與恢復日」。鏡像 `/nova_shared/roadmap/` 同步結果頻道報。<br></div></details><h2>近 4 天已關</h2>
-<script>var g=new Date("2026-11-01T02:12:52.544788+08:00"),m=Math.round((Date.now()-g)/60000),a=document.getElementById("age");
+<script>var g=new Date("2026-11-01T02:22:54.242042+08:00"),m=Math.round((Date.now()-g)/60000),a=document.getElementById("age");
 a.textContent=m<1?"剛更新":m+" 分鐘前更新";if(m>30){a.textContent+="（過久，可能停更）";a.className="stale"}</script></body></html>
