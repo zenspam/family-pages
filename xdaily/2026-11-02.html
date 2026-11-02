@@ -1,0 +1,38 @@
+<title>X-daily 11-02</title>
+<style>
+:root{--bg:#fbfbf9;--fg:#1f2326;--mute:#5d6770;--rule:#d9dcd6;--acc:#2f5d62;--warn:#8a5a12;--warnbg:#f6efe0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.75 "Noto Sans TC",system-ui,sans-serif;margin:0;padding:24px 16px}
+main{max-width:42rem;margin:0 auto}h1{font-size:1.6rem;line-height:1.3;margin:0 0 .3rem}
+h2{font-size:1.1rem;margin:2.2rem 0 .6rem;padding-top:1rem;border-top:1px solid var(--rule);color:var(--acc)}
+.src,.foot{color:var(--mute);font-size:.9rem}a{color:var(--acc);word-break:break-all}
+.unv{background:var(--warnbg);color:var(--warn);border-left:3px solid var(--warn);padding:.35rem .7rem;font-size:.92rem;margin:.4rem 0}
+.link{font-size:.85rem}li{margin:.4rem 0}
+.lead{font-size:1.15rem;line-height:1.7;margin:1rem 0 .5rem;padding:.8rem 1rem;border-left:4px solid var(--acc);background:var(--warnbg)}
+</style>
+<main>
+<h1>X-daily 11-02</h1>
+<p class="src">Grok 讀 X 公開帖寫草稿，Gemini Argon（網頁）潤飾文筆；程式核過每個數字與連結都出自草稿。內容未經人工逐句核對。</p>
+<p class="lead">蓝哥AI 轉述卡茲克研究了近 1 年的 Agent，也就是能自己動手做事的 AI 助手，透過把郵件或告警變成觸發條件，不用等人類下指令就能自動把工作做完。</p>
+<h2>蓝哥AI @0xlangeai</h2>
+<p>他轉述卡茲克把飛書、郵件、告警和定時任務變成自動觸發條件去叫醒對應的 Agent 分工合作，並搭配自建的 CI 中台，也就是自動檢查和發布程式的系統，他說近兩周四個專案裡處理了 298 個 PR，也就是程式碼修改申請，Codex 報了 333 條問題並在合併前修掉 306 條，中位 2–3 分鐘就能上線。</p>
+<p><b>對你有什麼用。</b>你可以參考這套做法，讓 AI 在收到通知時自己動手寫程式、檢查和發布，不用每次都等你打開視窗下指令，只在需要做決定時才通知你。</p>
+<p class="link"><a href="https://x.com/0xlangeai/status/2117064397793206553">x.com/0xlangeai/status/2117064397793206553</a></p>
+<h2>闯荡大叔 @haoge6699</h2>
+<p>他介紹開源專案 agency-agents-zh，開源就是免費公開讓大家拿去用，他說裡面內建 275 個隨插即用的 AI 專家，包含開發、設計等 20 個部門跟 60 個中國市場 Agent，而且支援 Claude Code、Cursor、Copilot 等 18 種工具。</p>
+<p><b>對你有什麼用。</b>你一個人工作時也能直接套用這些現成的 AI 專家來幫忙開發或做行銷，省下自己從頭設定的時間。</p>
+<p class="link"><a href="https://x.com/haoge6699/status/2117102146499809572">x.com/haoge6699/status/2117102146499809572</a></p>
+<h2>zack @mayne_wong</h2>
+<p>他把 Claude Code 放在遠端電腦上跑，並靠 tailscale 與 herdr core 把自己的電腦跟好幾台遠端電腦連起來，再用 Grok Bot 當遙控器隨時發指令叫 Agent 開工並回報結果。</p>
+<p><b>對你有什麼用。</b>你可以用這招在外面隨時遙控遠端電腦上的 AI 幫你寫程式，做完還會自動通知你，不用一直守在電腦前面。</p>
+<p class="link"><a href="https://x.com/mayne_wong/status/2117225630089838617">x.com/mayne_wong/status/2117225630089838617</a></p>
+<h2>良竹 @liangzhu_AI</h2>
+<p>他分享 GitHub 上一套叫 marketing skills 的開源專案，也就是給 AI 重複使用的技能說明書，能先用 product-marketing 寫好產品背景資料，接著讓 cro，也就是幫你提高客人註冊或購買比例的做法，去檢查按鈕和表單，最後再用 copywriting，也就是寫宣傳文字，來修改網頁表達。</p>
+<p><b>對你有什麼用。</b>如果你會寫程式卻不會賣產品，可以用這套工具讓 AI 先讀懂你的產品，再照順序幫你找出網頁沒人註冊的問題並改好文案，不用每次都從零跟 AI 解釋。</p>
+<p class="link"><a href="https://x.com/liangzhu_AI/status/2117087298714247548">x.com/liangzhu_AI/status/2117087298714247548</a></p>
+<h2>Chuck Bass @ChuckBass14291</h2>
+<p>他介紹用 Go 語言做出來的 Twigpine/zero，這是一個跑在自己電腦終端機的 AI 寫程式助手，他說在 GitHub 有 1773 個 Star，支援 OpenAI、Anthropic、Gemini、DeepSeek、Qwen 與本地模型，並設有權限沙箱，也就是限制 AI 只能在指定資料夾改檔案和執行指令的安全機制。</p>
+<p><b>對你有什麼用。</b>你可以在自己的電腦上安全地讓 AI 幫你讀寫程式碼和跑自動化流程，還能自由切換不同模型或直接跑自己電腦裡的模型。</p>
+<p class="link"><a href="https://x.com/ChuckBass14291/status/2117065363976577084">x.com/ChuckBass14291/status/2117065363976577084</a></p>
+</main>
