@@ -1,0 +1,38 @@
+<title>X-daily 11-05</title>
+<style>
+:root{--bg:#fbfbf9;--fg:#1f2326;--mute:#5d6770;--rule:#d9dcd6;--acc:#2f5d62;--warn:#8a5a12;--warnbg:#f6efe0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.75 "Noto Sans TC",system-ui,sans-serif;margin:0;padding:24px 16px}
+main{max-width:42rem;margin:0 auto}h1{font-size:1.6rem;line-height:1.3;margin:0 0 .3rem}
+h2{font-size:1.1rem;margin:2.2rem 0 .6rem;padding-top:1rem;border-top:1px solid var(--rule);color:var(--acc)}
+.src,.foot{color:var(--mute);font-size:.9rem}a{color:var(--acc);word-break:break-all}
+.unv{background:var(--warnbg);color:var(--warn);border-left:3px solid var(--warn);padding:.35rem .7rem;font-size:.92rem;margin:.4rem 0}
+.link{font-size:.85rem}li{margin:.4rem 0}
+.lead{font-size:1.15rem;line-height:1.7;margin:1rem 0 .5rem;padding:.8rem 1rem;border-left:4px solid var(--acc);background:var(--warnbg)}
+</style>
+<main>
+<h1>X-daily 11-05</h1>
+<p class="src">Grok 讀 X 公開帖寫草稿，Gemini Argon（網頁）潤飾文筆；程式核過每個數字與連結都出自草稿。內容未經人工逐句核對。</p>
+<p class="lead">劍的 AI 實驗室說，寫程式裡面的工具函數（讓 AI 幫你做特定小任務的指令）不是寫給人看的，是寫給 AI 模型呼叫的，如果名字不清楚或報錯像天書，模型撞牆兩次就叫不動了。</p>
+<h2>劍的 AI 實驗室 @swordBluesy</h2>
+<p>他整理了 Anthropic Academy 第 15 課，說寫工具函數要遵守三條規矩，包含名字一看就懂、先檢查必填的參數（餵給指令的必要資料），還有把錯誤訊息寫到讓 AI 看得懂。</p>
+<p><b>對你有什麼用。</b>寫新函數前先照這三條檢查一遍，AI 才不會一直卡住叫不動，幫你省下改程式的時間。</p>
+<p class="link"><a href="https://x.com/swordBluesy/status/2118292551967113525">x.com/swordBluesy/status/2118292551967113525</a></p>
+<h2>XiaoAnLab @xiaoanlab</h2>
+<p>他說 Kimi 推出了 Hosted Agents，也就是代管式的 AI 智能體（能自己一步步完成任務的 AI 助手），把底層的 Harness（控制 AI 運作與接工具的框架）做成雲端服務，內建 140 多個技能，可以 7×24 小時處理長時間任務跟多個 AI 合作。</p>
+<p><b>對你有什麼用。</b>不想自己架設和維護系統的團隊，可以直接用這個雲端服務來降低起步成本。</p>
+<p class="link"><a href="https://x.com/xiaoanlab/status/2118238875332026816">x.com/xiaoanlab/status/2118238875332026816</a></p>
+<h2>Laban @lunkertw</h2>
+<p>他說讓兩個不同的 AI 工具共享記憶時，最怕把做錯的方法也傳給下一個 AI，而且如果是處理公司的 repo（放程式碼的專案資料夾），一定要先把預設傳送到雲端的對話功能關掉。</p>
+<p><b>對你有什麼用。</b>把經驗餵給下一個 AI 之前先自己檢查過，並關掉雲端預設轉發，才不會讓 AI 越學越錯或把公司程式碼傳出去。</p>
+<p class="link"><a href="https://x.com/lunkertw/status/2118218945857765665">x.com/lunkertw/status/2118218945857765665</a></p>
+<h2>納米AI @antiAIvo</h2>
+<p>他說自己用 AI 做了一個把專案變成畫面的工具，拿來試 DeepSeek Harness 時，左邊的架構圖會亮起正在跑的區塊，右邊會同時顯示對應到哪幾行真實的程式碼。</p>
+<p><b>對你有什麼用。</b>你可以跟著畫面一步步看資料怎麼跑，用最快的速度看懂一個複雜的程式專案。</p>
+<p class="link"><a href="https://x.com/antiAIvo/status/2118278869383848438">x.com/antiAIvo/status/2118278869383848438</a></p>
+<h2>Willy 威力 @willyxfuture</h2>
+<p>他說開源（把模型免費公開給大家下載使用）的 Ripple-65B Preview 發布了，模型大小是 65B，訓練了 12T，上下文（AI 一次能記住並處理的資料長度）最高到 1M，官方自己報的 TerminalBench 2.1 分數是 80.52，贏過 501B 的 Reflection Beam，他們報的全部研發成本是 3200 萬美元。</p>
+<p><b>對你有什麼用。</b>多了一個免費公開、可以自己抓下來用而且一次能塞進超長資料的模型選擇。</p>
+<p class="link"><a href="https://x.com/willyxfuture/status/2118312151450325049">x.com/willyxfuture/status/2118312151450325049</a></p>
+</main>
