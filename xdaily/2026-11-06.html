@@ -1,0 +1,32 @@
+<title>X-daily 2026-11-06</title><style>:root{--bg:#fbfbf9;--fg:#1f2326;--mute:#5d6770;--rule:#d9dcd6;--acc:#2f5d62;--warn:#8a5a12;--warnbg:#f6efe0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.75 "Noto Sans TC",system-ui,sans-serif;margin:0;padding:24px 16px}
+main{max-width:42rem;margin:0 auto}h1{font-size:1.6rem;line-height:1.3;margin:0 0 .3rem}
+h2{font-size:1.1rem;margin:2rem 0 .5rem;padding-top:1rem;border-top:1px solid var(--rule);color:var(--acc)}
+.src{color:var(--mute);font-size:.9rem}.warn{background:var(--warnbg);color:var(--warn);border-left:3px solid var(--warn);padding:.4rem .7rem}
+a{color:var(--acc);word-break:break-all}p{margin:.6rem 0}.link{font-size:.85rem}</style><main><p class="warn">這是 Grok 原稿，Argon 潤稿版退回：比對沒過：{&quot;error&quot;: &quot;TimeoutError: Locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\&quot;div[contenteditable=&#x27;true&#x27;]\&quot;).first\n    - locator resolved to &lt;div dir=\&quot;ltr\&quot; role=\&quot;textbox\&quot; data-gramm=\&quot;false\&quot; aria-multiline=\&quot;true\&quot; contenteditable=\&quot;true\&quot; aria-label=\&quot;請輸入 Gemini 提示詞\</p><h1>X-daily 2026-11-06</h1>
+<p class="src">Grok 讀 X 公開帖寫稿；沒有人工逐句核對，數字都是作者自報。</p>
+<h2>今日主線</h2>
+<p>小墨同學說 Pi Agent 現在能在手機上開發遊戲，Xogot 把它集成分為底層引擎</p>
+<p>Vince 聊開發說有人把 Claude Code 完全跑在 VPS，本地用 MCP 暴露檔案系統</p>
+<p>Laban 說小店老闆要的不是 agent，是每天少做那三件事</p>
+<h2>小墨同學 @xiaomovps</h2>
+<p>Pi 手機遊戲：他說 Pi Agent 現在已經能在手機上開發遊戲。Xogot 正式把 Pi Agent 集成到自己的遊戲開發工具，可以直接在 iPhone 和 iPad 上通過 AI 開發 Godot 遊戲。不是套聊天窗口，是把 Pi 作為底層 Agent 引擎集成，有直接寫代碼改場景、PiSwift 開源支援 Apple 生態、Pi Durable 支援任務恢復三個點。Pi 作者 Mario 也轉發了</p>
+<p class="link"><a href="https://x.com/xiaomovps/status/2118675698831482989">x.com/xiaomovps/status/2118675698831482989</a></p>
+<p>Pi 更新：他說 Pi 最近 X 上內容變少，但去 GitHub 看 PR 分支，發版速度降低但更新內容沒減。有 p2 實驗性 Web/TUI、Chord v2 重做底層、Anthropic Message Threads 進開發分支（服務端延續會話減少重傳歷史）、主線穩定性修復。他期待官方桌面端或手機端</p>
+<p class="link"><a href="https://x.com/xiaomovps/status/2118579001325126118">x.com/xiaomovps/status/2118579001325126118</a></p>
+<h2>Vince 聊開發 @vincemask</h2>
+<p>遠端架構：他說評論區有人分享更徹底的 Claude Code 遠端開發架構。Claude Code 完全運行在 VPS 上，本地通過 MCP 暴露檔案系統和開發環境。核心是 Claude Code（VPS）→ MCP Server（本地）→ 檔案操作／編譯調試。用 herdr 管理會話、server-filesystem 和 expose-files-mcp 提供能力。他問有人跑通完整流程了嗎</p>
+<p class="link"><a href="https://x.com/vincemask/status/2118675731920331178">x.com/vincemask/status/2118675731920331178</a></p>
+<h2>Laban @lunkertw</h2>
+<p>小店需求：他說小店老闆要的不是 agent，是「每天少做那三件事」。先把一個重複流程（對帳、回訊息）做成一鍵，比講工作流有用多了</p>
+<p class="link"><a href="https://x.com/lunkertw/status/2118656522632987020">x.com/lunkertw/status/2118656522632987020</a></p>
+<h2>劍的 AI 實驗室 @swordBluesy</h2>
+<p>市場：他說晶片指數 11 月 5 日跌 12.3%，是 2020 年 3 月以來最差一天。Nvidia 跌 9.2%，Alphabet 和 Amazon 只跌 2.2%。同一波 AI 熱潮，賣鏟子的被打得比租鏟子的重 5 倍</p>
+<p class="link"><a href="https://x.com/swordBluesy/status/2118675238796066855">x.com/swordBluesy/status/2118675238796066855</a></p>
+<h2>區塊客 @BlockcastNews</h2>
+<p>人才流失：他說 AI 新創 Anthropic 在提交 IPO 文件前夕面臨人才大量流失危機，核心產品 Claude Code 負責人 Cat Wu 等至少四位關鍵成員相繼離職，其中兩人更轉投 OpenAI。營收增速放緩、營運轉虧，加上被黑石評為「垃圾級」股票，恐重創其 2 兆美元估值夢</p>
+<p class="link"><a href="https://x.com/BlockcastNews/status/2118675863696814543">x.com/BlockcastNews/status/2118675863696814543</a></p>
+<p>小工具</p>
+<p>無新工具</p></main>
