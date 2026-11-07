@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}</style>
+<title>東北風土馬拉松 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one reading column, like a race guide booklet; a big date block opens, then sections in the order a runner plans */
+:root{
+  --bg:#f3f6f1; --paper:#ffffff; --ink:#1d2a3a; --muted:#56636f;
+  --rice:#4f7a3a; --rice-soft:#e3ecd9; --indigo:#2b4a7a; --rule:#d3dccd; --warn:#8a4b12; --warn-soft:#f7ecdc;
+  --display:"Noto Serif TC","Songti TC",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141a17; --paper:#1c2420; --ink:#e6ece4; --muted:#a3b0a8;
+  --rice:#9cc47f; --rice-soft:#25331f; --indigo:#9db8e6; --rule:#33403a; --warn:#e8b57a; --warn-soft:#33281b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a17; --paper:#1c2420; --ink:#e6ece4; --muted:#a3b0a8;
+  --rice:#9cc47f; --rice-soft:#25331f; --indigo:#9db8e6; --rule:#33403a; --warn:#e8b57a; --warn-soft:#33281b; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75}
+.wrap{max-width:720px;margin:0 auto;padding-block:32px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:36px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.3}
+h1{font-size:clamp(30px,7vw,44px);font-weight:900}
+h2{font-size:22px;font-weight:600;color:var(--indigo);padding-bottom:6px;border-bottom:1px solid var(--rule)}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-size:13px;letter-spacing:.12em;color:var(--rice);font-weight:700}
+.hero{display:flex;flex-direction:column;gap:14px}
+.date{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;font-family:var(--display)}
+.date b{font-size:clamp(40px,11vw,64px);font-weight:900;color:var(--rice);line-height:1}
+.date span{font-size:18px;color:var(--muted)}
+.lede{font-size:17px}
+.note{font-size:14px;color:var(--muted)}
+.warn{background:var(--warn-soft);color:var(--warn);border-radius:6px;padding:10px 14px;font-size:14px}
+.events{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.ev{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ev h3{margin:0;font-size:17px}
+.ev .dist{font-family:var(--display);font-size:24px;font-weight:900;color:var(--rice);font-variant-numeric:tabular-nums}
+.ev dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:14px}
+.ev dt{color:var(--muted)} .ev dd{margin:0;font-variant-numeric:tabular-nums}
+ol.time{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-left:2px solid var(--rice-soft)}
+ol.time li{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:6px 0 6px 14px;position:relative}
+ol.time li::before{content:"";position:absolute;left:-6px;top:15px;width:10px;height:10px;border-radius:50%;background:var(--rice)}
+ol.time time{font-variant-numeric:tabular-nums;font-weight:700}
+ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.box{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.box h3{margin:0;font-size:17px}
+a{color:var(--indigo);text-underline-offset:3px}
+a:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.cta{display:inline-block;background:var(--rice);color:var(--paper);text-decoration:none;font-weight:700;padding:10px 18px;border-radius:6px;align-self:flex-start}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--rule);padding-top:14px;display:flex;flex-direction:column;gap:6px}
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">TOHOKU FOOD MARATHON 2027 · 宮城縣登米市</div>
+    <h1>東北風土馬拉松 2027</h1>
+    <div class="date"><b>2027.4.18</b><span>星期日・長沼湖畔</span></div>
+    <p class="lede">這是一場邊吃邊跑的「祭典馬拉松」。賽道繞著登米市的長沼湖，補給站端出東北各地的名產小吃，喝的是釀日本酒用的水；跑完還有美食節和日本酒節。它仿效法國波爾多的梅多克葡萄酒馬拉松，目的是替 311 地震後的東北招來世界各地的旅人。</p>
+    <p class="note">2026 年那屆有 5,000 多名跑者，其中 351 人來自 20 個國家和地區，全場約 38,000 人到訪。</p>
+    <a class="cta" href="https://runnet.jp/entry/runtes/user/pc/competitionDetailAction.do?raceId=397171&amp;div=1">到 RUNNET 報名（日文）</a>
+  </header>
+
+  <section>
+    <h2>報名</h2>
+    <ul>
+      <li>報名期間：2026 年 9 月 12 日 00:00 起，到 2027 年 3 月 14 日 23:59 截止，額滿提前結束（按付款先後）。</li>
+      <li>只能在網路報名，平台是日本的 RUNNET，現場不受理。</li>
+      <li>RUNNET 有「お仲間エントリー」（朋友一起報）和家庭報名，由代表人一次替大家報。</li>
+      <li>報名後不能退費，也不能換組別；因天災或疫病停辦同樣不退費。</li>
+      <li>需要事先做健康檢查，並且能在關門時間內跑完。</li>
+      <li>號碼布 4 月上旬郵寄到府，當天不設報到櫃台。</li>
+      <li>紀念 T 恤不含在報名費裡，另外開放加購。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>組別與費用</h2>
+    <div class="events">
+      <div class="ev"><h3>全程馬拉松</h3><div class="dist">42.195 km</div>
+        <dl><dt>費用</dt><dd>12,100 日圓</dd><dt>關門</dt><dd>6 小時 30 分</dd><dt>名額</dt><dd>1,500 人</dd><dt>資格</dt><dd>高中生以上</dd></dl>
+        <p class="note">繞長沼兩圈；補給站約 20 種小吃。</p></div>
+      <div class="ev"><h3>半程馬拉松</h3><div class="dist">21.0975 km</div>
+        <dl><dt>費用</dt><dd>9,350 日圓</dd><dt>關門</dt><dd>3 小時 30 分</dd><dt>名額</dt><dd>3,000 人</dd><dt>資格</dt><dd>高中生以上</dd></dl>
+        <p class="note">繞長沼一圈；補給約 10 種小吃。</p></div>
+      <div class="ev"><h3>5 公里跑</h3><div class="dist">5 km</div>
+        <dl><dt>費用</dt><dd>4,400 日圓</dd><dt>關門</dt><dd>1 小時</dd><dt>名額</dt><dd>1,000 人</dd><dt>資格</dt><dd>國中生以上</dd></dl>
+        <p class="note">跑到 2.5 公里折返。</p></div>
+      <div class="ev"><h3>親子跑</h3><div class="dist">0.5 km</div>
+        <dl><dt>費用</dt><dd>2,200 日圓／組</dd><dt>關門</dt><dd>20 分</dd><dt>名額</dt><dd>200 組</dd><dt>資格</dt><dd>家長 1 人＋小學以下孩子 1 人</dd></dl></div>
+    </div>
+    <p class="note">另有給身心障礙兒童和陪跑者的 KIDS 微笑跑（0.5 公里），原則上由合作團體邀請參加。報名費都含稅。資格欄照官網寫法；RUNNET 寫的是全馬、半馬 16 歲以上，5 公里 13 歲以上。</p>
+    <p>完賽可以拿到東北美食、日本酒試飲券（也可換無酒精飲料），還有抽獎；完賽證明在線上發。</p>
+  </section>
+
+  <section>
+    <h2>當天流程</h2>
+    <ol class="time">
+      <li><time>08:00</time><span>會場開放</span></li>
+      <li><time>08:30</time><span>全馬起跑，9:00 前分批出發</span></li>
+      <li><time>09:00</time><span>半馬開始起跑。報名時選一個 30 分鐘時段，時段內隨時可出發，最晚 11:00</span></li>
+      <li><time>11:30</time><span>親子跑，分兩批</span></li>
+      <li><time>12:30</time><span>KIDS 微笑跑</span></li>
+      <li><time>13:00</time><span>5 公里跑</span></li>
+      <li><time>15:00</time><span>活動結束</span></li>
+    </ol>
+    <p class="note">半馬和親子跑都想參加的人，半馬要選早一點的時段。</p>
+  </section>
+
+  <section>
+    <h2>不跑的人也能玩</h2>
+    <ul>
+      <li><b>東北日本酒節</b>：東北各地酒藏帶著酒和釀酒師一起來。</li>
+      <li><b>登米美食節</b>：在地美食和物產攤位。</li>
+      <li><b>前夜祭「東北 Food Night」</b>：在登米市役所附近的 Hotel Sunshine 佐沼。</li>
+      <li><b>新的旅遊方案</b>：2027 年起有串連登米、南三陸、氣仙沼的旅遊行程，內容有住南三陸 Hotel 觀洋、氣仙沼的牡蠣養殖體驗和酒藏參觀。官網說是為海外跑者設計，一般人也能參加；詳細行程與價格還沒公布。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>交通</h2>
+    <div class="box">
+      <h3>主會場：長沼 Futopia 豐鐵之丘公園</h3>
+      <p>宮城県登米市迫町北方天形161-84。起點、終點、美食節、日本酒節都在這裡。登米市離仙台開車約 1.5 小時。</p>
+    </div>
+    <ul>
+      <li><b>新幹線</b>：到「くりこま高原」站（栗駒高原），轉大會接駁車約 30 分鐘到會場。2026 年的班表裡，東京 6:04 發的 やまびこ51號 8:26 到站，可以接 8:35 的接駁車。</li>
+      <li><b>JR 在來線</b>：東北本線「瀬峰」站也有接駁車。這一站不能刷 Suica，要先買紙本車票，或用「えきねっとチケットレス」App。</li>
+      <li><b>住登米市區</b>：登米市役所和會場之間有接駁車，當天 8:00–15:00 每 15–20 分鐘一班；市役所周邊旅館和餐廳多，適合前一晚住。</li>
+      <li><b>自駕</b>：停車場要報名時一起預約，每台 1,100 日圓，停好再搭接駁車。東北自動車道走築館 IC，三陸自動車道走登米 IC。半馬跑者要搭停車場 10:15 前的接駁車，再晚可能趕不上最後起跑。</li>
+      <li><b>回程</b>：會場往くりこま高原站的最後一班接駁車 15:30 發車。</li>
+    </ul>
+    <p class="warn">接駁車和新幹線的時刻是 2026 年的參考資料，官網說 2027 年的會再更新。訂票前請以官網最新版為準。</p>
+  </section>
+
+  <footer>
+    <p>資料來源：<a href="https://tohokumarathon.com/">東北風土馬拉松官網</a>（大會概要、報名須知、交通、常見問題、2026-09-08 新聞稿）、<a href="https://runnet.jp/entry/runtes/user/pc/competitionDetailAction.do?raceId=397171&amp;div=1">RUNNET 報名頁</a>。官網另有<a href="https://tohokumarathon.com/en">英文版</a>。</p>
+    <p>主辦單位詢問信箱：info@tohokumarathon.com</p>
+    <p>內容整理並翻譯自 2026 年 11 月 7 日的官網；報名名額會變動，以官網為準。</p>
+  </footer>
+</main>
+</body>
+</html>
