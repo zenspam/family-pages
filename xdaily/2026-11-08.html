@@ -1,0 +1,52 @@
+<title>X-daily 2026-11-08</title><style>:root{--bg:#fbfbf9;--fg:#1f2326;--mute:#5d6770;--rule:#d9dcd6;--acc:#2f5d62;--warn:#8a5a12;--warnbg:#f6efe0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15191b;--fg:#e4e7e3;--mute:#98a39f;--rule:#2d3638;--acc:#7fb5ba;--warn:#e0b563;--warnbg:#2a2418;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.75 "Noto Sans TC",system-ui,sans-serif;margin:0;padding:24px 16px}
+main{max-width:42rem;margin:0 auto}h1{font-size:1.6rem;line-height:1.3;margin:0 0 .3rem}
+h2{font-size:1.1rem;margin:2rem 0 .5rem;padding-top:1rem;border-top:1px solid var(--rule);color:var(--acc)}
+.src{color:var(--mute);font-size:.9rem}.warn{background:var(--warnbg);color:var(--warn);border-left:3px solid var(--warn);padding:.4rem .7rem}
+a{color:var(--acc);word-break:break-all}p{margin:.6rem 0}.link{font-size:.85rem}</style><main><p class="warn">這是 Grok 原稿，Argon 潤稿版退回：比對沒過：{&quot;error&quot;: &quot;TargetClosedError: Page.wait_for_timeout: Target page, context or browser has been closed&quot;}</p><h1>X-daily 2026-11-08</h1>
+<p class="src">Grok 讀 X 公開帖寫稿；沒有人工逐句核對，數字都是作者自報。</p>
+<h2>今日主線</h2>
+<p>劍的 AI 實驗室說，Qwen Code 官方把規則分成基線與條件，帶 paths 的只在碰到匹配檔案時才注入提示詞</p>
+<p>心有猛虎說，Anthropic S-1/A 修訂稿顯示 Q3 經營利潤轉負，算力成本占比升到 58%</p>
+<p>doskey 說，比過 Hermes Agent Bot、Grok Bot 與 Dots 後，還是 Grok Bot 最好用</p>
+<h2>劍的 AI 實驗室 @swordBluesy</h2>
+<p>主題：Qwen Code 規則機制</p>
+<p>他說官方文件把規則放在 .qwen/rules/ 的 Markdown，沒寫 paths 的是基線規則，每一輪都進系統提示詞；寫了 paths 的是條件規則，AI 讀或改到匹配檔案才注入一次。官方範例用 glob 如 src/**/*.tsx，擴展規則必須帶 paths，否則跳過，因為一次實測九個擴展常駐內容佔了 65% token。</p>
+<p class="link"><a href="https://x.com/swordBluesy/status/2119396292585718179">x.com/swordBluesy/status/2119396292585718179</a></p>
+<h2>心有猛虎 @zg0820</h2>
+<p>主題：Anthropic 財報修訂</p>
+<p>他說 11 月 2 日 S-1/A 補進 Q3，營收 169.6 億美元但經營利潤從 Q2 正轉為 -5.67 億，算力成本環比漲 77% 到 98.6 億，占營收從 48% 到 58%。長期算力承諾約 8954 億美元，風險披露改成「過去就曾未能識別」加速，並稱 9 月代碼庫九成以上是 Claude 寫的。</p>
+<p class="link"><a href="https://x.com/zg0820/status/2119400313295900744">x.com/zg0820/status/2119400313295900744</a></p>
+<h2>doskey @doskey</h2>
+<p>主題：Agent Bot 比較</p>
+<p>他說比過 Hermes Agent Bot、Grok Bot 與 Dots，還是 Grok Bot 最好用。</p>
+<p class="link"><a href="https://x.com/doskey/status/2119400720634089818">x.com/doskey/status/2119400720634089818</a></p>
+<h2>bolvarfordragon @bo1varFordragoN</h2>
+<p>主題：開發者工作狀態</p>
+<p>他轉述一位同時打幾份工還在讀 PhD 的開發者說，現在 95% 程式碼交給 LLM 生成，活幹得更多卻睡不好，以前手動寫碼反而能倒頭就睡。他形容自己變成「瘋狂的經理」，只調度催進度，唯一還能進入深度工作的是讀論文。</p>
+<p class="link"><a href="https://x.com/bo1varFordragoN/status/2119400651461373979">x.com/bo1varFordragoN/status/2119400651461373979</a></p>
+<h2>藍天bluesky @blueskylh1</h2>
+<p>主題：AI 影片工作流整理</p>
+<p>他整理 EianLu 的長文，說先在火山引擎申請 API Key，讓 Claude Code 或 Codex 寫腳本接入 Seedance；把想法、時長、畫幅告訴 AI 完善劇情，再拆分鏡、生成角色設定圖、畫首尾幀，審核後再提交生成，最後用程式碼拼接。他說關鍵是先把文字和圖片問題解決再花錢生成。</p>
+<p class="link"><a href="https://x.com/blueskylh1/status/2119400002384789720">x.com/blueskylh1/status/2119400002384789720</a></p>
+<h2>TianQi @TianQi_Do</h2>
+<p>主題：Blender MCP 工具</p>
+<p>他說這些工具已在 GitHub 公開，第一個是 MCP for Blender，讓 Claude 控制 Blender 建立 3D 物件、編輯材質、建構場景並渲染。</p>
+<p class="link"><a href="https://x.com/TianQi_Do/status/2119400276461502757">x.com/TianQi_Do/status/2119400276461502757</a></p>
+<h2>隨機比特 @XShude</h2>
+<p>主題：Agent 路徑與目標</p>
+<p>他說可以讓 Agent 自由調整執行路徑，但要把「換方法」和「改成功條件」切開。例如要求腳本跑通全部 5 個測試用例，它怎麼重構都行；如果卡住時想刪掉報錯的測試用例來算通過，就必須交回給人審核，防止目標在迭代中自行漂移。</p>
+<p class="link"><a href="https://x.com/XShude/status/2119400006495154630">x.com/XShude/status/2119400006495154630</a></p>
+<h2>Magnus @MagNornsX</h2>
+<p>主題：Grok Bot 額度</p>
+<p>他說最近 Grok Bot 的額度和智商掉得像玩笑，自己的 Muse 額度消耗得比它慢，覺得 Muse 更耐用。</p>
+<p class="link"><a href="https://x.com/MagNornsX/status/2119400639969300794">x.com/MagNornsX/status/2119400639969300794</a></p>
+<h2>Eastgo @EastgoCC</h2>
+<p>主題：免費 GPU 領取</p>
+<p>他說有 Grok Bot 和 Muse 的可以去 Kaggle Notebook 領 2 張 T4，每張 15GB 顯存，可跑 DeepSeek-V4-Pro、Qwen3.5-9B 無審查模型、Qwen-Image-2.1 無審核生圖與 Wan2.2-5B 無審核文生影片。</p>
+<p class="link"><a href="https://x.com/EastgoCC/status/2119400389682536823">x.com/EastgoCC/status/2119400389682536823</a></p>
+<p>小工具</p>
+<p>心有猛虎 @zg0820 列了多個 AI 逆向 skill：REA 把 JS、Electron、原生二進位分析接進 Agent；android-reverse-engineering-skill 反編譯安卓安裝包；leanrea 用 8 KB 輕量 Skill 指揮本機逆向工具。</p>
+<p class="link"><a href="https://x.com/zg0820/status/2119399907174011380">x.com/zg0820/status/2119399907174011380</a></p></main>
